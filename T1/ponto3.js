@@ -52,23 +52,27 @@ const cubeSize = 4;
 var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 var cube1 = new THREE.Mesh(cubeGeometry, material);
 let cube1CurrentPosition = new THREE.Vector3();
+// Create a position for the cube so whe can save it in case of collision
 cube1CurrentPosition.copy(cube1.position);
 
-// BB
 // position the cube
-const planeBorderWidth = 40 / 2;
-cube1.position.set(3.0, 2.0, 0.0);
+const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2;
+cube1.position.set(0.0, cubeSize / 2, 0.0);
+// Main cube Bounding Box for collision
 const cube1BB = new THREE.Box3().setFromObject(cube1);
 
-let collidableMeshList = [];
+const collidableMeshList = [];
+const collidableCubes = [];
 
-for (let i = -planeBorderWidth; i < planeBorderWidth + 1; i += cubeSize) {
-  for (let j = -planeBorderWidth; j < planeBorderWidth + 1; j += cubeSize) {
+for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
+  for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
       continue;
-    const borderCube = new THREE.Mesh(cubeGeometry, material2);
+    const clonedMaterial = material2.clone();
+    const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
     borderCube.position.set(i, 2.0, j);
     const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+    collidableCubes.push(borderCube);
     collidableMeshList.push(borderCubeBB);
     scene.add(borderCube);
   }
@@ -93,20 +97,43 @@ function keyboardUpdate() {
     cube1.translateZ(-moveDistance);
   if (keyboard.pressed("S") || keyboard.pressed("down"))
     cube1.translateZ(moveDistance);
-
-  if (keyboard.pressed("space")) cube1.position.set(0.0, 2.0, 0.0);
 }
 
 function checkCollision() {
   for (const collidableObj of collidableMeshList) {
     if (cube1BB.intersectsBox(collidableObj)) {
       cube1.position.copy(cube1CurrentPosition);
-    } else {
-      material2.color.set("green");
     }
   }
 }
 
+function checkObjectClicked(event) {
+  // Check if the mouse was pressed
+  // Get the mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  var mouse = new THREE.Vector2();
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Create a Ray with origin at the mouse position
+  //   and direction into the scene (camera direction)
+  var raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  // Create an array containing all objects in the scene with which the ray intersects
+  var intersects = raycaster.intersectObjects(scene.children, true);
+  // If there is one (or more) intersections
+  if (intersects.length > 0) {
+    // Show only the first object
+    if (collidableCubes.includes(intersects[0].object)) {
+      // Set a random color even if pressed multiple times
+      intersects[0].object.material.color.set(
+        Math.random() * 0xffffff,
+        Math.random() * 0xffffff,
+        Math.random() * 0xffffff
+      );
+    }
+  }
+}
 function showInformation() {
   // Use this to show information onscreen
   var controls = new InfoBox();
@@ -118,6 +145,7 @@ function showInformation() {
   controls.show();
 }
 
+document.addEventListener("mousedown", checkObjectClicked, false);
 function render() {
   cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld); // Update BB to current Cube position
   checkCollision(); // Check for collisions
