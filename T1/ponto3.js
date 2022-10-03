@@ -125,12 +125,13 @@ function checkObjectClicked(event) {
   if (intersects.length > 0) {
     // Show only the first object
     if (collidableCubes.includes(intersects[0].object)) {
-      // Set a random color even if pressed multiple times
-      intersects[0].object.material.color.set(
-        Math.random() * 0xffffff,
-        Math.random() * 0xffffff,
-        Math.random() * 0xffffff
-      );
+      // Toggle cube color
+      const currentObjColor = intersects[0].object.material.color;
+      if (currentObjColor.getHex() === material2.color.getHex()) {
+        intersects[0].object.material.color = material.color;
+      } else {
+        intersects[0].object.material.color = material2.color;
+      }
     }
   }
 }
