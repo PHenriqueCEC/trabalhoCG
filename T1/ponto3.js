@@ -7,9 +7,11 @@ import {
   initDefaultBasicLight,
   setDefaultMaterial,
   InfoBox,
+  getMaxSize,
   onWindowResize,
   createGroundPlaneXZ,
 } from "../libs/util/util.js";
+import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 
 let scene, renderer, camera, material, material2, light, orbit; // Initial variables
 scene = new THREE.Scene(); // Create main scene
@@ -50,20 +52,13 @@ scene.add(plane);
 // create a cube
 const cubeSize = 4;
 var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-var cube1 = new THREE.Mesh(cubeGeometry, material);
-let cube1CurrentPosition = new THREE.Vector3();
-// Create a position for the cube so whe can save it in case of collision
-cube1CurrentPosition.copy(cube1.position);
 
-// position the cube
-const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2;
-cube1.position.set(0.0, cubeSize / 2, 0.0);
-// Main cube Bounding Box for collision
-const cube1BB = new THREE.Box3().setFromObject(cube1);
+const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2; // Verificando o tamanho da borda do plano
 
-const collidableMeshList = [];
-const collidableCubes = [];
+const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
+const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 
+// Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
 for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
@@ -77,36 +72,109 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     scene.add(borderCube);
   }
 }
-// add the cube to the scene
-scene.add(cube1);
+
+// Carrega o modelo GLTF e seta sua bounding box
+let man = null;
+let manBB = null;
+function loadGLTFFile(modelName) {
+  var loader = new GLTFLoader();
+  loader.load(
+    modelName,
+    function (gltf) {
+      var obj = gltf.scene;
+      obj.traverse(function (child) {
+        if (child) {
+          child.castShadow = true;
+        }
+      });
+      obj.traverse(function (node) {
+        if (node.material) node.material.side = THREE.DoubleSide;
+      });
+      obj = normalizeAndRescale(obj, 8);
+      man = obj;
+      manBB = new THREE.Box3().setFromObject(man);
+      scene.add(obj);
+    },
+    onProgress,
+    onError
+  );
+}
+
+function onError() {}
+
+function onProgress(xhr, model) {
+  if (xhr.lengthComputable) {
+    var percentComplete = (xhr.loaded / xhr.total) * 100;
+  }
+}
+
+// Normalize scale and multiple by the newScale
+function normalizeAndRescale(obj, newScale) {
+  var scale = getMaxSize(obj); // Available in 'utils.js'
+  obj.scale.set(
+    newScale * (1.0 / scale),
+    newScale * (1.0 / scale),
+    newScale * (1.0 / scale)
+  );
+  return obj;
+}
+
+loadGLTFFile("../assets/objects/walkingMan.glb", false);
 
 render();
 
 function keyboardUpdate() {
   keyboard.update();
-  cube1CurrentPosition.copy(cube1.position);
   var speed = 30;
   var moveDistance = speed * clock.getDelta();
-
   // Keyboard.pressed - execute while is pressed
-  if (keyboard.pressed("A") || keyboard.pressed("left"))
-    cube1.translateX(-moveDistance);
-  if (keyboard.pressed("D") || keyboard.pressed("right"))
-    cube1.translateX(moveDistance);
-  if (keyboard.pressed("W") || keyboard.pressed("up"))
-    cube1.translateZ(-moveDistance);
-  if (keyboard.pressed("S") || keyboard.pressed("down"))
-    cube1.translateZ(moveDistance);
-}
+  if (keyboard.pressed("A") || keyboard.pressed("left")) {
+    manBB.translate(new THREE.Vector3(-moveDistance, 0, 0)); // Move apenas a bounding box para checar colisões
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(moveDistance, 0, 0)); // Move a bounding box de volta
+    } else {
+      man.translateX(-moveDistance); // Move o objeto
+    }
+  }
+  if (keyboard.pressed("D") || keyboard.pressed("right")) {
+    manBB.translate(new THREE.Vector3(moveDistance, 0, 0));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(-moveDistance, 0, 0));
+    } else {
+      man.translateX(moveDistance);
+    }
+  }
+  if (keyboard.pressed("W") || keyboard.pressed("up")) {
+    manBB.translate(new THREE.Vector3(0, 0, moveDistance));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(0, 0, -moveDistance));
+    } else {
+      man.translateZ(moveDistance);
+    }
+  }
 
-function checkCollision() {
-  for (const collidableObj of collidableMeshList) {
-    if (cube1BB.intersectsBox(collidableObj)) {
-      cube1.position.copy(cube1CurrentPosition);
+  if (keyboard.pressed("S") || keyboard.pressed("down")) {
+    manBB.translate(new THREE.Vector3(0, 0, -moveDistance));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(0, 0, moveDistance));
+    } else {
+      man.translateZ(-moveDistance);
     }
   }
 }
 
+// Checa se a bounding box do personagem colidiu com alguma das bounding boxes dos cubos
+function checkCollision() {
+  if (manBB === null || man === null) return;
+  for (const collidableObj of collidableMeshList) {
+    if (manBB.intersectsBox(collidableObj)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Checa se o mouse está sobre algum dos cubos
 function checkObjectClicked(event) {
   // Check if the mouse was pressed
   // Get the mouse position in normalized device coordinates
@@ -135,6 +203,7 @@ function checkObjectClicked(event) {
     }
   }
 }
+
 function showInformation() {
   // Use this to show information onscreen
   var controls = new InfoBox();
@@ -142,14 +211,14 @@ function showInformation() {
   controls.addParagraph();
   controls.add("Press WASD keys to move continuously");
   controls.add("Press arrow keys to move in discrete steps");
-  controls.add("Press SPACE to put the cube in its original position");
   controls.show();
 }
 
 document.addEventListener("mousedown", checkObjectClicked, false);
 function render() {
-  cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld); // Update BB to current Cube position
-  checkCollision(); // Check for collisions
+  if (man !== null && manBB !== null) {
+    manBB.setFromObject(man); // Atualiza a bounding box do personagem
+  }
   requestAnimationFrame(render); // Show events
   keyboardUpdate();
   renderer.render(scene, camera); // Render scene
