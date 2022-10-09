@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import KeyboardState from "../libs/util/KeyboardState.js";
 import GUI from '../libs/util/dat.gui.module.js';
-import { TrackballControls } from '../build/jsm/controls/TrackballControls.js';
 import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js'
 import {
     initRenderer,
@@ -21,10 +20,7 @@ light = initDefaultSpotlight(scene, new THREE.Vector3(5.0, 15.0, 5.0)); // Use d
 material = setDefaultMaterial(); // create a basic material
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-
-
-
+var mixer = new Array();
 var direction = 5  //variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
 
 window.addEventListener("resize", function () { onWindowResize(camera, renderer); }, false);
@@ -37,29 +33,23 @@ let camPos = new THREE.Vector3(5, 4, 8);
 let camUp = new THREE.Vector3(0.0, 1.0, 0.0);
 let camLook = new THREE.Vector3(0.0, 0.0, 0.0);
 
-// camera = new THREE.PerspectiveCamera(
-//     45,
-//     window.innerWidth / window.innerHeight,
-//     0.1,
-//     1000
-// );
-var s = 72; // Estimated size for orthographic projection
-camera = new THREE.OrthographicCamera(-window.innerWidth / s,           //left
-    window.innerWidth / s,                                              //right
-    window.innerHeight / (s - 10),                                      //top
-    window.innerHeight / (-s - 10),                                     //bottom
-    -s,                                                                 //near
-    s);
+camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+
 
 camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.lookAt(camLook);
 
-let auxilio = new THREE.Object3D()
-// auxilio.position.set(new THREE.Vector3(0.0, 0.0, 0.0))
-scene.add(auxilio)
-auxilio.add(camera)
+let holder = new THREE.Object3D()
+scene.add(holder)
+holder.add(camera)
 
+let manholder = new THREE.Object3D()
 
 var man = null;
 
@@ -75,34 +65,17 @@ loader.load('../assets/objects/walkingMan.glb', function (gltf) {
         if (node.material) node.material.side = THREE.DoubleSide;
     });
 
-    auxilio.add(man);
-    // Only fix the position of the centered object
-    // The man around will have a different geometric transformation
-    // man = obj
-    // man.add(camera);
+    manholder.add(man);
+    holder.add(manholder)
+
     // Create animationMixer and push it in the array of mixers
     var mixerLocal = new THREE.AnimationMixer(man);
     mixerLocal.clipAction(gltf.animations[0]).play();
     mixer.push(mixerLocal);
-}, onProgress, onError);
-
-
-var mixer = new Array();
-
-
-
-
+});
 
 buildInterface();
 render();
-
-function onError() { };
-
-function onProgress(xhr, model) {
-    if (xhr.lengthComputable) {
-        var percentComplete = xhr.loaded / xhr.total * 100;
-    }
-}
 
 function changeProjection() {
     // Store the previous position of the camera
@@ -124,12 +97,10 @@ function changeProjection() {
         );
     }
 
-
-
     camera.position.copy(camPos);
     camera.up.copy(camUp);
     camera.lookAt(camLook);
-    auxilio.add(camera);
+    holder.add(camera);
 }
 function buildInterface() {
 
@@ -145,45 +116,50 @@ function buildInterface() {
     gui.add(controls, 'onChangeProjection').name("Change Projection");
 }
 function rotate(new_direction) {
-    if (man) {
-        var mat4 = new THREE.Matrix4();
-        man.matrixAutoUpdate = false;
-        man.matrix.identity();  // reset matrix
-        man.matrix.multiply(mat4.makeRotationY(THREE.MathUtils.degToRad(45 * (direction - new_direction))));
-        // direction = new_direction;
+
+    let aux = direction - new_direction;
+    let rot = aux; // variavel de rotação
+    if (Math.abs(aux) > 4) { //vê se é o caminho mais longo
+        rot = 4 - (Math.abs(aux) - 4) //descobre o caminha mais curto
+        rot = rot * (-1 * (Math.abs(aux) / aux)) // arruma o sentido do caminho mais curto
     }
+    for (let i = 1; i <= 60; i++) {
+        manholder.rotateY(THREE.MathUtils.degToRad(45 * rot / 60));
+    }
+
+    direction = new_direction;
 }
 function keyboardUpdate() {
     keyboard.update()
 
     if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//2
-        auxilio.translateX(0.07);
-        auxilio.translateZ(-0.07);
+        holder.translateX(0.07);
+        holder.translateZ(-0.07);
         rotate(2)
     } else if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//8
-        auxilio.translateX(-0.07);
-        auxilio.translateZ(-0.07);
+        holder.translateX(-0.07);
+        holder.translateZ(-0.07);
         rotate(8)
     } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//4
-        auxilio.translateX(0.07);
-        auxilio.translateZ(0.07);
+        holder.translateX(0.07);
+        holder.translateZ(0.07);
         rotate(4)
     } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//6
-        auxilio.translateX(-0.07);
-        auxilio.translateZ(0.07);
+        holder.translateX(-0.07);
+        holder.translateZ(0.07);
         rotate(6)
     } else if
         (keyboard.pressed('W') || keyboard.pressed('up')) {//1
-        auxilio.translateZ(-0.1);
+        holder.translateZ(-0.1);
         rotate(1)
     } else if (keyboard.pressed('S') || keyboard.pressed('down')) {//5
-        auxilio.translateZ(+0.1);
+        holder.translateZ(+0.1);
         rotate(5)
     } else if (keyboard.pressed('D') || keyboard.pressed('right')) {//3
-        auxilio.translateX(0.1);
+        holder.translateX(0.1);
         rotate(3)
     } else if (keyboard.pressed('A') || keyboard.pressed('left')) {//7
-        auxilio.translateX(-0.1);
+        holder.translateX(-0.1);
         rotate(7)
     }
 }
@@ -194,8 +170,9 @@ function keyboardOn() {
         || keyboard.pressed('D') || keyboard.pressed('right')
         || keyboard.pressed('A') || keyboard.pressed('left')) {
         return true;
-    } else { return false }
-
+    } else {
+        return false
+    }
 }
 
 
@@ -203,7 +180,6 @@ function render() {
     keyboardUpdate();
     // Render scene
     var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
-    trackballControls.update();
     requestAnimationFrame(render);
     renderer.render(scene, camera);
     // Animation control
