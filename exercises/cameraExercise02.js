@@ -43,9 +43,6 @@ camera = new THREE.PerspectiveCamera(
   1000
 );
 
-camera2 = new THREE.OrthographicCamera(
-
-)
 camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.lookAt(camLook);
