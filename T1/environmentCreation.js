@@ -55,24 +55,25 @@ scene.add(cube);
 
 //Criando o chão
 
-var floorCubeGeometry = new THREE.BoxGeometry(2, 2, 2);
-let materialFloorCube = setDefaultMaterial("rgba(242,202,132,255)");
-/* let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-
-floorCube.position.set(-19.0, -1.0, 17.0);
-scene.add(floorCube); */ 
+var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
+let materialFloorCube = setDefaultMaterial("#E6DEB3");
+let materialAuxFloorCube = setDefaultMaterial("#FEF7C6")
 
 
- for (let x = -20; x <= 20; x += 5.0) {
-    for (let z = -20; z <= 20; z += 5.0) {
+ for (let x = -20; x <= 20; x += 1) {
+    for (let z = -20; z <= 20; z += 1) {
         let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-        floorCube.position.set(x, -1.0, z);
+        let auxFloorCube = new THREE.Mesh(auxFloorCubeGeometry, materialAuxFloorCube);
+
+        floorCube.position.set(x, -0.5, z);
         scene.add(floorCube);
+
+        floorCube.add(auxFloorCube);
+        auxFloorCube.translateY(0.01);
     }
 
 } 
-
-
 
 var cubeAxesHelper = new THREE.AxesHelper(9);
 cube.add(cubeAxesHelper);
