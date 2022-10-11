@@ -17,7 +17,7 @@ let scene, renderer, camera, material, light, orbit;; // Initial variables
 scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
 camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
-material = setDefaultMaterial(); // create a basic material
+material = setDefaultMaterial("#DEB887"); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
 orbit = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
 
@@ -38,20 +38,21 @@ var axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
 
 // create the ground plane
-//let plane = createGroundPlaneXZ(30, 30)
-let plane = createGroundPlaneWired(40, 40, 20, 20)
+let plane2 = createGroundPlaneXZ(55, 55, 1, 1, "#FFE4B5")
+let plane = createGroundPlaneWired(45, 45, 20, 20)
 
 scene.add(plane);
-//scene.add(plane2);
+scene.add(plane2);
 
 // create a cube
-var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 var cube = new THREE.Mesh(cubeGeometry, material);
 // position the cube
-cube.position.set(0.0, 1.0, 0.0);
+cube.position.set(0.0, 0.5, 0.0);
 // add the cube to the scene
 scene.add(cube);
 
+insertCube();
 
 //Criando o chão
 
@@ -61,8 +62,8 @@ let materialFloorCube = setDefaultMaterial("#E6DEB3");
 let materialAuxFloorCube = setDefaultMaterial("#FEF7C6")
 
 
- for (let x = -20; x <= 20; x += 1) {
-    for (let z = -20; z <= 20; z += 1) {
+ for (let x = -25; x <= 25; x += 1) {
+    for (let z = -25; z <= 25; z += 1) {
         let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
         let auxFloorCube = new THREE.Mesh(auxFloorCubeGeometry, materialAuxFloorCube);
 
@@ -126,6 +127,16 @@ function showInformation() {
     controls.add("Press 'A' and 'D' to rotate.");
     controls.add("Press 'W' and 'S' to change scale");
     controls.show();
+}
+
+function insertCube() {
+    var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+    var cube = new THREE.Mesh(cubeGeometry, material);
+    // position the cube
+    cube.position.set(6.0, 0.5, 0.0);
+    // add the cube to the scene
+    scene.add(cube);
+
 }
 
 function render() {
