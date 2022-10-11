@@ -38,7 +38,7 @@ var axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
 
 // create the ground plane
-let plane2 = createGroundPlaneXZ(55, 55, 1, 1, "#FFE4B5")
+let plane2 = createGroundPlaneXZ(70, 70, 1, 1, "#FFE4B5")
 let plane = createGroundPlaneWired(45, 45, 20, 20)
 
 scene.add(plane);
