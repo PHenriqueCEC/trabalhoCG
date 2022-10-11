@@ -21,8 +21,8 @@ material = setDefaultMaterial(); // create a basic material
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
 var mixer = new Array();
-var direction = 5  //variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
-var new_direction = 5
+var direction = 270  //variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
+var new_direction = 270
 var certo = true;
 
 window.addEventListener("resize", function () { onWindowResize(camera, renderer); }, false);
@@ -123,23 +123,24 @@ function rotate() {
         certo = false
 
         let aux = direction - new_direction;
-        let rot = aux; // variavel de rotação
-        if (Math.abs(aux) > 4) { //vê se é o caminho mais longo
-            rot = 4 - (Math.abs(aux) - 4) //descobre o caminha mais curto
-            rot = (Math.abs(aux) / aux) // arruma o sentido do caminho mais curto
+        let dir = (Math.abs(aux) / aux); // variavel de rotação
+        if (Math.abs(aux) < 180) { //vê se é o caminho mais longo
+            dir = -dir  // arruma o sentido do caminho mais curto
+            console.log(dir) //console
         }
+        manholder.rotateY(THREE.MathUtils.degToRad(15 * dir));
+        direction = direction + (15 * dir);
 
-        manholder.rotateY(THREE.MathUtils.degToRad(45 * 0.5));
-        direction = direction + 0.5;
-        direction %= 8;
-        console.log(direction, new_direction);
+        direction = direction % 360;
+
+        if (direction === -15) direction = 345;
     }
 
     if ((direction >= (new_direction - 0.5)) && (direction <= (new_direction + 0.5))) {
         direction = new_direction;
         certo = true
     };
-    console.log(direction);
+    // console.log(direction);  
 }
 function keyboardUpdate() {
     keyboard.update()
@@ -147,32 +148,32 @@ function keyboardUpdate() {
     if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//1
         holder.translateX(0.07);
         holder.translateZ(-0.07);
-        new_direction = 1;
+        new_direction = 45;
     } else if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//7
         holder.translateX(-0.07);
         holder.translateZ(-0.07);
-        new_direction = 7;
+        new_direction = 135
     } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//3
         holder.translateX(0.07);
         holder.translateZ(0.07);
-        new_direction = 3;
+        new_direction = 315;
     } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//5
         holder.translateX(-0.07);
         holder.translateZ(0.07);
-        new_direction = 5;
+        new_direction = 225;
     } else if
         (keyboard.pressed('W') || keyboard.pressed('up')) {//0
         holder.translateZ(-0.1);
-        new_direction = 0;
+        new_direction = 90;
     } else if (keyboard.pressed('S') || keyboard.pressed('down')) {//4
         holder.translateZ(+0.1);
-        new_direction = 4;
+        new_direction = 270;
     } else if (keyboard.pressed('D') || keyboard.pressed('right')) {//2
         holder.translateX(0.1);
-        new_direction = 2;
+        new_direction = 0;
     } else if (keyboard.pressed('A') || keyboard.pressed('left')) {//6
         holder.translateX(-0.1);
-        new_direction = 6;
+        new_direction = 180;
     }
 }
 
