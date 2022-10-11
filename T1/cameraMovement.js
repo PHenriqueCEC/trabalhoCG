@@ -136,10 +136,7 @@ function rotate() {
         if (direction === -15) direction = 345;
     }
 
-    if ((direction >= (new_direction - 0.5)) && (direction <= (new_direction + 0.5))) {
-        direction = new_direction;
-        certo = true
-    };
+
     // console.log(direction);  
 }
 function keyboardUpdate() {
