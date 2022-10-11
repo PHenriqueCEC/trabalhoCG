@@ -22,12 +22,15 @@ camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this positi
 
 var mixer = new Array();
 var direction = 5  //variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
+var new_direction = 5
+var certo = true;
 
 window.addEventListener("resize", function () { onWindowResize(camera, renderer); }, false);
 keyboard = new KeyboardState();
 
 var groundPlane = createGroundPlaneXZ(10, 10, 40, 40); // width, height, resolutionW, resolutionH
 scene.add(groundPlane);
+
 
 let camPos = new THREE.Vector3(5, 4, 8);
 let camUp = new THREE.Vector3(0.0, 1.0, 0.0);
@@ -115,52 +118,61 @@ function buildInterface() {
     var gui = new GUI();
     gui.add(controls, 'onChangeProjection').name("Change Projection");
 }
-function rotate(new_direction) {
+function rotate() {
+    if (new_direction != direction) {
+        certo = false
 
-    let aux = direction - new_direction;
-    let rot = aux; // variavel de rotação
-    if (Math.abs(aux) > 4) { //vê se é o caminho mais longo
-        rot = 4 - (Math.abs(aux) - 4) //descobre o caminha mais curto
-        rot = rot * (-1 * (Math.abs(aux) / aux)) // arruma o sentido do caminho mais curto
-    }
-    for (let i = 1; i <= 60; i++) {
-        manholder.rotateY(THREE.MathUtils.degToRad(45 * rot / 60));
+        let aux = direction - new_direction;
+        let rot = aux; // variavel de rotação
+        if (Math.abs(aux) > 4) { //vê se é o caminho mais longo
+            rot = 4 - (Math.abs(aux) - 4) //descobre o caminha mais curto
+            rot = (Math.abs(aux) / aux) // arruma o sentido do caminho mais curto
+        }
+
+        manholder.rotateY(THREE.MathUtils.degToRad(45 * 0.5));
+        direction = direction + 0.5;
+        direction %= 8;
+        console.log(direction, new_direction);
     }
 
-    direction = new_direction;
+    if ((direction >= (new_direction - 0.5)) && (direction <= (new_direction + 0.5))) {
+        direction = new_direction;
+        certo = true
+    };
+    console.log(direction);
 }
 function keyboardUpdate() {
     keyboard.update()
 
-    if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//2
+    if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//1
         holder.translateX(0.07);
         holder.translateZ(-0.07);
-        rotate(2)
-    } else if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//8
+        new_direction = 1;
+    } else if ((keyboard.pressed('W') || keyboard.pressed('up')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//7
         holder.translateX(-0.07);
         holder.translateZ(-0.07);
-        rotate(8)
-    } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//4
+        new_direction = 7;
+    } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('D') || keyboard.pressed('right'))) {//3
         holder.translateX(0.07);
         holder.translateZ(0.07);
-        rotate(4)
-    } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//6
+        new_direction = 3;
+    } else if ((keyboard.pressed('S') || keyboard.pressed('down')) && (keyboard.pressed('A') || keyboard.pressed('left'))) {//5
         holder.translateX(-0.07);
         holder.translateZ(0.07);
-        rotate(6)
+        new_direction = 5;
     } else if
-        (keyboard.pressed('W') || keyboard.pressed('up')) {//1
+        (keyboard.pressed('W') || keyboard.pressed('up')) {//0
         holder.translateZ(-0.1);
-        rotate(1)
-    } else if (keyboard.pressed('S') || keyboard.pressed('down')) {//5
+        new_direction = 0;
+    } else if (keyboard.pressed('S') || keyboard.pressed('down')) {//4
         holder.translateZ(+0.1);
-        rotate(5)
-    } else if (keyboard.pressed('D') || keyboard.pressed('right')) {//3
+        new_direction = 4;
+    } else if (keyboard.pressed('D') || keyboard.pressed('right')) {//2
         holder.translateX(0.1);
-        rotate(3)
-    } else if (keyboard.pressed('A') || keyboard.pressed('left')) {//7
+        new_direction = 2;
+    } else if (keyboard.pressed('A') || keyboard.pressed('left')) {//6
         holder.translateX(-0.1);
-        rotate(7)
+        new_direction = 6;
     }
 }
 
@@ -177,12 +189,18 @@ function keyboardOn() {
 
 
 function render() {
+
+    var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
+
+    requestAnimationFrame(render);
+
+    renderer.render(scene, camera);
+
+    rotate()
+
     keyboardUpdate();
     // Render scene
-    var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
-    requestAnimationFrame(render);
-    renderer.render(scene, camera);
-    // Animation control
+
     if (keyboardOn()) {
         for (var i = 0; i < mixer.length; i++)
             mixer[i].update(delta * 2);
