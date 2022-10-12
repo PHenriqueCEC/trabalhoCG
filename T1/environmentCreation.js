@@ -50,10 +50,6 @@ cube.position.set(0.0, 0.5, 0.0);
 // add the cube to the scene
 scene.add(cube);
 
-
-
-insertCube();
-
 //Criando o chão
 
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -62,7 +58,7 @@ let materialFloorCube = setDefaultMaterial("#E6DEB3");
 let materialAuxFloorCube = setDefaultMaterial("#FEF7C6")
 
 
- for (let x = -25; x <= 25; x += 1) {
+for (let x = -25; x <= 25; x += 1) {
     for (let z = -25; z <= 25; z += 1) {
         let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
         let auxFloorCube = new THREE.Mesh(auxFloorCubeGeometry, materialAuxFloorCube);
@@ -74,7 +70,43 @@ let materialAuxFloorCube = setDefaultMaterial("#FEF7C6")
         auxFloorCube.translateY(0.01);
     }
 
-} 
+}
+
+insertCube();
+
+//Inserindo "parede"
+var wallCubeGeometry = new THREE.BoxGeometry(5, 5, 5);
+let materialWallCube = setDefaultMaterial("#8B4513");
+
+for (let z = -25; z <= 23; z += 2.5) {
+    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+
+    wallCube.position.set(-23, 2.5, z);
+    scene.add(wallCube);
+}
+
+for (let z = -25; z <= 23; z += 2.5) {
+    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+
+    wallCube.position.set(23, 2.5, z);
+    scene.add(wallCube);
+}
+
+for(let x = -25; x <= 25; x += 2.5) {
+    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+
+    wallCube.position.set(x, 2.5, -23);
+    scene.add(wallCube);
+}
+
+for(let x = -25; x <= 25; x += 2.5) {
+    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+
+    wallCube.position.set(x, 2.5, 23);
+    scene.add(wallCube);
+}
+
+
 
 var cubeAxesHelper = new THREE.AxesHelper(9);
 cube.add(cubeAxesHelper);
