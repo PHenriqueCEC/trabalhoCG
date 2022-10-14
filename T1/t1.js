@@ -158,7 +158,6 @@ function rotate() {
     if (Math.abs(aux) < 180) {
       //vê se é o caminho mais longo
       dir = -dir; // arruma o sentido do caminho mais curto
-      console.log(dir); //console
     }
     manholder.rotateY(THREE.MathUtils.degToRad(15 * dir));
     direction = direction + 15 * dir;
@@ -167,8 +166,6 @@ function rotate() {
 
     if (direction === -15) direction = 345;
   }
-
-  // console.log(direction);
 }
 
 const diagonalDistance = 0.07;
@@ -309,7 +306,6 @@ function checkObjectClicked(event) {
   var mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  console.log(camera);
 
   // Create a Ray with origin at the mouse position
   //   and direction into the scene (camera direction)
