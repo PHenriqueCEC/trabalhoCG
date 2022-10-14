@@ -115,14 +115,14 @@ function fixPosition(obj) {
 // Function to rotate the man around the center object
 function rotateMan(delta) {
   if (man) {
-    time += delta * 25;
+    time += delta * 300;
 
     var mat4 = new THREE.Matrix4();
     var scale = 0.4;
     man.matrixAutoUpdate = false;
     man.matrix.identity();  // reset matrix
     man.matrix.multiply(mat4.makeRotationY(THREE.MathUtils.degToRad(-time)));
-    man.matrix.multiply(mat4.makeTranslation(2.0, 0.0, 0.0));
+    // man.matrix.multiply(mat4.makeTranslation(2.0, 0.0, 0.0));
     man.matrix.multiply(mat4.makeScale(scale, scale, scale));
   }
 }
