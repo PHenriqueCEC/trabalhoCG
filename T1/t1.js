@@ -24,7 +24,7 @@ camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this positi
 
 var mixer = new Array();
 var direction = 270; // Variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
-var new_direction = 270;
+var new_direction = 270; // futura nova direção
 
 window.addEventListener(
   "resize",
@@ -104,13 +104,13 @@ camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.lookAt(camLook);
 
-let holder = new THREE.Object3D();
+let holder = new THREE.Object3D(); // Objeto criado para manter sempre a camera e o personagem alinhados
 scene.add(holder);
 
 holder.add(camera);
 
 // Definições do personagem
-let manholder = new THREE.Object3D();
+let manholder = new THREE.Object3D();// Objeto de auxilio para manejamento do personagem
 
 var man = null;
 let manBB = null;
@@ -184,6 +184,7 @@ function buildInterface() {
   gui.add(controls, "onChangeProjection").name("Change Projection");
 }
 
+// rotaciona o personagem
 function rotate() {
   if (new_direction != direction) {
     let aux = direction - new_direction;
