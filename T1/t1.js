@@ -4,20 +4,20 @@ import GUI from "../libs/util/dat.gui.module.js";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 import {
   initRenderer,
-  initDefaultSpotlight,
   createGroundPlaneXZ,
   setDefaultMaterial,
   onWindowResize,
   initCamera,
+  initDefaultBasicLight,
 } from "../libs/util/util.js";
 import { insertCubes, keyboardOn } from "./utils/utils.js";
 
-let scene, renderer, light, camera, keyboard, material, clock;
+let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
 renderer = initRenderer(); // View function in util/utils
-light = initDefaultSpotlight(scene, new THREE.Vector3(25.0, 95.0, 50.0)); // Use default light
+initDefaultBasicLight(scene);
 material = setDefaultMaterial("#8B4513"); // Create a basic material
 const cubeMaterial = setDefaultMaterial("#DEB887");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
