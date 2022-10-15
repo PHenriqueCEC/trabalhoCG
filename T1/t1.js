@@ -16,7 +16,7 @@ scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
 renderer = initRenderer(); // View function in util/utils
-light = initDefaultSpotlight(scene, new THREE.Vector3(25.0, 65.0, 50.0)); // Use default light
+light = initDefaultSpotlight(scene, new THREE.Vector3(25.0, 95.0, 50.0)); // Use default light
 material = setDefaultMaterial("#8B4513"); // create a basic material
 const borderCubeMaterial = setDefaultMaterial("#DEB887");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
@@ -35,8 +35,8 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // cria plano
-const planeMaxSize = 117
-let plane2 = createGroundPlaneXZ(120, 120, 1, 1, "#FFE0B5")
+const planeMaxSize = 118
+let plane2 = createGroundPlaneXZ(150, 150, 1, 1, "#FFE0B5")
 let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize)
 
 scene.add(plane);
