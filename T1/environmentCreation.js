@@ -9,8 +9,7 @@ import {
     InfoBox,
     SecondaryBox,
     onWindowResize,
-    createGroundPlaneXZ,
-    createGroundPlaneWired
+    createGroundPlaneXZ
 } from "../libs/util/util.js";
 
 let scene, renderer, camera, material, light, orbit;; // Initial variables
@@ -18,6 +17,7 @@ scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
 camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
 material = setDefaultMaterial("#DEB887"); // create a basic material
+const borderCubeMaterial = setDefaultMaterial("#8B4513");
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
 orbit = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
 
@@ -36,22 +36,14 @@ var axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
 
 // create the ground plane
+const planeMaxSize = 50
 let plane2 = createGroundPlaneXZ(70, 70, 1, 1, "#FFE4B5")
-let plane = createGroundPlaneWired(45, 45, 20, 20)
+let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize)
 
 scene.add(plane);
 scene.add(plane2);
 
-// create a cube
-var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-var cube = new THREE.Mesh(cubeGeometry, material);
-// position the cube
-cube.position.set(0.0, 0.5, 0.0);
-// add the cube to the scene
-scene.add(cube);
-
 //Criando o chão
-
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
 let materialFloorCube = setDefaultMaterial("#E6DEB3");
@@ -74,42 +66,35 @@ for (let x = -25; x <= 25; x += 1) {
 
 insertCube();
 
-//Inserindo "parede"
-var wallCubeGeometry = new THREE.BoxGeometry(5, 5, 5);
-let materialWallCube = setDefaultMaterial("#8B4513");
 
-for (let z = -25; z <= 23; z += 2.5) {
-    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+// Cria a parede
+const cubeSize = 2;
+var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
-    wallCube.position.set(-23, 2.5, z);
-    scene.add(wallCube);
-}
+const planeBorderWidth = ((planeMaxSize / 2) - (cubeSize / 2)); // Verificando o tamanho da borda do plano
 
-for (let z = -25; z <= 23; z += 2.5) {
-    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
+const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 
-    wallCube.position.set(23, 2.5, z);
-    scene.add(wallCube);
-}
+// Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
+for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
+    for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
+      if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
+        continue; //Salta uma interação no loop
+      const clonedMaterial = borderCubeMaterial.clone();
+      const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      borderCube.position.set(i, cubeSize / 2, j);
+      const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+      collidableCubes.push(borderCube);
+      collidableMeshList.push(borderCubeBB);
+      scene.add(borderCube);
+    }
 
-for(let x = -25; x <= 25; x += 2.5) {
-    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
+  }
 
-    wallCube.position.set(x, 2.5, -23);
-    scene.add(wallCube);
-}
-
-for(let x = -25; x <= 25; x += 2.5) {
-    let wallCube = new THREE.Mesh(wallCubeGeometry, materialWallCube);
-
-    wallCube.position.set(x, 2.5, 23);
-    scene.add(wallCube);
-}
-
-
-
-var cubeAxesHelper = new THREE.AxesHelper(9);
-cube.add(cubeAxesHelper);
+var cube = new THREE.Mesh(cubeGeometry, material);
+cube.position.set(0.0, 0.5, 0.0);
+scene.add(cube);
 
 
 var positionMessage = new SecondaryBox("");
@@ -153,9 +138,7 @@ function updatePositionMessage() {
 function insertCube() {
     var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
     var cube = new THREE.Mesh(cubeGeometry, material);
-    // position the cube
     cube.position.set(6.0, 0.5, 0.0);
-    // add the cube to the scene
     scene.add(cube);
 
     var cube2 = new THREE.Mesh(cubeGeometry, material);
@@ -186,14 +169,6 @@ function insertCube() {
     cube8.position.set(-22.0, 0.5, -4.0);
     scene.add(cube8);
 
-    var cube9 = new THREE.Mesh(cubeGeometry, material);
-    cube9.position.set(-15.0, 0.5, -23.0);
-    scene.add(cube9);
-
-    var cube10 = new THREE.Mesh(cubeGeometry, material);
-    cube10.position.set(23.0, 0.5, 18.0);
-    scene.add(cube10);
-
     var cube11 = new THREE.Mesh(cubeGeometry, material);
     cube11.position.set(16.0, 0.5, 16.0);
     scene.add(cube11);
@@ -205,14 +180,6 @@ function insertCube() {
     var cube13 = new THREE.Mesh(cubeGeometry, material);
     cube13.position.set(17.0, 0.5, -19.0);
     scene.add(cube13);
-
-    var cube14 = new THREE.Mesh(cubeGeometry, material);
-    cube14.position.set(20.0, 0.5, -19.0);
-    scene.add(cube14);
-
-    var cube15 = new THREE.Mesh(cubeGeometry, material);
-    cube15.position.set(-20.0, 0.5, 19.0);
-    scene.add(cube15);
 
     var cube16 = new THREE.Mesh(cubeGeometry, material);
     cube16.position.set(0.0, 0.5, 6.0);
@@ -226,14 +193,6 @@ function insertCube() {
     cube17.position.set(13.0, 0.5, 7.0);
     scene.add(cube17);
 
-    var cube18 = new THREE.Mesh(cubeGeometry, material);
-    cube18.position.set(-14.0, 0.5, -22.0);
-    scene.add(cube18);
-
-    var cube19 = new THREE.Mesh(cubeGeometry, material);
-    cube19.position.set(21.0, 0.5, 0.0);
-    scene.add(cube19);
-
     var cube20 = new THREE.Mesh(cubeGeometry, material);
     cube20.position.set(0.0, 0.5, 19.0);
     scene.add(cube20);
@@ -241,7 +200,6 @@ function insertCube() {
     var cube21 = new THREE.Mesh(cubeGeometry, material);
     cube21.position.set(-5.0, 0.5, -9.0);
     scene.add(cube21);
-
 
 }
 
