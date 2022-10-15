@@ -37,11 +37,11 @@ keyboard = new KeyboardState();
 
 // cria plano
 const planeMaxSize = 118;
-let plane2 = createGroundPlaneXZ(150, 150, 1, 1, "#FFE0B5");
-let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize); //Plano com os tiles
+let plane = createGroundPlaneXZ(210, 210, 1, 1, "#FFE0B5");
+//let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize); //Plano com os tiles
 
 scene.add(plane);
-scene.add(plane2);
+//scene.add(plane2);
 
 //Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -202,7 +202,7 @@ function rotate() {
   }
 }
 
-const diagonalDistance = 0.07;
+const diagonalDistance = 0.08;
 const normalDistance = 0.12;
 
 function keyboardUpdate() {
