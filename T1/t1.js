@@ -19,7 +19,7 @@ clock = new THREE.Clock();
 renderer = initRenderer(); // View function in util/utils
 initDefaultBasicLight(scene);
 material = setDefaultMaterial("#8B4513"); // Create a basic material
-const cubeMaterial = setDefaultMaterial("#DEB887");
+const cubeMaterial = setDefaultMaterial("#C8996C");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
 var mixer = new Array();
@@ -37,15 +37,15 @@ keyboard = new KeyboardState();
 
 // Cria plano
 const planeMaxSize = 118;
-let plane = createGroundPlaneXZ(210, 210, 1, 1, "#FFE0B5");
+let plane = createGroundPlaneXZ(210, 210, 1, 1, "#DBB691");
 
 scene.add(plane);
 
 // Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
-let materialFloorCube = setDefaultMaterial("#E6DEB3");
-let materialAuxFloorCube = setDefaultMaterial("#e8cea9");
+let materialFloorCube = setDefaultMaterial("#CFB48F");
+let materialAuxFloorCube = setDefaultMaterial("#EFDAB4");
 
 var tiles = planeMaxSize / 2 - 1;
 for (let x = -tiles; x <= tiles; x += 1) {
