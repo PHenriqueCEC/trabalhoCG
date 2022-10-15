@@ -35,26 +35,27 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // cria plano
-const planeMaxSize = 118
-let plane2 = createGroundPlaneXZ(150, 150, 1, 1, "#FFE0B5")
-let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize)
+const planeMaxSize = 118;
+let plane2 = createGroundPlaneXZ(150, 150, 1, 1, "#FFE0B5");
+let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize);
 
 scene.add(plane);
 scene.add(plane2);
-
 
 //Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
 let materialFloorCube = setDefaultMaterial("#E6DEB3");
-let materialAuxFloorCube = setDefaultMaterial("#FEF7C6")
+let materialAuxFloorCube = setDefaultMaterial("#FEF7C6");
 
-
-var aux = planeMaxSize / 2 - 1
+var aux = planeMaxSize / 2 - 1;
 for (let x = -aux; x <= aux; x += 1) {
   for (let z = -aux; z <= aux; z += 1) {
     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(auxFloorCubeGeometry, materialAuxFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
 
     floorCube.position.set(x, -0.5, z);
     scene.add(floorCube);
@@ -63,7 +64,6 @@ for (let x = -aux; x <= aux; x += 1) {
     auxFloorCube.translateY(0.01);
   }
 }
-
 
 // cria cubos
 const cubeSize = 2;
@@ -211,13 +211,19 @@ function keyboardUpdate() {
   ) {
     //1
     new_direction = 45;
-    manBB.translate(new THREE.Vector3(diagonalDistance, 0, -diagonalDistance)); // Move apenas a bounding box para checar colisões
+    // Dividido por direções para que o personagem deslize caso apenas uma das direções esteja bloqueada
+    // Eixo X
+    manBB.translate(new THREE.Vector3(diagonalDistance, 0, 0)); // Move apenas a bounding box para checar colisões
     if (checkCollision()) {
-      manBB.translate(
-        new THREE.Vector3(-diagonalDistance, 0, diagonalDistance)
-      ); // Move a bounding box de volta
+      manBB.translate(new THREE.Vector3(-diagonalDistance, 0, 0)); // Move a bounding box de volta
     } else {
       holder.translateX(diagonalDistance);
+    }
+    // Eixo Z
+    manBB.translate(new THREE.Vector3(0, 0, -diagonalDistance));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(0, 0, diagonalDistance));
+    } else {
       holder.translateZ(-diagonalDistance);
     }
   } else if (
@@ -226,11 +232,18 @@ function keyboardUpdate() {
   ) {
     //7
     new_direction = 135;
-    manBB.translate(new THREE.Vector3(-diagonalDistance, 0, -diagonalDistance));
+    // Eixo X
+    manBB.translate(new THREE.Vector3(-diagonalDistance, 0, 0));
     if (checkCollision()) {
-      manBB.translate(new THREE.Vector3(diagonalDistance, 0, diagonalDistance));
+      manBB.translate(new THREE.Vector3(diagonalDistance, 0, 0));
     } else {
       holder.translateX(-diagonalDistance);
+    }
+    // Eixo Z
+    manBB.translate(new THREE.Vector3(0, 0, -diagonalDistance));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(0, 0, diagonalDistance));
+    } else {
       holder.translateZ(-diagonalDistance);
     }
   } else if (
@@ -239,13 +252,18 @@ function keyboardUpdate() {
   ) {
     //3
     new_direction = 315;
-    manBB.translate(new THREE.Vector3(diagonalDistance, 0, diagonalDistance));
+    // Eixo X
+    manBB.translate(new THREE.Vector3(diagonalDistance, 0, 0));
     if (checkCollision()) {
-      manBB.translate(
-        new THREE.Vector3(-diagonalDistance, 0, -diagonalDistance)
-      );
+      manBB.translate(new THREE.Vector3(-diagonalDistance, 0, 0));
     } else {
       holder.translateX(diagonalDistance);
+    }
+    // Eixo Z
+    manBB.translate(new THREE.Vector3(0, 0, diagonalDistance));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(0, 0, -diagonalDistance));
+    } else {
       holder.translateZ(diagonalDistance);
     }
   } else if (
@@ -254,13 +272,18 @@ function keyboardUpdate() {
   ) {
     //5
     new_direction = 225;
-    manBB.translate(new THREE.Vector3(-diagonalDistance, 0, diagonalDistance));
+    // Eixo X
+    manBB.translate(new THREE.Vector3(-diagonalDistance, 0, 0));
     if (checkCollision()) {
-      manBB.translate(
-        new THREE.Vector3(diagonalDistance, 0, -diagonalDistance)
-      );
+      manBB.translate(new THREE.Vector3(diagonalDistance, 0, 0));
     } else {
       holder.translateX(-diagonalDistance);
+    }
+    // Eixo Z
+    manBB.translate(new THREE.Vector3(0, 0, diagonalDistance));
+    if (checkCollision()) {
+      manBB.translate(new THREE.Vector3(0, 0, -diagonalDistance));
+    } else {
       holder.translateZ(diagonalDistance);
     }
   } else if (keyboard.pressed("W") || keyboard.pressed("up")) {
