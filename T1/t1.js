@@ -16,9 +16,9 @@ scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
 renderer = initRenderer(); // View function in util/utils
-light = initDefaultSpotlight(scene, new THREE.Vector3(5.0, 15.0, 5.0)); // Use default light
-material = setDefaultMaterial(); // create a basic material
-const borderCubeMaterial = setDefaultMaterial("green");
+light = initDefaultSpotlight(scene, new THREE.Vector3(25.0, 65.0, 50.0)); // Use default light
+material = setDefaultMaterial("#8B4513"); // create a basic material
+const borderCubeMaterial = setDefaultMaterial("#DEB887");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
 var mixer = new Array();
@@ -35,9 +35,35 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // cria plano
-const planeMaxSize = 40;
-var groundPlane = createGroundPlaneXZ(planeMaxSize, planeMaxSize); // width, height, resolutionW, resolutionH
-scene.add(groundPlane);
+const planeMaxSize = 117
+let plane2 = createGroundPlaneXZ(120, 120, 1, 1, "#FFE0B5")
+let plane = createGroundPlaneXZ(planeMaxSize, planeMaxSize)
+
+scene.add(plane);
+scene.add(plane2);
+
+
+//Criando o chão
+var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
+let materialFloorCube = setDefaultMaterial("#E6DEB3");
+let materialAuxFloorCube = setDefaultMaterial("#FEF7C6")
+
+
+var aux = planeMaxSize / 2 - 1
+for (let x = -aux; x <= aux; x += 1) {
+  for (let z = -aux; z <= aux; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(auxFloorCubeGeometry, materialAuxFloorCube);
+
+    floorCube.position.set(x, -0.5, z);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
 
 // cria cubos
 const cubeSize = 2;
@@ -63,7 +89,7 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   }
 }
 
-let camPos = new THREE.Vector3(5, 4, 8);
+let camPos = new THREE.Vector3(10.5, 10.5, 10.5);
 let camUp = new THREE.Vector3(0.0, 1.0, 0.0);
 let camLook = new THREE.Vector3(0.0, 0.0, 0.0);
 
@@ -76,10 +102,12 @@ camera = new THREE.PerspectiveCamera(
 
 camera.position.copy(camPos);
 camera.up.copy(camUp);
+// camera.position.set(20, 30, 20); // melhor valor que encontrei para a camera
 camera.lookAt(camLook);
 
 let holder = new THREE.Object3D();
 scene.add(holder);
+
 holder.add(camera);
 
 let manholder = new THREE.Object3D();
@@ -99,6 +127,8 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   });
 
   manholder.add(man);
+  // manholder.scale.set(0.75, 0.75, 0.75);
+
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
 
@@ -114,7 +144,7 @@ render();
 function changeProjection() {
   // Store the previous position of the camera
   if (camera instanceof THREE.PerspectiveCamera) {
-    var s = 72; // Estimated size for orthographic projection
+    var s = 142; // Estimated size for orthographic projection
     camera = new THREE.OrthographicCamera(
       window.innerWidth / -s,
       window.innerWidth / s,
@@ -151,6 +181,7 @@ function buildInterface() {
   var gui = new GUI();
   gui.add(controls, "onChangeProjection").name("Change Projection");
 }
+
 function rotate() {
   if (new_direction != direction) {
     let aux = direction - new_direction;
@@ -169,7 +200,8 @@ function rotate() {
 }
 
 const diagonalDistance = 0.07;
-const normalDistance = 0.1;
+const normalDistance = 0.12;
+
 function keyboardUpdate() {
   keyboard.update();
 
@@ -330,6 +362,7 @@ function checkObjectClicked(event) {
 }
 
 document.addEventListener("mousedown", checkObjectClicked, false);
+
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
 
