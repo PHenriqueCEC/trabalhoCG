@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import KeyboardState from "../libs/util/KeyboardState.js";
-import GUI from "../libs/util/dat.gui.module.js";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 import {
   initRenderer,
@@ -171,19 +170,6 @@ function changeProjection() {
   holder.add(camera);
 }
 
-function buildInterface() {
-  // Interface
-  var controls = new (function () {
-    this.viewAxes = false;
-    this.onChangeProjection = function () {
-      changeProjection();
-    };
-  })();
-  // GUI interface
-  var gui = new GUI();
-  gui.add(controls, "onChangeProjection").name("Change Projection");
-}
-
 // rotaciona o personagem
 function rotate() {
   if (new_direction != direction) {
@@ -239,57 +225,61 @@ const normalDistance = 0.12;
 function keyboardUpdate() {
   keyboard.update();
 
+  if (keyboard.down('C')) {
+    changeProjection()
+  }
+
   if (
     (keyboard.pressed("W") || keyboard.pressed("up")) &&
     (keyboard.pressed("D") || keyboard.pressed("right"))
   ) {
     //1
-    new_direction = 45;
-    // Dividido por direções para que o personagem deslize caso apenas uma das direções esteja bloqueada
-    // Eixo X
-    checkMovement("x", diagonalDistance);
-    // Eixo Z
-    checkMovement("z", -diagonalDistance);
+    new_direction = 90;
+    checkMovement("z", -normalDistance);
   } else if (
     (keyboard.pressed("W") || keyboard.pressed("up")) &&
     (keyboard.pressed("A") || keyboard.pressed("left"))
   ) {
     //7
-    new_direction = 135;
-    checkMovement("x", -diagonalDistance);
-    checkMovement("z", -diagonalDistance);
+    new_direction = 180;
+    checkMovement("x", -normalDistance);
   } else if (
     (keyboard.pressed("S") || keyboard.pressed("down")) &&
     (keyboard.pressed("D") || keyboard.pressed("right"))
   ) {
     //3
-    new_direction = 315;
-    checkMovement("x", diagonalDistance);
-    checkMovement("z", diagonalDistance);
+    new_direction = 0;
+    checkMovement("x", normalDistance);
   } else if (
     (keyboard.pressed("S") || keyboard.pressed("down")) &&
     (keyboard.pressed("A") || keyboard.pressed("left"))
   ) {
     //5
+    new_direction = 270;
+    checkMovement("z", normalDistance);
+  } else if (keyboard.pressed("W") || keyboard.pressed("up")) {
+    //0
+    new_direction = 135;
+    // Dividido por direções para que o personagem deslize caso apenas uma das direções esteja bloqueada
+    // Eixo X
+    checkMovement("x", -diagonalDistance);
+    // Eixo Z
+    checkMovement("z", -diagonalDistance);
+  } else if (keyboard.pressed("S") || keyboard.pressed("down")) {
+    //4
+    new_direction = 315;
+    checkMovement("x", diagonalDistance);
+    checkMovement("z", diagonalDistance);
+  } else if (keyboard.pressed("D") || keyboard.pressed("right")) {
+    //2
+    new_direction = 45;
+    checkMovement("x", diagonalDistance);
+    checkMovement("z", -diagonalDistance);
+  } else if (keyboard.pressed("A") || keyboard.pressed("left")) {
+    //6
     new_direction = 225;
     checkMovement("x", -diagonalDistance);
     checkMovement("z", diagonalDistance);
-  } else if (keyboard.pressed("W") || keyboard.pressed("up")) {
-    //0
-    new_direction = 90;
-    checkMovement("z", -normalDistance);
-  } else if (keyboard.pressed("S") || keyboard.pressed("down")) {
-    //4
-    new_direction = 270;
-    checkMovement("z", normalDistance);
-  } else if (keyboard.pressed("D") || keyboard.pressed("right")) {
-    //2
-    new_direction = 0;
-    checkMovement("x", normalDistance);
-  } else if (keyboard.pressed("A") || keyboard.pressed("left")) {
-    //6
-    new_direction = 180;
-    checkMovement("x", -normalDistance);
   }
 }
 
