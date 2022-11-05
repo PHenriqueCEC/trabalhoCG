@@ -46,7 +46,7 @@ var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
 let materialFloorCube = setDefaultMaterial("#CFB48F");
 let materialAuxFloorCube = setDefaultMaterial("#EFDAB4");
 
-var tiles = planeMaxSize / 2 - 1;
+var tiles = planeMaxSize / 2 ;
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
@@ -137,7 +137,6 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
 });
 
 insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
-buildInterface();
 render();
 
 // Funções auxiliares
