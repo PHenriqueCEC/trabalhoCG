@@ -9,7 +9,7 @@ import {
   initCamera,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
-import { insertCubes, keyboardOn } from "./utils/utils.js";
+import { keyboardOn } from "./utils/utils.js";
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -35,10 +35,10 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // Cria plano
-const planeMaxSize = 118;
-let plane = createGroundPlaneXZ(210, 210, 1, 1, "#DBB691");
+const planeMaxSize = 40;
+let initialPlane = createGroundPlaneXZ(60, 60, 1, 1, "#DBB691");
 
-scene.add(plane);
+scene.add(initialPlane);
 
 // Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -77,6 +77,8 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
       continue;
+    if (i == 3 || i == 4 || i ==5 || i == 6 || j == 3|| j == 4 || j == 5 || j == 6) //Arrumando espaço para a escada/portal
+      continue;
     const clonedMaterial = cubeMaterial.clone();
     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
     borderCube.position.set(i, cubeSize / 2, j);
@@ -84,8 +86,11 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     collidableCubes.push(borderCube);
     collidableMeshList.push(borderCubeBB);
     scene.add(borderCube);
+
+    
   }
 }
+
 
 // Definições da câmera
 let camPos = new THREE.Vector3(10.5, 10.5, 10.5);
@@ -136,7 +141,7 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   mixer.push(mixerLocal);
 });
 
-insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
+//insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
 render();
 
 // Funções auxiliares
