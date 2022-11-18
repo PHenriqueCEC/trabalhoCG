@@ -10,6 +10,7 @@ import {
   initDefaultBasicLight,
 } from "../libs/util/util.js";
 import { keyboardOn } from "./utils/utils.js";
+import { CSG } from "../libs/other/CSGMesh.js";
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -24,6 +25,21 @@ camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this positi
 var mixer = new Array();
 var direction = 270; // Variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
 var new_direction = 270; // futura nova direção
+
+let portals = {
+  blue: {
+    door: null,
+    doorBB: null,
+  },
+  yellow: {
+    door: null,
+    doorBB: null,
+  },
+  red: {
+    door: null,
+    doorBB: null,
+  },
+};
 
 window.addEventListener(
   "resize",
@@ -46,7 +62,7 @@ var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
 let materialFloorCube = setDefaultMaterial("#CFB48F");
 let materialAuxFloorCube = setDefaultMaterial("#EFDAB4");
 
-var tiles = planeMaxSize / 2 ;
+var tiles = planeMaxSize / 2;
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
@@ -77,7 +93,17 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
       continue;
-    if (i == 3 || i == 4 || i ==5 || i == 6 || j == 3|| j == 4 || j == 5 || j == 6) //Arrumando espaço para a escada/portal
+    if (
+      i == 3 ||
+      i == 4 ||
+      i == 5 ||
+      i == 6 ||
+      j == 3 ||
+      j == 4 ||
+      j == 5 ||
+      j == 6
+    )
+      //Arrumando espaço para a escada/portal
       continue;
     const clonedMaterial = cubeMaterial.clone();
     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
@@ -86,11 +112,122 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     collidableCubes.push(borderCube);
     collidableMeshList.push(borderCubeBB);
     scene.add(borderCube);
-
-    
   }
 }
 
+function updateObject(mesh) {
+  mesh.matrixAutoUpdate = false;
+  mesh.updateMatrix();
+}
+
+const createPortal = (color) => {
+  const portal = new THREE.Mesh(new THREE.BoxGeometry(5, 7, 1));
+  portal.position.set(0, 3, 0);
+  updateObject(portal);
+  // remove a rectangle from portal with csg
+  const portalRect = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 5, 1),
+    new THREE.MeshBasicMaterial({ color: "#000000" })
+  );
+  portalRect.position.set(0, 2, 0);
+  updateObject(portalRect);
+  const portalCSG = CSG.fromMesh(portal);
+  const portalRectCSG = CSG.fromMesh(portalRect);
+  const portalCSGSub = portalCSG.subtract(portalRectCSG);
+  const portalSub = CSG.toMesh(portalCSGSub, portal.matrix);
+  portalSub.position.set(0, 3, 0);
+  // remove a rounded rectangle from portal with csg, combining cylinder and cube
+  const cylinderMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(2.02, 2.02, 2, 20)
+  );
+  cylinderMesh.rotateX(Math.PI / 2);
+  cylinderMesh.position.set(0, 4, 0);
+  updateObject(cylinderMesh);
+  // scene.add(cylinderMesh);
+  const portalCSGSub2 = CSG.fromMesh(portalSub).subtract(
+    CSG.fromMesh(cylinderMesh)
+  );
+  const portalSub2 = CSG.toMesh(portalCSGSub2, portal.matrix);
+  portalSub2.material = new THREE.MeshBasicMaterial({ color: "#000000" });
+  portalSub2.position.set(5, 3, 0);
+  // portalSub2.rotateY(Math.PI / 2);
+  scene.add(portalSub2);
+
+  // add door to fit the hole
+  const door = new THREE.Mesh(new THREE.BoxGeometry(4, 5, 1));
+  door.position.set(0, 2, 0);
+  // door.rotateY(Math.PI / 2);
+  updateObject(door);
+  // add cylinder to door with CSG
+  const cylinderMesh2 = new THREE.Mesh(
+    new THREE.CylinderGeometry(2.02, 2.02, 1, 20)
+  );
+  cylinderMesh2.rotateX(Math.PI / 2);
+  cylinderMesh2.position.set(0, 4, 0);
+  updateObject(cylinderMesh2);
+  const doorCSG = CSG.fromMesh(door);
+  const cylinderCSG = CSG.fromMesh(cylinderMesh2);
+  const doorCSGSub = doorCSG.union(cylinderCSG);
+  const doorSub = CSG.toMesh(doorCSGSub, door.matrix);
+  doorSub.material = new THREE.MeshBasicMaterial({ color: "lightgreen" });
+  doorSub.position.set(5, 2, 0);
+  scene.add(doorSub);
+
+  // add portal BB
+  const portalBB1 = new THREE.Box3().setFromPoints([
+    new THREE.Vector3(3, 0, 0),
+    new THREE.Vector3(3, 7, 0),
+  ]);
+  const portalBB2 = new THREE.Box3().setFromPoints([
+    new THREE.Vector3(7, 0, 0),
+    new THREE.Vector3(7, 7, 0),
+  ]);
+  collidableMeshList.push(portalBB1);
+  collidableMeshList.push(portalBB2);
+
+  const doorBB = new THREE.Box3().setFromObject(doorSub);
+  collidableMeshList.push(doorBB);
+
+  // scene.add(portalSub);
+  portals[color] = {
+    door: doorSub,
+    doorBB,
+  };
+  return portalSub;
+};
+
+createPortal("blue");
+
+const teste = (color) => {
+  const door = portals[color].door;
+  // set position to open with lerping
+  const openPosition = door.position.clone();
+  openPosition.y = -5;
+  const openDoor = () => {
+    door.position.lerp(openPosition, 0.0005);
+    // if door is open, remove BB
+    if (door.position.y < -4) {
+      const doorBB = portals[color].doorBB;
+      doorBB.translate(new THREE.Vector3(0, -10, 0));
+    }
+    if (door.position.distanceTo(openPosition) > 0.1) {
+      requestAnimationFrame(openDoor);
+    }
+  };
+  openDoor();
+};
+
+const checkDistanceBetweenManAndDoor = (color) => {
+  if (!manBB) return;
+  const doorPos = portals[color].door.position.clone();
+
+  // check if man is close to door
+  const radiusDistance = 6;
+  const distance = manBB.distanceToPoint(doorPos);
+  if (distance < radiusDistance) {
+    teste(color);
+  }
+};
 
 // Definições da câmera
 let camPos = new THREE.Vector3(10.5, 10.5, 10.5);
@@ -114,7 +251,7 @@ scene.add(holder);
 holder.add(camera);
 
 // Definições do personagem
-let manholder = new THREE.Object3D();// Objeto de auxilio para manejamento do personagem
+let manholder = new THREE.Object3D(); // Objeto de auxilio para manejamento do personagem
 
 var man = null;
 let manBB = null;
@@ -229,8 +366,8 @@ const normalDistance = 0.12;
 function keyboardUpdate() {
   keyboard.update();
 
-  if (keyboard.down('C')) {
-    changeProjection()
+  if (keyboard.down("C")) {
+    changeProjection();
   }
 
   if (
@@ -323,6 +460,7 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
+  checkDistanceBetweenManAndDoor("blue");
 
   requestAnimationFrame(render);
 
