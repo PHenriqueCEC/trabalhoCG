@@ -9,7 +9,16 @@ import {
   initCamera,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
-import { insertCubes, keyboardOn } from "./utils/utils.js";
+import { insertCube, insertCubes, keyboardOn, whatTile } from "./utils/utils.js";
+import { Vector3 } from "../build/three.module.js";
+
+const slerpConfig = {
+  destination: null,
+  alpha: 0.1,
+  move: false,
+  quaternion: null,
+  object: null
+}
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -35,7 +44,7 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // Cria plano
-const planeMaxSize = 118;
+const planeMaxSize = 20;
 let plane = createGroundPlaneXZ(210, 210, 1, 1, "#DBB691");
 
 scene.add(plane);
@@ -46,7 +55,7 @@ var auxFloorCubeGeometry = new THREE.BoxGeometry(0.9, 1, 0.9);
 let materialFloorCube = setDefaultMaterial("#CFB48F");
 let materialAuxFloorCube = setDefaultMaterial("#EFDAB4");
 
-var tiles = planeMaxSize / 2 ;
+var tiles = planeMaxSize / 2;
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
@@ -135,6 +144,23 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   mixerLocal.clipAction(gltf.animations[0]).play();
   mixer.push(mixerLocal);
 });
+
+
+const cubeGeometryRange = new THREE.BoxGeometry(6, 0.1, 3);
+const cubeMaterialRange = setDefaultMaterial()
+const cubeRange = new THREE.Mesh(cubeGeometryRange, cubeMaterialRange);
+const cubeRangeHelper = new THREE.Box3().setFromObject(cubeRange);
+cubeRangeHelper.translate(new THREE.Vector3(0, 0.5, 1.5));
+let helper = new THREE.Box3Helper(cubeRangeHelper, 'yellow');
+// helper.visible = false;
+manholder.add(helper);
+//Vai virar função pra utilizar com o cubo selecionado por clique
+for (const collidableObj of collidableMeshList) {
+  if (cubeRangeHelper.intersectsBox(collidableObj)) {
+    console.log("colide");
+  }
+}
+
 
 insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
 render();
@@ -283,6 +309,13 @@ function keyboardUpdate() {
 }
 
 // Checa se o mouse está sobre algum dos cubos
+
+//  To-do
+//  Ao remover os cubos dos holders, excluir a bb deles e remover da lista de clicaveis 
+//  adicionar o lerp e slerp
+//  testar posição final
+//  abaixar a bb pra verificar apenas os blocos que se encontram no chão
+
 function checkObjectClicked(event) {
   // Checa se o mouse foi pressionado
   // Pega a posição do mouse em coordenadas normalizadas
@@ -299,15 +332,63 @@ function checkObjectClicked(event) {
   // Cria um array contendo todos os objetos da cena com os quais o raio intersecta
   const intersects = raycaster.intersectObjects(scene.children, true);
   // Se houver uma (ou mais) interseções
-  if (intersects.length > 0) {
-    // Mostra apenas o primeiro objeto
-    if (collidableCubes.includes(intersects[0].object)) {
+  if (intersects.length > 0 && collidableCubes.includes(intersects[0].object)) {
+    slerpConfig.move = false;
+    console.log(helper.intersectsBox(intersects[1].object) == true)
+    // intersects.remove(cubeRangeHelper);
+    if (true) {
+
+      // }
+      // // Mostra apenas o primeiro objeto
+      // if (collidableCubes.includes(intersects[0].object) && holder.position.distanceTo(intersects[0].object.position) <= 3) {
       // Da um toggle na cor do objeto
       const currentObjColor = intersects[0].object.material.color;
+      let aux = intersects[0].object.position
+      // aux = new Vector3(aux.x, 0.5, aux.z)
       if (currentObjColor.getHex() === cubeMaterial.color.getHex()) {
         intersects[0].object.material.color = material.color;
+        let p = aux.sub(new Vector3(holder.position.x, holder.position.y, holder.position.z));
+        manholder.add(intersects[0].object)
+        intersects[0].object.position.set(p.x, p.y, p.z)
+        intersects[0].object.translateY(1)
+        let rot = intersects[0].object.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(270 - direction))
+        intersects[0].object.rotateY(direction)
+        intersects[0].object.position.set(rot.x, rot.y, rot.z)
       } else {
         intersects[0].object.material.color = cubeMaterial.color;
+        // intersects[0].object.translateY(-1);
+        let p1 = null;
+        let angle = direction - 270;
+        aux = aux.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
+        let p = (new Vector3(aux.x + holder.position.x, aux.y + holder.position.y, aux.z + holder.position.z))//.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
+        // addVectors 
+        p1 = whatTile(p);
+
+
+        manholder.remove(intersects[0].object)
+        const quaternion = new THREE.Quaternion();
+
+
+        slerpConfig.move = true;
+        slerpConfig.quaternion = quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(direction % 45));
+        slerpConfig.vector = p1;
+        slerpConfig.object = intersects[0].object;
+
+        console.log("p1 ", p1, " quaternion ", quaternion, " object ", intersects[0].object)
+        scene.add(intersects[0].object)
+
+        // intersects[0].object.quaternion.slerp(quaternion, alpha);
+        // intersects[0].object.position.lerp(vector, alpha);
+
+
+
+        // insertCube(cubeMaterial,
+        //   collidableCubes,
+        //   collidableMeshList,
+        //   scene, p, p1, direction % 90)
+
+        // intersects[0].object.setPosition(aux.add(holder.position))
+
       }
     }
   }
@@ -318,6 +399,11 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
+
+  if (slerpConfig.move) {
+    slerpConfig.object.quaternion.slerp(slerpConfig.quaternion, slerpConfig.alpha);
+    slerpConfig.object.position.lerp(slerpConfig.vector, slerpConfig.alpha);
+  }
 
   requestAnimationFrame(render);
 

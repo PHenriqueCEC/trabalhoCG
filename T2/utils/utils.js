@@ -75,5 +75,51 @@ export function insertCubes(
     collidableCubes.push(cube);
     collidableMeshList.push(cubeBB);
     scene.add(cube);
+    // cube.add(cubeBB);
   });
+}
+
+
+export function insertCube(
+  cubeMaterial,
+  collidableCubes,
+  collidableMeshList,
+  scene,
+  position,
+  position1,
+  angle
+) {
+  const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  {
+    const clonedMaterial = cubeMaterial.clone();
+    const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+
+    cube.position.set(position.x, position.y, position.z);
+    // cube.rotateY(THREE.MathUtils.degToRad(angle));
+    const cubeBB = new THREE.Box3().setFromObject(cube);
+    collidableCubes.push(cube);
+    collidableMeshList.push(cubeBB);
+    // cube.add(cubeBB);
+    scene.add(cube);
+    const quaternion = new THREE.Quaternion();
+
+    quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle));
+    const vector = position1;
+    let alpha = 0.5;
+
+    cube.quaternion.slerp(quaternion, alpha);
+    cube.position.lerp(vector, alpha);
+  }
+}
+
+
+export function whatTile(position) {
+  // const tileSize = 1;
+  const x = parseInt(position.x + 0.5);
+  const z = parseInt(position.z + 0.5);
+  // if (position.x % 0.5 == 0) { x = position.x; } else { x = parseInt(position.x) + 0.5; }
+  // if (position.z % 0.5 == 0) { z = position.z; } else { z = parseInt(position.z) + 0.5; }
+  // console.log(position, new THREE.Vector3(x, position.y - 2, z))
+  return new THREE.Vector3(x, position.y - 1, z)// menos dois pra apontar pro lugar onde o bloco vai para
+
 }
