@@ -93,18 +93,14 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
       continue;
+    console.log({ i, j });
+    // open a hole in the middle of each border side
     if (
-      i == 3 ||
-      i == 4 ||
-      i == 5 ||
-      i == 6 ||
-      j == 3 ||
-      j == 4 ||
-      j == 5 ||
-      j == 6
-    )
-      //Arrumando espaço para a escada/portal
+      (Math.abs(i) > 4 && Math.abs(j) < 3) ||
+      (Math.abs(j) > 4 && Math.abs(i) < 3)
+    ) {
       continue;
+    }
     const clonedMaterial = cubeMaterial.clone();
     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
     borderCube.position.set(i, cubeSize / 2, j);
@@ -121,15 +117,12 @@ function updateObject(mesh) {
 }
 
 const createPortal = (color) => {
-  const portal = new THREE.Mesh(new THREE.BoxGeometry(5, 7, 1));
+  const portal = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 1));
   portal.position.set(0, 3, 0);
   updateObject(portal);
   // remove a rectangle from portal with csg
-  const portalRect = new THREE.Mesh(
-    new THREE.BoxGeometry(4, 5, 1),
-    new THREE.MeshBasicMaterial({ color: "#000000" })
-  );
-  portalRect.position.set(0, 2, 0);
+  const portalRect = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 1));
+  portalRect.position.set(0, 1.5, 0);
   updateObject(portalRect);
   const portalCSG = CSG.fromMesh(portal);
   const portalRectCSG = CSG.fromMesh(portalRect);
@@ -138,39 +131,39 @@ const createPortal = (color) => {
   portalSub.position.set(0, 3, 0);
   // remove a rounded rectangle from portal with csg, combining cylinder and cube
   const cylinderMesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.02, 2.02, 2, 20)
+    new THREE.CylinderGeometry(1.5, 1.5, 2, 20)
   );
   cylinderMesh.rotateX(Math.PI / 2);
-  cylinderMesh.position.set(0, 4, 0);
+  cylinderMesh.position.set(0, 3, 0);
   updateObject(cylinderMesh);
   // scene.add(cylinderMesh);
   const portalCSGSub2 = CSG.fromMesh(portalSub).subtract(
     CSG.fromMesh(cylinderMesh)
   );
   const portalSub2 = CSG.toMesh(portalCSGSub2, portal.matrix);
-  portalSub2.material = new THREE.MeshBasicMaterial({ color: "#000000" });
+  portalSub2.material = new THREE.MeshBasicMaterial({ color: "#000" });
   portalSub2.position.set(5, 3, 0);
   // portalSub2.rotateY(Math.PI / 2);
   scene.add(portalSub2);
 
   // add door to fit the hole
-  const door = new THREE.Mesh(new THREE.BoxGeometry(4, 5, 1));
-  door.position.set(0, 2, 0);
+  const door = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 1));
+  door.position.set(0, 1.5, 0);
   // door.rotateY(Math.PI / 2);
   updateObject(door);
   // add cylinder to door with CSG
   const cylinderMesh2 = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.02, 2.02, 1, 20)
+    new THREE.CylinderGeometry(1.5, 1.5, 1, 20)
   );
   cylinderMesh2.rotateX(Math.PI / 2);
-  cylinderMesh2.position.set(0, 4, 0);
+  cylinderMesh2.position.set(0, 3, 0);
   updateObject(cylinderMesh2);
   const doorCSG = CSG.fromMesh(door);
   const cylinderCSG = CSG.fromMesh(cylinderMesh2);
   const doorCSGSub = doorCSG.union(cylinderCSG);
   const doorSub = CSG.toMesh(doorCSGSub, door.matrix);
   doorSub.material = new THREE.MeshBasicMaterial({ color: "lightgreen" });
-  doorSub.position.set(5, 2, 0);
+  doorSub.position.set(5, 1.5, 0);
   scene.add(doorSub);
 
   // add portal BB
@@ -460,7 +453,7 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
-  checkDistanceBetweenManAndDoor("blue");
+  // checkDistanceBetweenManAndDoor("blue");
 
   requestAnimationFrame(render);
 
