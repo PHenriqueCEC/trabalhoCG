@@ -245,7 +245,7 @@ const stairsPositionByColor = getStairsPositionByColor(planeBorderWidth);
 const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   const stairs = new THREE.Group();
   const aux = direction === "up" ? 1 : -1;
-  const stepGeometry = new THREE.BoxGeometry(3, 0.5, 5);
+  const stepGeometry = new THREE.BoxGeometry(1, 0.5, 5);
   const stepMaterial = new THREE.MeshPhongMaterial({ color: "brown" });
   for (let i = 0; i < numberOfSteps; i++) {
     const step = new THREE.Mesh(stepGeometry, stepMaterial);
@@ -253,7 +253,11 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
     stairs.add(step);
   }
   const pos = stairsPositionByColor[portalColor];
-  stairs.position.set(pos.x, pos.y, pos.z);
+  if (portalColor === "blue" || portalColor === "default") {
+    stairs.position.set(pos.x + 1 * aux, pos.y, pos.z);
+  } else {
+    stairs.position.set(pos.x, pos.y, pos.z + 1 * aux);
+  }
   if (rotation) {
     stairs.rotateY(rotation);
   }
@@ -277,6 +281,12 @@ createStairs({
   direction: "down",
   rotation: Math.PI / 2,
   portalColor: "red",
+});
+createStairs({
+  numberOfSteps: 10,
+  direction: "up",
+  rotation: Math.PI / 2,
+  portalColor: "yellow",
 });
 
 // Cria portais
@@ -439,7 +449,23 @@ function checkKeyCollision() {
   });
 }
 
+const getY = (posY, base) => {
+  for (let i = 1; i < 11; i++) {
+    if (posY < base && posY > planeBorderWidth) {
+      return 0;
+    }
+    if (posY > base && posY < base + i) {
+      return i;
+    }
+  }
+};
+
+let oldY = 0;
+
 function checkMovement(axis, distance) {
+  const { x, y, z } = holder.position;
+  const aux = distance > 0 ? -1 : 1;
+
   switch (axis) {
     case "x":
       manBB.translate(new THREE.Vector3(distance, 0, 0)); // Move apenas a bounding box para checar colisões
@@ -447,6 +473,18 @@ function checkMovement(axis, distance) {
         manBB.translate(new THREE.Vector3(-distance, 0, 0)); // Move a bounding box de volta
       } else {
         holder.translateX(distance);
+        if (
+          Math.abs(x) >= planeBorderWidth &&
+          Math.abs(x) <= planeBorderWidth + 11
+        ) {
+          const base = planeBorderWidth + (x > 0 ? 2.5 : 2);
+
+          const newY = getY(Math.abs(x), base);
+          if (newY !== oldY) {
+            holder.translateY(aux * 0.5);
+            oldY = newY;
+          }
+        }
       }
       break;
     case "z":
@@ -455,6 +493,18 @@ function checkMovement(axis, distance) {
         manBB.translate(new THREE.Vector3(0, 0, -distance)); // Move a bounding box de volta
       } else {
         holder.translateZ(distance);
+        if (
+          Math.abs(z) >= planeBorderWidth &&
+          Math.abs(z) <= planeBorderWidth + 11
+        ) {
+          const base = planeBorderWidth + (z > 0 ? 2.5 : 2);
+
+          const newY = getY(Math.abs(z), base);
+          if (newY !== oldY) {
+            holder.translateY(aux * 0.5);
+            oldY = newY;
+          }
+        }
       }
       break;
   }
