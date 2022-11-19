@@ -10,7 +10,7 @@ import {
   initDefaultBasicLight,
   
 } from "../libs/util/util.js";
-import { insertCubesFourthArea, keyboardOn } from "./utils/utils.js";
+import { insertCubesFirstArea, insertCubesSecondArea, keyboardOn } from "./utils/utils.js";
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -115,7 +115,27 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
+insertCubesFirstArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+
 //Chave azul
+let roomKey = tiles / 4;
+for (let x = -roomKey; x <= roomKey; x += 1) {
+  for (let z = -roomKey; z <= roomKey; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateX(43)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
 
 
 
@@ -155,9 +175,9 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
-//Cria quarta area
-for (let x = -tiles; x <= tiles; x += 1) {
-  for (let z = -tiles; z <= tiles; z += 1) {
+//Chave Amarela
+for (let x = -roomKey; x <= roomKey; x += 1) {
+  for (let z = -roomKey; z <= roomKey; z += 1) {
     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
     let auxFloorCube = new THREE.Mesh(
       auxFloorCubeGeometry,
@@ -165,7 +185,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateZ(-25)
+    floorCube.translateZ(38.5)
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -173,7 +193,28 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
-insertCubesFourthArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+//Cria a area final
+let finalArea = tiles / 2
+for (let x = -finalArea; x <= finalArea; x += 1) {
+  for (let z = -finalArea; z <= finalArea; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, 5.0, z);
+    floorCube.translateZ(-20)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Cria a plataforma sobre a area final
+
+
 
 
 
