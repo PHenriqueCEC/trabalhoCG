@@ -8,8 +8,9 @@ import {
   onWindowResize,
   initCamera,
   initDefaultBasicLight,
+  
 } from "../libs/util/util.js";
-import { keyboardOn } from "./utils/utils.js";
+import { insertCubesFourthArea, keyboardOn } from "./utils/utils.js";
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -35,10 +36,10 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // Cria plano
-const planeMaxSize = 40;
-let initialPlane = createGroundPlaneXZ(60, 60, 1, 1, "#DBB691");
+const planeMaxSize = 20;
+/* let initialPlane = createGroundPlaneXZ(30, 30, 1, 1, "#DBB691");
 
-scene.add(initialPlane);
+scene.add(initialPlane); */
 
 // Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -61,7 +62,12 @@ for (let x = -tiles; x <= tiles; x += 1) {
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
   }
-}
+} 
+
+
+
+
+
 
 // Cria cubos
 const cubeSize = 2;
@@ -90,6 +96,88 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     
   }
 }
+
+//Cria primeira area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateX(25)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Chave azul
+
+
+
+//Cria segunda area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, 5.0, z);
+    floorCube.translateX(-25)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Cria terceira area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateZ(25)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Cria quarta area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateZ(-25)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+insertCubesFourthArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+
+
+
+
 
 
 // Definições da câmera
