@@ -72,6 +72,7 @@ export function insertCubes(
 
     cube.position.set(positionX, positionY, positionZ);
     const cubeBB = new THREE.Box3().setFromObject(cube);
+    cube.castShadow = true;
     collidableCubes.push(cube);
     collidableMeshList.push(cubeBB);
     scene.add(cube);
@@ -100,6 +101,7 @@ export function insertCube(
     collidableCubes.push(cube);
     collidableMeshList.push(cubeBB);
     // cube.add(cubeBB);
+    cube.castShadow = true;
     scene.add(cube);
     const quaternion = new THREE.Quaternion();
 

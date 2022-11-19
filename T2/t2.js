@@ -18,6 +18,12 @@ const slerpConfig = {
   move: false,
   quaternion: null,
   object: null
+};
+const lerpConfig = {
+  destination: null,
+  alpha: 0.1,
+  move: false,
+  object: null
 }
 
 let scene, renderer, camera, keyboard, material, clock;
@@ -333,45 +339,56 @@ function checkObjectClicked(event) {
   const intersects = raycaster.intersectObjects(scene.children, true);
   // Se houver uma (ou mais) interseções
   if (intersects.length > 0 && collidableCubes.includes(intersects[0].object)) {
+    const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == intersects[0].object);
+    console.log(helper.box)
+    console.log(cbIndex)
+    const cb = collidableMeshList[cbIndex];
+    console.log(cb)
     slerpConfig.move = false;
-    console.log(helper.intersectsBox(intersects[1].object) == true)
+    lerpConfig.move = false;
+
+    console.log(helper.box.intersectsBox(cb))
+
+    // console.log(helper.box.intersectsBox(intersects[0].object))
     // intersects.remove(cubeRangeHelper);
-    if (true) {
+    if (helper.box.intersectsBox(cb)) {
 
       // }
       // // Mostra apenas o primeiro objeto
       // if (collidableCubes.includes(intersects[0].object) && holder.position.distanceTo(intersects[0].object.position) <= 3) {
       // Da um toggle na cor do objeto
       const currentObjColor = intersects[0].object.material.color;
-      let aux = intersects[0].object.position
+      let aux = intersects[0].object.position;
       // aux = new Vector3(aux.x, 0.5, aux.z)
       if (currentObjColor.getHex() === cubeMaterial.color.getHex()) {
         intersects[0].object.material.color = material.color;
         let p = aux.sub(new Vector3(holder.position.x, holder.position.y, holder.position.z));
-        manholder.add(intersects[0].object)
-        intersects[0].object.position.set(p.x, p.y, p.z)
-        intersects[0].object.translateY(1)
+        manholder.add(intersects[0].object);
+        intersects[0].object.position.set(p.x, p.y, p.z);
         let rot = intersects[0].object.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(270 - direction))
         intersects[0].object.rotateY(direction)
         intersects[0].object.position.set(rot.x, rot.y, rot.z)
+        lerpConfig.destination = new THREE.Vector3(p.x, p.y + 1, p.z);
+        lerpConfig.object = intersects[0].object;
+        lerpConfig.move = true;
       } else {
         intersects[0].object.material.color = cubeMaterial.color;
         // intersects[0].object.translateY(-1);
         let p1 = null;
         let angle = direction - 270;
-        aux = aux.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
+        aux = aux.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle));
         let p = (new Vector3(aux.x + holder.position.x, aux.y + holder.position.y, aux.z + holder.position.z))//.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
         // addVectors 
         p1 = whatTile(p);
 
 
-        manholder.remove(intersects[0].object)
+        manholder.remove(intersects[0].object);
         const quaternion = new THREE.Quaternion();
 
 
         slerpConfig.move = true;
         slerpConfig.quaternion = quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(direction % 45));
-        slerpConfig.vector = p1;
+        slerpConfig.destination = p1;
         slerpConfig.object = intersects[0].object;
 
         console.log("p1 ", p1, " quaternion ", quaternion, " object ", intersects[0].object)
@@ -402,10 +419,14 @@ function render() {
 
   if (slerpConfig.move) {
     slerpConfig.object.quaternion.slerp(slerpConfig.quaternion, slerpConfig.alpha);
-    slerpConfig.object.position.lerp(slerpConfig.vector, slerpConfig.alpha);
+    slerpConfig.object.position.lerp(slerpConfig.destination, slerpConfig.alpha);
   }
-
+  if (lerpConfig.move) {
+    lerpConfig.object.position.lerp(lerpConfig.destination, lerpConfig.alpha);
+  }
   requestAnimationFrame(render);
+
+  // helper.update;
 
   renderer.render(scene, camera);
 

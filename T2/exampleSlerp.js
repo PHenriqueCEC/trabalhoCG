@@ -29,6 +29,9 @@ groundPlane.rotateX(THREE.MathUtils.degToRad(-90));
 scene.add(groundPlane);
 
 // Create sphere
+
+//usar isso para fa\zer as sombras
+
 let geometry = new THREE.BoxGeometry(1, 1, 1);
 let material = new THREE.MeshPhongMaterial({ color: "red", shininess: "200" });
 let sphere1 = new THREE.Mesh(geometry, material);
