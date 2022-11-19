@@ -9,7 +9,12 @@ import {
   initCamera,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
-import { keyboardOn, getPortalsObj } from "./utils/utils.js";
+import {
+  keyboardOn,
+  getPortalsObj,
+  keys,
+  characterCollectedKeys,
+} from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 
 let scene, renderer, camera, keyboard, material, clock;
@@ -104,6 +109,37 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     scene.add(borderCube);
   }
 }
+
+// Criando chaves
+const blueKey = new THREE.Mesh(
+  cubeGeometry,
+  new THREE.MeshPhongMaterial({ color: "blue" })
+);
+blueKey.position.set(5, cubeSize / 2, 5);
+const blueKeyBB = new THREE.Box3().setFromObject(blueKey);
+
+keys["blue"].object = blueKey;
+keys["blue"].boundingBox = blueKeyBB;
+
+const yellowKey = new THREE.Mesh(
+  cubeGeometry,
+  new THREE.MeshPhongMaterial({ color: "yellow" })
+);
+yellowKey.position.set(-5, cubeSize / 2, 5);
+const yellowKeyBB = new THREE.Box3().setFromObject(yellowKey);
+keys["yellow"].object = yellowKey;
+keys["yellow"].boundingBox = yellowKeyBB;
+
+const redKey = new THREE.Mesh(
+  cubeGeometry,
+  new THREE.MeshPhongMaterial({ color: "red" })
+);
+redKey.position.set(5, cubeSize / 2, -5);
+const redKeyBB = new THREE.Box3().setFromObject(redKey);
+keys["red"].object = redKey;
+keys["red"].boundingBox = redKeyBB;
+
+scene.add(blueKey, yellowKey, redKey);
 
 function updateObject(mesh) {
   mesh.matrixAutoUpdate = false;
@@ -239,7 +275,7 @@ const checkDistanceBetweenManAndDoors = () => {
     // check if man is close to door
     const radiusDistance = 6;
     const distance = manBB.distanceToPoint(doorPos);
-    if (distance < radiusDistance) {
+    if (distance < radiusDistance && characterCollectedKeys[color]) {
       openDoor(color);
     }
   });
@@ -355,6 +391,17 @@ function checkCollision() {
   return false;
 }
 
+function checkKeyCollision() {
+  if (manBB === null || man === null) return;
+  Object.keys(keys).forEach((color) => {
+    if (manBB.intersectsBox(keys[color].boundingBox)) {
+      scene.remove(keys[color].object);
+      keys[color].boundingBox.translate(new THREE.Vector3(0, -10, 0));
+      characterCollectedKeys[color] = true;
+    }
+  });
+}
+
 function checkMovement(axis, distance) {
   switch (axis) {
     case "x":
@@ -413,6 +460,7 @@ function keyboardUpdate() {
   ) {
     //5
     new_direction = 270;
+
     checkMovement("z", normalDistance);
   } else if (keyboard.pressed("W") || keyboard.pressed("up")) {
     //0
@@ -477,6 +525,7 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
   checkDistanceBetweenManAndDoors();
+  checkKeyCollision();
 
   requestAnimationFrame(render);
 

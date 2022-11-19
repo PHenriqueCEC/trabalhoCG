@@ -144,3 +144,24 @@ export const getPortalsObj = (planeBorderWidth) => ({
     withRotation: true,
   },
 });
+
+export const characterCollectedKeys = {
+  blue: false,
+  yellow: false,
+  red: false,
+};
+
+export const keys = {
+  blue: {
+    object: null,
+    boundingBox: null,
+  },
+  yellow: {
+    object: null,
+    boundingBox: null,
+  },
+  red: {
+    object: null,
+    boundingBox: null,
+  },
+};
