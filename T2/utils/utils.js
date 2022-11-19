@@ -165,3 +165,14 @@ export const keys = {
     boundingBox: null,
   },
 };
+export const portalOffsetSize = 2.5;
+
+export const getStairsPositionByColor = (planeBorderWidth) => ({
+  blue: new THREE.Vector3(-planeBorderWidth - portalOffsetSize - 0.5, -0.25, 1),
+  red: new THREE.Vector3(1, -0.25, planeBorderWidth + portalOffsetSize + 0.5),
+  default: new THREE.Vector3(
+    planeBorderWidth + portalOffsetSize + 0.5,
+    -0.25,
+    1
+  ),
+});

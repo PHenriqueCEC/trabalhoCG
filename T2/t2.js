@@ -14,6 +14,8 @@ import {
   getPortalsObj,
   keys,
   characterCollectedKeys,
+  portalOffsetSize,
+  getStairsPositionByColor,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 
@@ -82,7 +84,6 @@ const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 let portals = getPortalsObj(planeBorderWidth);
 
 // Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
-const portalOffsetSize = 2.5;
 for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
@@ -240,6 +241,43 @@ const createPortal = (color) => {
     doorBB,
   };
 };
+const stairsPositionByColor = getStairsPositionByColor(planeBorderWidth);
+const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
+  const stairs = new THREE.Group();
+  const aux = direction === "up" ? 1 : -1;
+  const stepGeometry = new THREE.BoxGeometry(3, 0.5, 5);
+  const stepMaterial = new THREE.MeshPhongMaterial({ color: "brown" });
+  for (let i = 0; i < numberOfSteps; i++) {
+    const step = new THREE.Mesh(stepGeometry, stepMaterial);
+    step.position.set(i * aux, i * 0.5 * aux, 0);
+    stairs.add(step);
+  }
+  const pos = stairsPositionByColor[portalColor];
+  stairs.position.set(pos.x, pos.y, pos.z);
+  if (rotation) {
+    stairs.rotateY(rotation);
+  }
+  scene.add(stairs);
+};
+
+createStairs({
+  numberOfSteps: 10,
+  direction: "down",
+  rotation: Math.PI,
+  portalColor: "default",
+});
+createStairs({
+  numberOfSteps: 10,
+  direction: "up",
+  rotation: Math.PI,
+  portalColor: "blue",
+});
+createStairs({
+  numberOfSteps: 10,
+  direction: "down",
+  rotation: Math.PI / 2,
+  portalColor: "red",
+});
 
 // Cria portais
 Object.keys(portals).forEach((color) => {
