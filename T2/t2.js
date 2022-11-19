@@ -77,32 +77,33 @@ const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 let portals = getPortalsObj(planeBorderWidth);
 
 // Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
-// let cubesRemoved = 0;
-// for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
-//   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
-//     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
-//       continue;
-//     // create a hole the size of three cubes in the middle of the border on each side
-//     if (
-//       (Math.abs(i) === planeBorderWidth &&
-//         Math.abs(j) < cubeSize * 3 &&
-//         cubesRemoved < 6) ||
-//       (Math.abs(j) === planeBorderWidth &&
-//         Math.abs(i) < cubeSize * 3 &&
-//         cubesRemoved < 12)
-//     ) {
-//       cubesRemoved += 1;
-//       continue;
-//     }
-//     const clonedMaterial = cubeMaterial.clone();
-//     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
-//     borderCube.position.set(i, cubeSize / 2, j);
-//     const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
-//     collidableCubes.push(borderCube);
-//     collidableMeshList.push(borderCubeBB);
-//     scene.add(borderCube);
-//   }
-// }
+const portalOffsetSize = 2.5;
+for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
+  for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
+    if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
+      continue;
+    // se cubo interceptar algum portal, não adicionar à lista de colisões
+    let interceptsPortal = false;
+    Object.keys(portals).forEach((color) => {
+      const portal = portals[color];
+      const minX = portal.position.x - portalOffsetSize;
+      const maxX = portal.position.x + portalOffsetSize;
+      const minZ = portal.position.z - portalOffsetSize;
+      const maxZ = portal.position.z + portalOffsetSize;
+      if (i >= minX && i <= maxX && j >= minZ && j <= maxZ) {
+        interceptsPortal = true;
+      }
+    });
+    if (interceptsPortal) continue;
+    const clonedMaterial = cubeMaterial.clone();
+    const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+    borderCube.position.set(i, cubeSize / 2, j);
+    const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+    collidableCubes.push(borderCube);
+    collidableMeshList.push(borderCubeBB);
+    scene.add(borderCube);
+  }
+}
 
 function updateObject(mesh) {
   mesh.matrixAutoUpdate = false;
@@ -137,7 +138,7 @@ const createPortal = (color) => {
 
   // adiciona caracteristicas do portal
   const portalSub2 = CSG.toMesh(portalCSGSub2, portal.matrix);
-  portalSub2.material = new THREE.MeshBasicMaterial({ color: "#000" });
+  portalSub2.material = cubeMaterial.clone();
   portalSub2.position.set(
     portals[color].position.x,
     portals[color].position.y,
@@ -155,7 +156,7 @@ const createPortal = (color) => {
       portals[color].topSpherePosition.y,
       portals[color].topSpherePosition.z
     );
-    sphereMesh.material = new THREE.MeshBasicMaterial({
+    sphereMesh.material = new THREE.MeshPhongMaterial({
       color: portals[color].color,
     });
     scene.add(sphereMesh);
@@ -181,7 +182,7 @@ const createPortal = (color) => {
   const cylinderCSG = CSG.fromMesh(cylinderMesh2);
   const doorCSGUnion = doorCSG.union(cylinderCSG);
   const doorUnion = CSG.toMesh(doorCSGUnion, door.matrix);
-  doorUnion.material = new THREE.MeshBasicMaterial({ color: "lightgreen" });
+  doorUnion.material = material.clone();
   doorUnion.position.set(
     portals[color].doorPosition.x,
     portals[color].doorPosition.y,
