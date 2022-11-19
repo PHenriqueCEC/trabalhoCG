@@ -9,7 +9,7 @@ import {
   initCamera,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
-import { keyboardOn } from "./utils/utils.js";
+import { keyboardOn, getPortalsObj } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 
 let scene, renderer, camera, keyboard, material, clock;
@@ -25,21 +25,6 @@ camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this positi
 var mixer = new Array();
 var direction = 270; // Variavel para gravar a posição para onde o boneco aponta são 8 posições de 0 a 7
 var new_direction = 270; // futura nova direção
-
-let portals = {
-  blue: {
-    door: null,
-    doorBB: null,
-  },
-  yellow: {
-    door: null,
-    doorBB: null,
-  },
-  red: {
-    door: null,
-    doorBB: null,
-  },
-};
 
 window.addEventListener(
   "resize",
@@ -88,28 +73,36 @@ const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2; // Verificando o taman
 const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
 const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 
+// Portais
+let portals = getPortalsObj(planeBorderWidth);
+
 // Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
-for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
-  for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
-    if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
-      continue;
-    console.log({ i, j });
-    // open a hole in the middle of each border side
-    if (
-      (Math.abs(i) > 4 && Math.abs(j) < 3) ||
-      (Math.abs(j) > 4 && Math.abs(i) < 3)
-    ) {
-      continue;
-    }
-    const clonedMaterial = cubeMaterial.clone();
-    const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
-    borderCube.position.set(i, cubeSize / 2, j);
-    const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
-    collidableCubes.push(borderCube);
-    collidableMeshList.push(borderCubeBB);
-    scene.add(borderCube);
-  }
-}
+// let cubesRemoved = 0;
+// for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
+//   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
+//     if (Math.abs(i) !== planeBorderWidth && Math.abs(j) !== planeBorderWidth)
+//       continue;
+//     // create a hole the size of three cubes in the middle of the border on each side
+//     if (
+//       (Math.abs(i) === planeBorderWidth &&
+//         Math.abs(j) < cubeSize * 3 &&
+//         cubesRemoved < 6) ||
+//       (Math.abs(j) === planeBorderWidth &&
+//         Math.abs(i) < cubeSize * 3 &&
+//         cubesRemoved < 12)
+//     ) {
+//       cubesRemoved += 1;
+//       continue;
+//     }
+//     const clonedMaterial = cubeMaterial.clone();
+//     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+//     borderCube.position.set(i, cubeSize / 2, j);
+//     const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+//     collidableCubes.push(borderCube);
+//     collidableMeshList.push(borderCubeBB);
+//     scene.add(borderCube);
+//   }
+// }
 
 function updateObject(mesh) {
   mesh.matrixAutoUpdate = false;
@@ -117,11 +110,12 @@ function updateObject(mesh) {
 }
 
 const createPortal = (color) => {
-  const portal = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 1));
+  const portal = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 2));
   portal.position.set(0, 3, 0);
   updateObject(portal);
-  // remove a rectangle from portal with csg
-  const portalRect = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 1));
+
+  // remove o retangulo da porta
+  const portalRect = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 2));
   portalRect.position.set(0, 1.5, 0);
   updateObject(portalRect);
   const portalCSG = CSG.fromMesh(portal);
@@ -129,74 +123,99 @@ const createPortal = (color) => {
   const portalCSGSub = portalCSG.subtract(portalRectCSG);
   const portalSub = CSG.toMesh(portalCSGSub, portal.matrix);
   portalSub.position.set(0, 3, 0);
-  // remove a rounded rectangle from portal with csg, combining cylinder and cube
+
+  // remove a parte arredondada da porta
   const cylinderMesh = new THREE.Mesh(
     new THREE.CylinderGeometry(1.5, 1.5, 2, 20)
   );
   cylinderMesh.rotateX(Math.PI / 2);
   cylinderMesh.position.set(0, 3, 0);
   updateObject(cylinderMesh);
-  // scene.add(cylinderMesh);
   const portalCSGSub2 = CSG.fromMesh(portalSub).subtract(
     CSG.fromMesh(cylinderMesh)
   );
+
+  // adiciona caracteristicas do portal
   const portalSub2 = CSG.toMesh(portalCSGSub2, portal.matrix);
   portalSub2.material = new THREE.MeshBasicMaterial({ color: "#000" });
-  portalSub2.position.set(5, 3, 0);
-  // portalSub2.rotateY(Math.PI / 2);
+  portalSub2.position.set(
+    portals[color].position.x,
+    portals[color].position.y,
+    portals[color].position.z
+  );
+  if (portals[color].withRotation) {
+    portalSub2.rotateY(Math.PI / 2);
+  }
+
+  // caso o portal não seja o inicial, adiciona esfera no topo identificando pela cor
+  if (color !== "default") {
+    const sphereMesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 20, 20));
+    sphereMesh.position.set(
+      portals[color].topSpherePosition.x,
+      portals[color].topSpherePosition.y,
+      portals[color].topSpherePosition.z
+    );
+    sphereMesh.material = new THREE.MeshBasicMaterial({
+      color: portals[color].color,
+    });
+    scene.add(sphereMesh);
+  }
+
   scene.add(portalSub2);
 
-  // add door to fit the hole
-  const door = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 1));
+  if (color === "default") return;
+
+  // adiciona a porta caso não seja o portal inicial
+  const door = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 2));
   door.position.set(0, 1.5, 0);
-  // door.rotateY(Math.PI / 2);
   updateObject(door);
-  // add cylinder to door with CSG
+
+  // adiciona parte arredondada da porta
   const cylinderMesh2 = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.5, 1.5, 1, 20)
+    new THREE.CylinderGeometry(1.5, 1.5, 2, 20)
   );
   cylinderMesh2.rotateX(Math.PI / 2);
   cylinderMesh2.position.set(0, 3, 0);
   updateObject(cylinderMesh2);
   const doorCSG = CSG.fromMesh(door);
   const cylinderCSG = CSG.fromMesh(cylinderMesh2);
-  const doorCSGSub = doorCSG.union(cylinderCSG);
-  const doorSub = CSG.toMesh(doorCSGSub, door.matrix);
-  doorSub.material = new THREE.MeshBasicMaterial({ color: "lightgreen" });
-  doorSub.position.set(5, 1.5, 0);
-  scene.add(doorSub);
+  const doorCSGUnion = doorCSG.union(cylinderCSG);
+  const doorUnion = CSG.toMesh(doorCSGUnion, door.matrix);
+  doorUnion.material = new THREE.MeshBasicMaterial({ color: "lightgreen" });
+  doorUnion.position.set(
+    portals[color].doorPosition.x,
+    portals[color].doorPosition.y,
+    portals[color].doorPosition.z
+  );
+  if (portals[color].withRotation) {
+    doorUnion.rotateY(Math.PI / 2);
+  }
+  scene.add(doorUnion);
 
-  // add portal BB
-  const portalBB1 = new THREE.Box3().setFromPoints([
-    new THREE.Vector3(3, 0, 0),
-    new THREE.Vector3(3, 7, 0),
-  ]);
-  const portalBB2 = new THREE.Box3().setFromPoints([
-    new THREE.Vector3(7, 0, 0),
-    new THREE.Vector3(7, 7, 0),
-  ]);
-  collidableMeshList.push(portalBB1);
-  collidableMeshList.push(portalBB2);
-
-  const doorBB = new THREE.Box3().setFromObject(doorSub);
+  // adiciona bounding boxes
+  const doorBB = new THREE.Box3().setFromObject(doorUnion);
+  collidableMeshList.push(portals[color].portalBB1);
+  collidableMeshList.push(portals[color].portalBB2);
   collidableMeshList.push(doorBB);
 
-  // scene.add(portalSub);
+  // atualiza o objeto de portais
   portals[color] = {
-    door: doorSub,
+    door: doorUnion,
     doorBB,
   };
-  return portalSub;
 };
 
-createPortal("blue");
+// Cria portais
+Object.keys(portals).forEach((color) => {
+  createPortal(color);
+});
 
-const teste = (color) => {
+const openDoor = (color) => {
   const door = portals[color].door;
   // set position to open with lerping
   const openPosition = door.position.clone();
   openPosition.y = -5;
-  const openDoor = () => {
+  const animateDoorOpening = () => {
     door.position.lerp(openPosition, 0.0005);
     // if door is open, remove BB
     if (door.position.y < -4) {
@@ -204,22 +223,25 @@ const teste = (color) => {
       doorBB.translate(new THREE.Vector3(0, -10, 0));
     }
     if (door.position.distanceTo(openPosition) > 0.1) {
-      requestAnimationFrame(openDoor);
+      requestAnimationFrame(animateDoorOpening);
     }
   };
-  openDoor();
+  animateDoorOpening();
 };
 
-const checkDistanceBetweenManAndDoor = (color) => {
+const checkDistanceBetweenManAndDoors = () => {
   if (!manBB) return;
-  const doorPos = portals[color].door.position.clone();
+  Object.keys(portals).forEach((color) => {
+    if (color === "default") return;
+    const doorPos = portals[color].door.position.clone();
 
-  // check if man is close to door
-  const radiusDistance = 6;
-  const distance = manBB.distanceToPoint(doorPos);
-  if (distance < radiusDistance) {
-    teste(color);
-  }
+    // check if man is close to door
+    const radiusDistance = 6;
+    const distance = manBB.distanceToPoint(doorPos);
+    if (distance < radiusDistance) {
+      openDoor(color);
+    }
+  });
 };
 
 // Definições da câmera
@@ -453,7 +475,7 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
-  // checkDistanceBetweenManAndDoor("blue");
+  checkDistanceBetweenManAndDoors();
 
   requestAnimationFrame(render);
 

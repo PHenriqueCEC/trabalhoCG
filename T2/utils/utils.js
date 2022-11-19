@@ -77,3 +77,70 @@ export function insertCubes(
     scene.add(cube);
   }); 
 }*/
+
+// Portais
+export const getPortalsObj = (planeBorderWidth) => ({
+  blue: {
+    door: null,
+    doorBB: null,
+    position: new THREE.Vector3(-planeBorderWidth - 0.5, 3, 0),
+    doorPosition: new THREE.Vector3(-planeBorderWidth - 0.5, 1.5, 0),
+    topSpherePosition: new THREE.Vector3(-planeBorderWidth + 0.5, 6, 0),
+    portalBB1: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(-18, 0, -2.5),
+      new THREE.Vector3(-20, 6, -1.5),
+    ]),
+    portalBB2: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(-18, 0, 2),
+      new THREE.Vector3(-20, 6, 3),
+    ]),
+    color: "#0000FF",
+    withRotation: true,
+  },
+  yellow: {
+    door: null,
+    doorBB: null,
+    position: new THREE.Vector3(0, 3, -planeBorderWidth - 0.5),
+    doorPosition: new THREE.Vector3(0, 1.5, -planeBorderWidth - 0.5),
+    topSpherePosition: new THREE.Vector3(0, 6, -planeBorderWidth + 0.5),
+    portalBB1: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(-2.5, 0, -18),
+      new THREE.Vector3(-1.5, 6, -20),
+    ]),
+    portalBB2: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(2, 0, -18),
+      new THREE.Vector3(3, 6, -20),
+    ]),
+    color: "#FFFF00",
+    withRotation: false,
+  },
+  red: {
+    door: null,
+    doorBB: null,
+    position: new THREE.Vector3(0, 3, planeBorderWidth + 0.5),
+    doorPosition: new THREE.Vector3(0, 1.5, planeBorderWidth + 0.5),
+    topSpherePosition: new THREE.Vector3(0, 6, planeBorderWidth - 0.5),
+    portalBB1: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(-2.5, 0, 18),
+      new THREE.Vector3(-1.5, 6, 20),
+    ]),
+    portalBB2: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(2, 0, 18),
+      new THREE.Vector3(3, 6, 20),
+    ]),
+    color: "#FF0000",
+    withRotation: false,
+  },
+  default: {
+    position: new THREE.Vector3(planeBorderWidth + 0.5, 3, 0),
+    portalBB1: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(18, 0, -2.5),
+      new THREE.Vector3(20, 6, -1.5),
+    ]),
+    portalBB2: new THREE.Box3().setFromPoints([
+      new THREE.Vector3(18, 0, 2),
+      new THREE.Vector3(20, 6, 3),
+    ]),
+    withRotation: true,
+  },
+});
