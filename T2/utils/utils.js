@@ -87,11 +87,11 @@ export const getPortalsObj = (planeBorderWidth) => ({
     doorPosition: new THREE.Vector3(-planeBorderWidth, 1.5, 1),
     topSpherePosition: new THREE.Vector3(-planeBorderWidth + 1, 6, 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-18, 0, -2.5),
-      new THREE.Vector3(-20, 6, -1.5),
+      new THREE.Vector3(-18, 0, -2),
+      new THREE.Vector3(-20, 6, -1),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-18, 0, 2),
+      new THREE.Vector3(-18, 0, 2.25),
       new THREE.Vector3(-20, 6, 3),
     ]),
     color: "#0000FF",
@@ -104,12 +104,12 @@ export const getPortalsObj = (planeBorderWidth) => ({
     doorPosition: new THREE.Vector3(1, 1.5, -planeBorderWidth),
     topSpherePosition: new THREE.Vector3(1, 6, -planeBorderWidth + 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-2.5, 0, -18),
-      new THREE.Vector3(-1.5, 6, -20),
+      new THREE.Vector3(-2, 0, -18),
+      new THREE.Vector3(-1, 6, -20),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(2, 0, -18),
-      new THREE.Vector3(3, 6, -20),
+      new THREE.Vector3(3, 0, -18),
+      new THREE.Vector3(4, 6, -20),
     ]),
     color: "#FFFF00",
     withRotation: false,
@@ -121,12 +121,12 @@ export const getPortalsObj = (planeBorderWidth) => ({
     doorPosition: new THREE.Vector3(1, 1.5, planeBorderWidth),
     topSpherePosition: new THREE.Vector3(1, 6, planeBorderWidth - 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-2.5, 0, 18),
-      new THREE.Vector3(-1.5, 6, 20),
+      new THREE.Vector3(-2, 0, 18),
+      new THREE.Vector3(-1, 6, 20),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(2, 0, 18),
-      new THREE.Vector3(3, 6, 20),
+      new THREE.Vector3(3, 0, 18),
+      new THREE.Vector3(4, 6, 20),
     ]),
     color: "#FF0000",
     withRotation: false,
@@ -134,11 +134,11 @@ export const getPortalsObj = (planeBorderWidth) => ({
   default: {
     position: new THREE.Vector3(planeBorderWidth, 3, 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(18, 0, -2.5),
-      new THREE.Vector3(20, 6, -1.5),
+      new THREE.Vector3(18, 0, -2),
+      new THREE.Vector3(20, 6, -1),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(18, 0, 2),
+      new THREE.Vector3(18, 0, 2.25),
       new THREE.Vector3(20, 6, 3),
     ]),
     withRotation: true,

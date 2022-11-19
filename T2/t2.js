@@ -199,7 +199,8 @@ const createPortal = (color) => {
   }
 
   scene.add(portalSub2);
-
+  collidableMeshList.push(portals[color].portalBB1);
+  collidableMeshList.push(portals[color].portalBB2);
   if (color === "default") return;
 
   // adiciona a porta caso não seja o portal inicial
@@ -231,8 +232,6 @@ const createPortal = (color) => {
 
   // adiciona bounding boxes
   const doorBB = new THREE.Box3().setFromObject(doorUnion);
-  collidableMeshList.push(portals[color].portalBB1);
-  collidableMeshList.push(portals[color].portalBB2);
   collidableMeshList.push(doorBB);
 
   // atualiza o objeto de portais
