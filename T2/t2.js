@@ -157,6 +157,36 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
+//Chave Vermelha
+for (let x = -roomKey; x <= roomKey; x += 1) {
+  for (let z = -roomKey; z <= roomKey; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, 5.0, z);
+    floorCube.translateX(-38.5)
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+insertCubesSecondArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+
+var cubeSecondAreaGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
+let materialCubeSecondArea = setDefaultMaterial("#D2B48C");
+
+for(let z = -6; z < 5; z += 5) {
+  let cubeSecondArea = new THREE.Mesh(cubeSecondAreaGeometry, materialCubeSecondArea);
+  cubeSecondArea.position.set(-29, 5.8, z);
+  scene.add(cubeSecondArea)
+}
+
+
 //Cria terceira area
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
@@ -214,8 +244,22 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
 
 //Cria a plataforma sobre a area final
 
+var platformGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
+let materialPlatform = setDefaultMaterial("#DEB887");
 
+for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
+  for (let z = -finalArea + 5; z <= finalArea; z += 0.9) {
+    let platform = new THREE.Mesh( platformGeometry, materialPlatform);
+   
+    platform.position.set(x, 5.5, z);
+    platform.translateZ(-22)
+    platform.translateX(-2)
+    scene.add(platform);
 
+    /* floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01); */
+  }
+}
 
 
 

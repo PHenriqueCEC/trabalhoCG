@@ -49,12 +49,12 @@ export function keyboardOn(keyboard) {
 
 
 const positionCubesSecondArea = [
-  [18.0, -4, 8.0],
-  [25.0, -4, 1.0],
-  [24.0, -4, 5.0],
-  [21.0, -4, 3.0],
-  [22.0, -4, 2.0],
-  [27.0, -4, 4.0]
+  [-18.0, 6, 8.0],
+  [-25.0, 6, 1.0],
+  [-24.0, 6, 5.0],
+  [-21.0, 6, 3.0],
+  [-22.0, 6, 2.0],
+  [-27.0, 6, 4.0]
 
 ];
 
@@ -65,7 +65,7 @@ export function insertCubesSecondArea(
   scene
 ) {
   const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-  positionCubesFirstArea.forEach(([positionX, positionY, positionZ]) => {
+  positionCubesSecondArea.forEach(([positionX, positionY, positionZ]) => {
     const clonedMaterial = cubeMaterial.clone();
     const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
 
