@@ -226,10 +226,8 @@ export function whatTile(position) {
   // if (position.x % 0.5 == 0) { x = position.x; } else { x = parseInt(position.x) + 0.5; }
   // if (position.z % 0.5 == 0) { z = position.z; } else { z = parseInt(position.z) + 0.5; }
   // console.log(position, new THREE.Vector3(x, position.y - 2, z))
-  return new THREE.Vector3(x, position.y - 1, z)// menos dois pra apontar pro lugar onde o bloco vai para
-
+  return new THREE.Vector3(x, position.y - 1, z); // menos dois pra apontar pro lugar onde o bloco vai para
 }
-
 
 // const bridge = [];
 // // func

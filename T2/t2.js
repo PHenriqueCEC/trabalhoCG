@@ -43,10 +43,8 @@ const lerpConfigA2 = {
   destination: null,
   alpha: 0.1,
   move: false,
-  object: null
-}
-
-
+  object: null,
+};
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -408,14 +406,14 @@ insertCubesSecondArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
 
 var cubeSecondAreaGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
 let materialCubeSecondArea = setDefaultMaterial("#D2B48C");
-const floatingCube = []
+const floatingCube = [];
 for (let z = -6; z < 5; z += 5) {
   let cubeSecondArea = new THREE.Mesh(
     cubeSecondAreaGeometry,
     materialCubeSecondArea
   );
   cubeSecondArea.position.set(-29, 5.4, z);
-  floatingCube.push(cubeSecondArea)
+  floatingCube.push(cubeSecondArea);
   scene.add(cubeSecondArea);
 }
 
@@ -479,6 +477,7 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
 var platformGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
 let materialPlatform = setDefaultMaterial("#DEB887");
 
+let finalPlatformBB;
 for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
   for (let z = -finalArea + 5; z <= finalArea; z += 0.9) {
     let platform = new THREE.Mesh(platformGeometry, materialPlatform);
@@ -486,6 +485,8 @@ for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
     platform.position.set(x, 5.5, z);
     platform.translateZ(-22);
     platform.translateX(-2);
+    const platformBB = new THREE.Box3().setFromObject(platform);
+    finalPlatformBB = platformBB;
     scene.add(platform);
 
     /* floorCube.add(auxFloorCube);
@@ -861,7 +862,12 @@ function checkObjectClicked(event) {
       holder.position.distanceTo(obj.position) <= 4 &&
       holder.position.distanceTo(obj.position) > 1
     ) {
-      if ((collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 5 && holder.position.distanceTo(obj.position) > 1) && currentObjColor.getHex() === cubeMaterial.color.getHex()) {
+      if (
+        collidableCubes.has(obj) &&
+        holder.position.distanceTo(obj.position) <= 5 &&
+        holder.position.distanceTo(obj.position) > 1 &&
+        currentObjColor.getHex() === cubeMaterial.color.getHex()
+      ) {
         obj.material.color = material.color;
         let p = aux.sub(
           new Vector3(holder.position.x, holder.position.y, holder.position.z)
@@ -901,14 +907,18 @@ function checkObjectClicked(event) {
         for (const o of floatingCube) {
           const pos = o.position;
           if (p1.x == pos.x && p1.z == pos.z) {
-            p1 = new THREE.Vector3(p1.x, p1.y + 0.1, p1.z)
-            lerpConfigA2.destination = new THREE.Vector3(pos.x, pos.y - 0.8, pos.z)
+            p1 = new THREE.Vector3(p1.x, p1.y + 0.1, p1.z);
+            lerpConfigA2.destination = new THREE.Vector3(
+              pos.x,
+              pos.y - 0.8,
+              pos.z
+            );
             lerpConfigA2.move = true;
             lerpConfigA2.object = o;
             collidableCubes.delete(obj);
-            const index = floatingCube.indexOf(o)
-            floatingCube.splice(index, 1)
-            console.log(floatingCube)
+            const index = floatingCube.indexOf(o);
+            floatingCube.splice(index, 1);
+            console.log(floatingCube);
           }
         }
 
@@ -938,17 +948,25 @@ function checkObjectClicked(event) {
 }
 function lerps() {
   if (slerpConfig.move) {
-    slerpConfig.object.quaternion.slerp(slerpConfig.quaternion, slerpConfig.alpha);
-    slerpConfig.object.position.lerp(slerpConfig.destination, slerpConfig.alpha);
+    slerpConfig.object.quaternion.slerp(
+      slerpConfig.quaternion,
+      slerpConfig.alpha
+    );
+    slerpConfig.object.position.lerp(
+      slerpConfig.destination,
+      slerpConfig.alpha
+    );
   }
   if (lerpConfig.move) {
     lerpConfig.object.position.lerp(lerpConfig.destination, lerpConfig.alpha);
   }
 
   if (lerpConfigA2.move) {
-    lerpConfigA2.object.position.lerp(lerpConfigA2.destination, lerpConfigA2.alpha);
+    lerpConfigA2.object.position.lerp(
+      lerpConfigA2.destination,
+      lerpConfigA2.alpha
+    );
   }
-
 }
 
 // Listener para o evento de click do mouse
@@ -960,6 +978,17 @@ function render() {
   checkKeyCollision();
 
   lerps();
+
+  if (manBB && finalPlatformBB && manBB.intersectsBox(finalPlatformBB)) {
+    // mensagem de alerta para fim do jogo
+    alert("Fim de jogo!\n\n Parabéns, você conseguiu!");
+
+    // reinicia o jogo
+    location.reload();
+
+    // para o loop do jogo
+    cancelAnimationFrame();
+  }
 
   requestAnimationFrame(render);
 
