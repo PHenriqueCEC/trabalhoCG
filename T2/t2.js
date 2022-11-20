@@ -412,7 +412,7 @@ for (let z = -6; z < 5; z += 5) {
     cubeSecondAreaGeometry,
     materialCubeSecondArea
   );
-  cubeSecondArea.position.set(-58, 4.4, z);
+  cubeSecondArea.position.set(-58, 5.0, z);
   floatingCube.push(cubeSecondArea)
   scene.add(cubeSecondArea);
 }
