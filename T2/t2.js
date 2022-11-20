@@ -985,13 +985,15 @@ function checkObjectClicked(event) {
           floatingCube.splice(index, 1);
         }
       }
-      for (const bbridge of bridge) {
-        if (p1.x == bbridge.box.position.x && p1.z == bbridge.box.position.z) {
-          p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z)
-          collidableCubes.delete(bbridge.box);
-          bridge.splice(bridge.indexOf(bbridge), 1);
-        }
-      }
+
+      // for (const bbridge of bridge) {
+      //   console.log(bbridge)
+      //   if (p1.x === bbridge.box.position.x && p1.z === bbridge.box.position.z) {
+      //     p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z)
+      //     collidableCubes.delete(bbridge.box);
+      //     bridge.splice(bridge.indexOf(bbridge), 1);
+      //   }
+      // }
 
       slerpConfig.move = true;
       slerpConfig.quaternion = quaternion.setFromAxisAngle(
