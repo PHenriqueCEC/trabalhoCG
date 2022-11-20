@@ -9,7 +9,7 @@ import {
   initCamera,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
-import { insertCube, insertCubes, keyboardOn, whatTile } from "./utils/utils.js";
+import { updateBB, insertCubes, keyboardOn, whatTile } from "./utils/utils.js";
 import { Vector3 } from "../build/three.module.js";
 
 const slerpConfig = {
@@ -84,9 +84,9 @@ var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
 const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2; // Verificando o tamanho da borda do plano
 
-const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
-const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
-
+// const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
+const collidableCubes = new Map(); // Cubos colidíveis(usado para detectar cliques)
+const collidableCubesB = new Map();
 // Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
 for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
@@ -96,8 +96,9 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
     borderCube.position.set(i, cubeSize / 2, j);
     const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
-    collidableCubes.push(borderCube);
-    collidableMeshList.push(borderCubeBB);
+    collidableCubesB.set(borderCube, borderCubeBB);
+    // collidableCubes.push(borderCube);
+    // collidableMeshList.push(borderCubeBB);
     scene.add(borderCube);
   }
 }
@@ -161,14 +162,17 @@ let helper = new THREE.Box3Helper(cubeRangeHelper, 'yellow');
 // helper.visible = false;
 manholder.add(helper);
 //Vai virar função pra utilizar com o cubo selecionado por clique
-for (const collidableObj of collidableMeshList) {
-  if (cubeRangeHelper.intersectsBox(collidableObj)) {
+for (const collidableObj of collidableCubes) {
+  if (cubeRangeHelper.intersectsBox(collidableObj[1])) {
+    // collidableCubes.get(collidableObj).
     console.log("colide");
   }
 }
 
 
-insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
+insertCubes(cubeMaterial, collidableCubes, scene);
+console.log(collidableCubes)
+
 render();
 
 // Funções auxiliares
@@ -221,12 +225,18 @@ function rotate() {
 
 function checkCollision() {
   if (manBB === null || man === null) return;
-  for (const collidableObj of collidableMeshList) {
-    if (manBB.intersectsBox(collidableObj)) {
+  for (const collidableObj of collidableCubes) {
+    if (collidableObj[1] != null && manBB.intersectsBox(collidableObj[1])) {
+      return true;
+    }
+  }
+  for (const collidableObj of collidableCubesB) {
+    if (collidableObj[1] != null && manBB.intersectsBox(collidableObj[1])) {
       return true;
     }
   }
   return false;
+
 }
 
 function checkMovement(axis, distance) {
@@ -338,78 +348,81 @@ function checkObjectClicked(event) {
   // Cria um array contendo todos os objetos da cena com os quais o raio intersecta
   const intersects = raycaster.intersectObjects(scene.children, true);
   // Se houver uma (ou mais) interseções
-  if (intersects.length > 0 && collidableCubes.includes(intersects[0].object)) {
-    const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == intersects[0].object);
-    console.log(helper.box)
-    console.log(cbIndex)
-    const cb = collidableMeshList[cbIndex];
-    console.log(cb)
-    slerpConfig.move = false;
-    lerpConfig.move = false;
+  slerpConfig.move = false;
+  lerpConfig.move = false;
+  const obj = intersects[0].object;
+  if (intersects.length > 0 && collidableCubes.has(obj)) {
+    // const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == obj);
+    // // console.log(helper.box)
+    // console.log(cbIndex)
+    // const cb = collidableMeshList[cbIndex];
+    // console.log(cb)
 
-    console.log(helper.box.intersectsBox(cb))
+    // console.log(helper.box.intersectsBox(cb))
 
-    // console.log(helper.box.intersectsBox(intersects[0].object))
+    // console.log(helper.box.intersectsBox(obj))
     // intersects.remove(cubeRangeHelper);
-    if (helper.box.intersectsBox(cb)) {
+    // if (helper.box.intersectsBox(cb)) {
+    // if (true) {
 
-      // }
-      // // Mostra apenas o primeiro objeto
-      // if (collidableCubes.includes(intersects[0].object) && holder.position.distanceTo(intersects[0].object.position) <= 3) {
-      // Da um toggle na cor do objeto
-      const currentObjColor = intersects[0].object.material.color;
-      let aux = intersects[0].object.position;
-      // aux = new Vector3(aux.x, 0.5, aux.z)
-      if (currentObjColor.getHex() === cubeMaterial.color.getHex()) {
-        intersects[0].object.material.color = material.color;
-        let p = aux.sub(new Vector3(holder.position.x, holder.position.y, holder.position.z));
-        manholder.add(intersects[0].object);
-        intersects[0].object.position.set(p.x, p.y, p.z);
-        let rot = intersects[0].object.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(270 - direction))
-        intersects[0].object.rotateY(direction)
-        intersects[0].object.position.set(rot.x, rot.y, rot.z)
-        lerpConfig.destination = new THREE.Vector3(p.x, p.y + 1, p.z);
-        lerpConfig.object = intersects[0].object;
-        lerpConfig.move = true;
-      } else {
-        intersects[0].object.material.color = cubeMaterial.color;
-        // intersects[0].object.translateY(-1);
-        let p1 = null;
-        let angle = direction - 270;
-        aux = aux.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle));
-        let p = (new Vector3(aux.x + holder.position.x, aux.y + holder.position.y, aux.z + holder.position.z))//.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
-        // addVectors 
-        p1 = whatTile(p);
-
-
-        manholder.remove(intersects[0].object);
-        const quaternion = new THREE.Quaternion();
+    // }
+    // // Mostra apenas o primeiro objeto
+    // if (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4) {
+    // Da um toggle na cor do objeto
+    const currentObjColor = obj.material.color;
+    let aux = obj.position;
+    // aux = new Vector3(aux.x, 0.5, aux.z)
+    if (currentObjColor.getHex() === cubeMaterial.color.getHex() && (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4 && holder.position.distanceTo(obj.position) > 1)) {
+      obj.material.color = material.color;
+      let p = aux.sub(new Vector3(holder.position.x, holder.position.y, holder.position.z));
+      manholder.add(obj);
+      obj.position.set(p.x, p.y, p.z);
+      let rot = obj.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(270 - direction))
+      obj.rotateY(direction)
+      obj.position.set(rot.x, rot.y, rot.z)
+      lerpConfig.destination = new THREE.Vector3(p.x, p.y + 1, p.z);
+      lerpConfig.object = obj;
+      lerpConfig.move = true;
+      collidableCubes.set(obj, null)
+    } else {
+      obj.material.color = cubeMaterial.color;
+      // obj.translateY(-1);
+      let p1 = null;
+      let angle = direction - 270;
+      aux = aux.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle));
+      let p = (new Vector3(aux.x + holder.position.x, aux.y + holder.position.y, aux.z + holder.position.z))//.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
+      // addVectors 
+      p1 = whatTile(p);
 
 
-        slerpConfig.move = true;
-        slerpConfig.quaternion = quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(direction % 45));
-        slerpConfig.destination = p1;
-        slerpConfig.object = intersects[0].object;
-
-        console.log("p1 ", p1, " quaternion ", quaternion, " object ", intersects[0].object)
-        scene.add(intersects[0].object)
-
-        // intersects[0].object.quaternion.slerp(quaternion, alpha);
-        // intersects[0].object.position.lerp(vector, alpha);
+      manholder.remove(obj);
+      const quaternion = new THREE.Quaternion();
 
 
+      slerpConfig.move = true;
+      slerpConfig.quaternion = quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(direction % 45));
+      slerpConfig.destination = p1;
+      slerpConfig.object = obj;
 
-        // insertCube(cubeMaterial,
-        //   collidableCubes,
-        //   collidableMeshList,
-        //   scene, p, p1, direction % 90)
+      console.log("p1 ", p1, " quaternion ", quaternion, " object ", obj)
+      scene.add(obj)
 
-        // intersects[0].object.setPosition(aux.add(holder.position))
+      // obj.quaternion.slerp(quaternion, alpha);
+      // obj.position.lerp(vector, alpha);
 
-      }
+
+
+      // insertCube(cubeMaterial,
+      //   collidableCubes,
+      //   collidableMeshList,
+      //   scene, p, p1, direction % 90)
+
+      // obj.setPosition(aux.add(holder.position))
+
     }
   }
 }
+
 
 // Listener para o evento de click do mouse
 document.addEventListener("mousedown", checkObjectClicked, false);
@@ -427,9 +440,8 @@ function render() {
   requestAnimationFrame(render);
 
   // helper.update;
-
+  updateBB(collidableCubes)
   renderer.render(scene, camera);
-
   rotate();
 
   keyboardUpdate();

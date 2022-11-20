@@ -62,7 +62,7 @@ const positionCubes = [
 export function insertCubes(
   cubeMaterial,
   collidableCubes,
-  collidableMeshList,
+  // collidableMeshList,
   scene
 ) {
   const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -73,44 +73,22 @@ export function insertCubes(
     cube.position.set(positionX, positionY, positionZ);
     const cubeBB = new THREE.Box3().setFromObject(cube);
     cube.castShadow = true;
-    collidableCubes.push(cube);
-    collidableMeshList.push(cubeBB);
+    collidableCubes.set(cube, cubeBB);
+    // collidableMeshList.push(cubeBB);
     scene.add(cube);
     // cube.add(cubeBB);
   });
 }
 
 
-export function insertCube(
-  cubeMaterial,
-  collidableCubes,
-  collidableMeshList,
-  scene,
-  position,
-  position1,
-  angle
-) {
-  const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-  {
-    const clonedMaterial = cubeMaterial.clone();
-    const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+export function updateBB(collidableCubes) {
 
-    cube.position.set(position.x, position.y, position.z);
-    // cube.rotateY(THREE.MathUtils.degToRad(angle));
-    const cubeBB = new THREE.Box3().setFromObject(cube);
-    collidableCubes.push(cube);
-    collidableMeshList.push(cubeBB);
-    // cube.add(cubeBB);
-    cube.castShadow = true;
-    scene.add(cube);
-    const quaternion = new THREE.Quaternion();
+  for (const obj of collidableCubes) {
+    // let p = obj[0].position;
 
-    quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle));
-    const vector = position1;
-    let alpha = 0.5;
-
-    cube.quaternion.slerp(quaternion, alpha);
-    cube.position.lerp(vector, alpha);
+    collidableCubes.set(obj[0], new THREE.Box3().setFromObject(obj[0]))
+    // obj[1].set(new THREE.Box3().setFromObject(obj[0]));
+    // collidableCubes.
   }
 }
 

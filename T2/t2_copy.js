@@ -107,18 +107,34 @@ holder.add(camera);
 var cubo = new MeshBasicMaterial
 
 
-insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
-render();
+var mat4 = new THREE.Matrix4();
 
 
 const cubeGeometryRange = new THREE.BoxGeometry(5, 2, 2);
-const cubeMaterialRange = setDefaultMaterial()
+const cubeMaterialRange = material
 const cubeRange = new THREE.Mesh(cubeGeometryRange, cubeMaterialRange);
-const cubeRangeHelper = new THREE.Box3().setFromObject(cubeRange);
+mat4.extractRotation(cubeRange.matrixWorld);
+// cubeRange.translateOnAxis(new THREE.Vector3(0, 1, 0)), THREE.MathUtils.degToRad(45)
+cubeRange.rotateY(45)
+const cubeRangeHelper = new THREE.Box3().setFromObject(cubeRange, true);
 cubeRangeHelper.translate(new THREE.Vector3(0, 2, 3));
+
+
 let helper = new THREE.Box3Helper(cubeRangeHelper, 'yellow');
+// helper.rotateOnAxis(new THREE.Vector3(holder.position), THREE.MathUtils.degToRad(45))
+
+// helper.box.translate(new THREE.Vector3(0, 0, 1))
+
 // helper.visible = false;
 scene.add(helper);
+
+console.log(helper.box)
+
+// helper.rotateY(THREE.MathUtils.degToRad(45))
+
+insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
+render();
+
 //Vai virar função pra utilizar com o cubo selecionado por clique
 for (const collidableObj of collidableMeshList) {
   if (cubeRangeHelper.intersectsBox(collidableObj)) {
