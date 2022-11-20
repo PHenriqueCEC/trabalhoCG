@@ -16,6 +16,8 @@ import {
   characterCollectedKeys,
   portalOffsetSize,
   getStairsPositionByColor,
+  insertCubesFirstArea,
+  insertCubesSecondArea,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 
@@ -43,10 +45,10 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // Cria plano
-const planeMaxSize = 40;
-let initialPlane = createGroundPlaneXZ(60, 60, 1, 1, "#DBB691");
+const planeMaxSize = 20;
+/* let initialPlane = createGroundPlaneXZ(30, 30, 1, 1, "#DBB691");
 
-scene.add(initialPlane);
+scene.add(initialPlane); */
 
 // Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -327,6 +329,168 @@ const checkDistanceBetweenManAndDoors = () => {
     }
   });
 };
+//Cria primeira area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateX(25);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+insertCubesFirstArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+
+//Chave azul
+let roomKey = tiles / 4;
+for (let x = -roomKey; x <= roomKey; x += 1) {
+  for (let z = -roomKey; z <= roomKey; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateX(43);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Cria segunda area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, 5.0, z);
+    floorCube.translateX(-25);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Chave Vermelha
+for (let x = -roomKey; x <= roomKey; x += 1) {
+  for (let z = -roomKey; z <= roomKey; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, 5.0, z);
+    floorCube.translateX(-38.5);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+insertCubesSecondArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+
+var cubeSecondAreaGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
+let materialCubeSecondArea = setDefaultMaterial("#D2B48C");
+
+for (let z = -6; z < 5; z += 5) {
+  let cubeSecondArea = new THREE.Mesh(
+    cubeSecondAreaGeometry,
+    materialCubeSecondArea
+  );
+  cubeSecondArea.position.set(-29, 5.8, z);
+  scene.add(cubeSecondArea);
+}
+
+//Cria terceira area
+for (let x = -tiles; x <= tiles; x += 1) {
+  for (let z = -tiles; z <= tiles; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateZ(25);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Chave Amarela
+for (let x = -roomKey; x <= roomKey; x += 1) {
+  for (let z = -roomKey; z <= roomKey; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, -5.0, z);
+    floorCube.translateZ(38.5);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Cria a area final
+let finalArea = tiles / 2;
+for (let x = -finalArea; x <= finalArea; x += 1) {
+  for (let z = -finalArea; z <= finalArea; z += 1) {
+    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    let auxFloorCube = new THREE.Mesh(
+      auxFloorCubeGeometry,
+      materialAuxFloorCube
+    );
+
+    floorCube.position.set(x, 5.0, z);
+    floorCube.translateZ(-20);
+    scene.add(floorCube);
+
+    floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01);
+  }
+}
+
+//Cria a plataforma sobre a area final
+
+var platformGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
+let materialPlatform = setDefaultMaterial("#DEB887");
+
+for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
+  for (let z = -finalArea + 5; z <= finalArea; z += 0.9) {
+    let platform = new THREE.Mesh(platformGeometry, materialPlatform);
+
+    platform.position.set(x, 5.5, z);
+    platform.translateZ(-22);
+    platform.translateX(-2);
+    scene.add(platform);
+
+    /* floorCube.add(auxFloorCube);
+    auxFloorCube.translateY(0.01); */
+  }
+}
 
 // Definições da câmera
 let camPos = new THREE.Vector3(10.5, 10.5, 10.5);

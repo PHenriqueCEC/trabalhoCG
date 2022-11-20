@@ -17,56 +17,23 @@ export function keyboardOn(keyboard) {
   }
 }
 
-/* const positionCubes = [
-  [6.0, 0.5, 0.0],
-  [7.0, 0.5, 0.0],
-  [8.0, 0.5, 0.0],
-  [0.0, 0.5, -12.0],
-  [-8.0, 0.5, -12.0],
-  [8.0, 0.5, 12.0],
-  [22.0, 0.5, 15.0],
-  [-22.0, 0.5, -4.0],
-  [16.0, 0.5, 16.0],
-  [-16.0, 0.5, 19.0],
-  [17.0, 0.5, -19.0],
-  [0.0, 0.5, 6.0],
-  [-9.0, 0.5, 6.0],
-  [13.0, 0.5, 7.0],
-  [0.0, 0.5, 19.0],
-  [-5.0, 0.5, -9.0],
-  [15, 0.5, 10],
-  [16, 0.5, 10],
-  [17, 0.5, 10],
-  [18, 0.5, 10],
-  [19, 0.5, 10],
-  [20, 0.5, 10],
-  [21, 0.5, 10],
-  [22, 0.5, 10],
-  [23, 0.5, 10],
-  [24, 0.5, 10],
-  [25, 0.5, 10],
-  [26, 0.5, -1],
-  [26, 0.5, 0],
-  [26, 0.5, 1],
-  [26, 0.5, 2],
-  [26, 0.5, 3],
-  [26, 0.5, 4],
-  [26, 0.5, 5],
-  [26, 0.5, 6],
-  [26, 0.5, 7],
-  [26, 0.5, 8],
-  [26, 0.5, 10],
-  [26, 0.5, 9],
+const positionCubesFirstArea = [
+  [18.0, -4, 8.0],
+  [25.0, -4, 1.0],
+  [24.0, -4, 5.0],
+  [21.0, -4, 3.0],
+  [22.0, -4, 2.0],
+  [27.0, -4, 4.0],
 ];
 
-export function insertCubes(
+export function insertCubesFirstArea(
   cubeMaterial,
   collidableCubes,
   collidableMeshList,
   scene
 ) {
   const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-  positionCubes.forEach(([positionX, positionY, positionZ]) => {
+  positionCubesFirstArea.forEach(([positionX, positionY, positionZ]) => {
     const clonedMaterial = cubeMaterial.clone();
     const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
 
@@ -75,8 +42,8 @@ export function insertCubes(
     collidableCubes.push(cube);
     collidableMeshList.push(cubeBB);
     scene.add(cube);
-  }); 
-}*/
+  });
+}
 
 // Portais
 export const getPortalsObj = (planeBorderWidth) => ({
@@ -181,3 +148,31 @@ export const getStairsPositionByColor = (planeBorderWidth) => ({
     1
   ),
 });
+
+const positionCubesSecondArea = [
+  [-18.0, 6, 8.0],
+  [-25.0, 6, 1.0],
+  [-24.0, 6, 5.0],
+  [-21.0, 6, 3.0],
+  [-22.0, 6, 2.0],
+  [-27.0, 6, 4.0],
+];
+
+export function insertCubesSecondArea(
+  cubeMaterial,
+  collidableCubes,
+  collidableMeshList,
+  scene
+) {
+  const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  positionCubesSecondArea.forEach(([positionX, positionY, positionZ]) => {
+    const clonedMaterial = cubeMaterial.clone();
+    const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+
+    cube.position.set(positionX, positionY, positionZ);
+    const cubeBB = new THREE.Box3().setFromObject(cube);
+    collidableCubes.push(cube);
+    collidableMeshList.push(cubeBB);
+    scene.add(cube);
+  });
+}
