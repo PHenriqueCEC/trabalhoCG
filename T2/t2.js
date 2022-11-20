@@ -18,8 +18,26 @@ import {
   getStairsPositionByColor,
   insertCubesFirstArea,
   insertCubesSecondArea,
+  updateBB,
+  insertCubes,
+  whatTile
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
+import { Vector3 } from "../build/three.module.js";
+
+const slerpConfig = {
+  destination: null,
+  alpha: 0.1,
+  move: false,
+  quaternion: null,
+  object: null
+};
+const lerpConfig = {
+  destination: null,
+  alpha: 0.1,
+  move: false,
+  object: null
+}
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -79,12 +97,15 @@ var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
 const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2; // Verificando o tamanho da borda do plano
 
-const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
-const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
+// const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
+// const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 
+const collidableCubes = new Map(); // Cubos colidíveis(usado para detectar cliques)
+const collidableCubesB = new Map();
 // Portais
 let portals = getPortalsObj(planeBorderWidth);
 
+// const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
 // Criando os cubos colidíveis na borda do plano e adicionando-os à lista de colisões
 for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   for (let j = -planeBorderWidth; j <= planeBorderWidth; j += cubeSize) {
@@ -107,8 +128,9 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
     borderCube.position.set(i, cubeSize / 2, j);
     const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
-    collidableCubes.push(borderCube);
-    collidableMeshList.push(borderCubeBB);
+    collidableCubesB.set(borderCube, borderCubeBB);
+    // collidableCubes.push(borderCube);
+    // collidableMeshList.push(borderCubeBB);
     scene.add(borderCube);
   }
 }
@@ -544,6 +566,27 @@ Object.keys(keys).forEach((objKey) => {
 });
 
 //insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
+
+const cubeGeometryRange = new THREE.BoxGeometry(6, 0.1, 3);
+const cubeMaterialRange = setDefaultMaterial()
+const cubeRange = new THREE.Mesh(cubeGeometryRange, cubeMaterialRange);
+const cubeRangeHelper = new THREE.Box3().setFromObject(cubeRange);
+cubeRangeHelper.translate(new THREE.Vector3(0, 0.5, 1.5));
+let helper = new THREE.Box3Helper(cubeRangeHelper, 'yellow');
+// helper.visible = false;
+manholder.add(helper);
+//Vai virar função pra utilizar com o cubo selecionado por clique
+for (const collidableObj of collidableCubes) {
+  if (cubeRangeHelper.intersectsBox(collidableObj[1])) {
+    // collidableCubes.get(collidableObj).
+    console.log("colide");
+  }
+}
+
+
+insertCubes(cubeMaterial, collidableCubes, scene);
+console.log(collidableCubes)
+
 render();
 
 // Funções auxiliares
@@ -596,12 +639,18 @@ function rotate() {
 
 function checkCollision() {
   if (manBB === null || man === null) return;
-  for (const collidableObj of collidableMeshList) {
-    if (manBB.intersectsBox(collidableObj)) {
+  for (const collidableObj of collidableCubes) {
+    if (collidableObj[1] != null && manBB.intersectsBox(collidableObj[1])) {
+      return true;
+    }
+  }
+  for (const collidableObj of collidableCubesB) {
+    if (collidableObj[1] != null && manBB.intersectsBox(collidableObj[1])) {
       return true;
     }
   }
   return false;
+
 }
 
 function checkKeyCollision() {
@@ -744,6 +793,13 @@ function keyboardUpdate() {
 }
 
 // Checa se o mouse está sobre algum dos cubos
+
+//  To-do
+//  Ao remover os cubos dos holders, excluir a bb deles e remover da lista de clicaveis 
+//  adicionar o lerp e slerp
+//  testar posição final
+//  abaixar a bb pra verificar apenas os blocos que se encontram no chão
+
 function checkObjectClicked(event) {
   // Checa se o mouse foi pressionado
   // Pega a posição do mouse em coordenadas normalizadas
@@ -760,19 +816,81 @@ function checkObjectClicked(event) {
   // Cria um array contendo todos os objetos da cena com os quais o raio intersecta
   const intersects = raycaster.intersectObjects(scene.children, true);
   // Se houver uma (ou mais) interseções
-  if (intersects.length > 0) {
-    // Mostra apenas o primeiro objeto
-    if (collidableCubes.includes(intersects[0].object)) {
-      // Da um toggle na cor do objeto
-      const currentObjColor = intersects[0].object.material.color;
-      if (currentObjColor.getHex() === cubeMaterial.color.getHex()) {
-        intersects[0].object.material.color = material.color;
-      } else {
-        intersects[0].object.material.color = cubeMaterial.color;
-      }
+  slerpConfig.move = false;
+  lerpConfig.move = false;
+  const obj = intersects[0].object;
+  if (intersects.length > 0 && collidableCubes.has(obj)) {
+    // const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == obj);
+    // // console.log(helper.box)
+    // console.log(cbIndex)
+    // const cb = collidableMeshList[cbIndex];
+    // console.log(cb)
+
+    // console.log(helper.box.intersectsBox(cb))
+
+    // console.log(helper.box.intersectsBox(obj))
+    // intersects.remove(cubeRangeHelper);
+    // if (helper.box.intersectsBox(cb)) {
+    // if (true) {
+
+    // }
+    // // Mostra apenas o primeiro objeto
+    // if (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4) {
+    // Da um toggle na cor do objeto
+    const currentObjColor = obj.material.color;
+    let aux = obj.position;
+    // aux = new Vector3(aux.x, 0.5, aux.z)
+    if (currentObjColor.getHex() === cubeMaterial.color.getHex() && (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4 && holder.position.distanceTo(obj.position) > 1)) {
+      obj.material.color = material.color;
+      let p = aux.sub(new Vector3(holder.position.x, holder.position.y, holder.position.z));
+      manholder.add(obj);
+      obj.position.set(p.x, p.y, p.z);
+      let rot = obj.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(270 - direction))
+      obj.rotateY(direction)
+      obj.position.set(rot.x, rot.y, rot.z)
+      lerpConfig.destination = new THREE.Vector3(p.x, p.y + 1, p.z);
+      lerpConfig.object = obj;
+      lerpConfig.move = true;
+      collidableCubes.set(obj, null)
+    } else {
+      obj.material.color = cubeMaterial.color;
+      // obj.translateY(-1);
+      let p1 = null;
+      let angle = direction - 270;
+      aux = aux.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle));
+      let p = (new Vector3(aux.x + holder.position.x, aux.y + holder.position.y, aux.z + holder.position.z))//.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
+      // addVectors 
+      p1 = whatTile(p);
+
+
+      manholder.remove(obj);
+      const quaternion = new THREE.Quaternion();
+
+
+      slerpConfig.move = true;
+      slerpConfig.quaternion = quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(direction % 45));
+      slerpConfig.destination = p1;
+      slerpConfig.object = obj;
+
+      console.log("p1 ", p1, " quaternion ", quaternion, " object ", obj)
+      scene.add(obj)
+
+      // obj.quaternion.slerp(quaternion, alpha);
+      // obj.position.lerp(vector, alpha);
+
+
+
+      // insertCube(cubeMaterial,
+      //   collidableCubes,
+      //   collidableMeshList,
+      //   scene, p, p1, direction % 90)
+
+      // obj.setPosition(aux.add(holder.position))
+
     }
   }
 }
+
 
 // Listener para o evento de click do mouse
 document.addEventListener("mousedown", checkObjectClicked, false);
@@ -782,10 +900,18 @@ function render() {
   checkDistanceBetweenManAndDoors();
   checkKeyCollision();
 
+  if (slerpConfig.move) {
+    slerpConfig.object.quaternion.slerp(slerpConfig.quaternion, slerpConfig.alpha);
+    slerpConfig.object.position.lerp(slerpConfig.destination, slerpConfig.alpha);
+  }
+  if (lerpConfig.move) {
+    lerpConfig.object.position.lerp(lerpConfig.destination, lerpConfig.alpha);
+  }
   requestAnimationFrame(render);
 
+  // helper.update;
+  updateBB(collidableCubes)
   renderer.render(scene, camera);
-
   rotate();
 
   keyboardUpdate();
