@@ -57,9 +57,8 @@ let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
-let pa2 = false;//porta da chave da area dois
+let pa2 = false; //porta da chave da area dois
 const bridge = [];
-
 
 renderer = initRenderer(); // View function in util/utils
 initDefaultBasicLight(scene);
@@ -274,7 +273,46 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   }
   scene.add(stairs);
 };
-
+const stairsLeftRailBB = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(22, 3, -2),
+  new THREE.Vector3(32, -5, -2),
+]);
+const stairsRightRailBB = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(22, 3, 4),
+  new THREE.Vector3(32, -5, 4),
+]);
+const stairsLeftRailBB2 = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(-22, 3, -2),
+  new THREE.Vector3(-32, 5, -2),
+]);
+const stairsRightRailBB2 = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(-22, 3, 4),
+  new THREE.Vector3(-32, 5, 4),
+]);
+const stairsLeftRailBB3 = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(-2, 3, 22),
+  new THREE.Vector3(-2, -5, 32),
+]);
+const stairsRightRailBB3 = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(4, 3, 22),
+  new THREE.Vector3(4, -5, 32),
+]);
+const stairsLeftRailBB4 = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(-2, 3, -22),
+  new THREE.Vector3(-2, 5, -30),
+]);
+const stairsRightRailBB4 = new THREE.Box3().setFromPoints([
+  new THREE.Vector3(4, 3, -22),
+  new THREE.Vector3(4, 5, -30),
+]);
+collidableMeshList.push(stairsLeftRailBB);
+collidableMeshList.push(stairsRightRailBB);
+collidableMeshList.push(stairsLeftRailBB2);
+collidableMeshList.push(stairsRightRailBB2);
+collidableMeshList.push(stairsLeftRailBB3);
+collidableMeshList.push(stairsRightRailBB3);
+collidableMeshList.push(stairsLeftRailBB4);
+collidableMeshList.push(stairsRightRailBB4);
 createStairs({
   numberOfSteps: 10,
   direction: "down",
@@ -371,14 +409,17 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
 insertCubesFirstArea(cubeMaterial, collidableCubes, scene);
 
-
 // ponte
-const x = 71, z = 0;
+const x = 71,
+  z = 0;
 for (let i = 0; i < 3; i++) {
   for (let j = 0; j < 2; j++) {
     const cubeGeometryMecs = new THREE.BoxGeometry(1, 1, 1);
-    const cubeMaterialRangeMecs = setDefaultMaterial()
-    const cubeRangeMecs = new THREE.Mesh(cubeGeometryMecs, cubeMaterialRangeMecs);
+    const cubeMaterialRangeMecs = setDefaultMaterial();
+    const cubeRangeMecs = new THREE.Mesh(
+      cubeGeometryMecs,
+      cubeMaterialRangeMecs
+    );
     cubeRangeMecs.position.set(x + i, -4.5, z + j);
     const cubeBBMecs = new THREE.Box3().setFromObject(cubeRangeMecs);
     collidableCubes.set(cubeRangeMecs, cubeBBMecs);
@@ -386,8 +427,8 @@ for (let i = 0; i < 3; i++) {
     area1Mec.z = cubeRangeMecs.position.z;
     area1Mec.box = cubeRangeMecs;
     area1Mec.bbox = cubeBBMecs;
-    bridge.push(cubeRangeMecs)
-    scene.add(cubeBBMecs)
+    bridge.push(cubeRangeMecs);
+    scene.add(cubeBBMecs);
   }
 }
 
@@ -463,10 +504,10 @@ var doorGeometry = new THREE.BoxGeometry(1, 1, 1);
 let materialDoor = setDefaultMaterial("#000");
 let doorA2 = new THREE.Mesh(doorGeometry, materialDoor);
 doorA2.scale.set(1, 3, 10);
-doorA2.position.set(-71, 6, 0)
-let doorbb = new THREE.Box3().setFromObject(doorA2)
-collidableCubes.set(doorA2, doorbb)
-scene.add(doorA2)
+doorA2.position.set(-71, 6, 0);
+let doorbb = new THREE.Box3().setFromObject(doorA2);
+collidableCubes.set(doorA2, doorbb);
+scene.add(doorA2);
 
 insertCubesSecondArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
 
@@ -931,8 +972,12 @@ function checkObjectClicked(event) {
     let aux = obj.position;
     // aux = new Vector3(aux.x, 0.5, aux.z)
 
-    if ((collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 5
-      && holder.position.distanceTo(obj.position) > 1) && currentObjColor.getHex() === cubeMaterial.color.getHex()) {
+    if (
+      collidableCubes.has(obj) &&
+      holder.position.distanceTo(obj.position) <= 5 &&
+      holder.position.distanceTo(obj.position) > 1 &&
+      currentObjColor.getHex() === cubeMaterial.color.getHex()
+    ) {
       obj.material.color = material.color;
       let p = aux.sub(
         new Vector3(holder.position.x, holder.position.y, holder.position.z)
@@ -1041,10 +1086,16 @@ function lerps() {
     );
   }
   if (floatingCube.length <= 0 && pa2 === false) {
-    doorA2.position.lerp(new THREE.Vector3(doorA2.position.x, doorA2.position.y - 5, doorA2.position.z, lerpConfig.alpha));
+    doorA2.position.lerp(
+      new THREE.Vector3(
+        doorA2.position.x,
+        doorA2.position.y - 5,
+        doorA2.position.z,
+        lerpConfig.alpha
+      )
+    );
     pa2 = true;
   }
-
 }
 
 // Listener para o evento de click do mouse
