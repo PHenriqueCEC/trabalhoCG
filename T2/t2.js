@@ -17,7 +17,7 @@ scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
 renderer = initRenderer(); // View function in util/utils
-initDefaultBasicLight(scene);
+//initDefaultBasicLight(scene);
 material = setDefaultMaterial("#8B4513"); // Create a basic material
 const cubeMaterial = setDefaultMaterial("#C8996C");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
@@ -256,13 +256,8 @@ for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
     platform.translateX(-2)
     scene.add(platform);
 
-    /* floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01); */
   }
 }
-
-
-
 
 
 // Definições da câmera
@@ -285,6 +280,37 @@ let holder = new THREE.Object3D(); // Objeto criado para manter sempre a camera 
 scene.add(holder);
 
 holder.add(camera);
+
+//Luz direcional firstArea
+let dirLight = new THREE.DirectionalLight(0xffffff, 0.5)
+dirLight.position.set(25, 0, 0)
+
+dirLight.castShadow = true;
+
+dirLight.target.position.set(25, -5, 0);
+dirLight.target.updateMatrixWorld();
+
+//Set up shadow properties for the light
+dirLight.shadow.mapSize.width = 512; // default
+dirLight.shadow.mapSize.height = 512; // default
+dirLight.shadow.camera.near = 0.5; // default
+dirLight.shadow.camera.far = 500; // default
+
+//let dirHelp = new THREE.DirectionalLightHelper(dirLight, 3)
+
+scene.add(dirLight);
+
+//Luz dir area inicial
+let dirLight2 = new THREE.DirectionalLight(0xffffff, 0.3)
+//dirLight2.position.set(25, 5, 0)
+
+
+
+//let dirHelp2 = new THREE.DirectionalLightHelper(dirLight2, 3)
+
+scene.add(dirLight2);
+
+
 
 // Definições do personagem
 let manholder = new THREE.Object3D();// Objeto de auxilio para manejamento do personagem
@@ -508,4 +534,23 @@ function render() {
   if (keyboardOn(keyboard)) {
     for (var i = 0; i < mixer.length; i++) mixer[i].update(delta * 2);
   }
+}
+
+function setDirectionalLighting(position)
+{
+  dirLight.position.copy(position);
+
+  // Shadow settings
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 512;
+  dirLight.shadow.mapSize.height = 512;
+  dirLight.shadow.camera.near = 1;
+  dirLight.shadow.camera.far = 20;
+  dirLight.shadow.camera.left = -5;
+  dirLight.shadow.camera.right = 5;
+  dirLight.shadow.camera.top = 5;
+  dirLight.shadow.camera.bottom = -5;
+  dirLight.name = "Direction Light";
+
+  scene.add(dirLight);
 }
