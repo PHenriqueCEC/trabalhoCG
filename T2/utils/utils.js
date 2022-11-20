@@ -48,7 +48,7 @@ export function insertCubesFirstArea(
 }
 
 // Portais
-export const getPortalsObj = (planeBorderWidth) => ({
+export const getPortalsObj = (planeBorderWidth, planeMaxSize) => ({
   blue: {
     door: null,
     doorBB: null,
@@ -56,12 +56,12 @@ export const getPortalsObj = (planeBorderWidth) => ({
     doorPosition: new THREE.Vector3(-planeBorderWidth, 1.5, 1),
     topSpherePosition: new THREE.Vector3(-planeBorderWidth + 1, 6, 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-18, 0, -2),
-      new THREE.Vector3(-20, 6, -1),
+      new THREE.Vector3(-planeMaxSize / 2 + 2, 0, -2),
+      new THREE.Vector3(-planeMaxSize / 2, 6, -1),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-18, 0, 2.25),
-      new THREE.Vector3(-20, 6, 3),
+      new THREE.Vector3(-planeMaxSize / 2 + 2, 0, 2.25),
+      new THREE.Vector3(-planeMaxSize / 2, 6, 3),
     ]),
     color: "#0000FF",
     withRotation: true,
@@ -73,12 +73,12 @@ export const getPortalsObj = (planeBorderWidth) => ({
     doorPosition: new THREE.Vector3(1, 1.5, -planeBorderWidth),
     topSpherePosition: new THREE.Vector3(1, 6, -planeBorderWidth + 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-2, 0, -18),
-      new THREE.Vector3(-1, 6, -20),
+      new THREE.Vector3(-2, 0, -planeMaxSize / 2 + 2),
+      new THREE.Vector3(-1, 6, -planeMaxSize / 2),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(3, 0, -18),
-      new THREE.Vector3(4, 6, -20),
+      new THREE.Vector3(3, 0, -planeMaxSize / 2 + 2),
+      new THREE.Vector3(4, 6, -planeMaxSize / 2),
     ]),
     color: "#FFFF00",
     withRotation: false,
@@ -90,12 +90,12 @@ export const getPortalsObj = (planeBorderWidth) => ({
     doorPosition: new THREE.Vector3(1, 1.5, planeBorderWidth),
     topSpherePosition: new THREE.Vector3(1, 6, planeBorderWidth - 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(-2, 0, 18),
-      new THREE.Vector3(-1, 6, 20),
+      new THREE.Vector3(-2, 0, planeMaxSize / 2 - 2),
+      new THREE.Vector3(-1, 6, planeMaxSize / 2),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(3, 0, 18),
-      new THREE.Vector3(4, 6, 20),
+      new THREE.Vector3(3, 0, planeMaxSize / 2 - 2),
+      new THREE.Vector3(4, 6, planeMaxSize / 2),
     ]),
     color: "#FF0000",
     withRotation: false,
@@ -103,12 +103,12 @@ export const getPortalsObj = (planeBorderWidth) => ({
   default: {
     position: new THREE.Vector3(planeBorderWidth, 3, 1),
     portalBB1: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(18, 0, -2),
-      new THREE.Vector3(20, 6, -1),
+      new THREE.Vector3(planeMaxSize / 2 - 2, 0, -2),
+      new THREE.Vector3(planeMaxSize / 2, 6, -1),
     ]),
     portalBB2: new THREE.Box3().setFromPoints([
-      new THREE.Vector3(18, 0, 2.25),
-      new THREE.Vector3(20, 6, 3),
+      new THREE.Vector3(planeMaxSize / 2 - 2, 0, 2.25),
+      new THREE.Vector3(planeMaxSize / 2, 6, 3),
     ]),
     withRotation: true,
   },
@@ -210,16 +210,14 @@ export function insertCubes(
 }
 
 export function updateBB(collidableCubes) {
-
   for (const obj of collidableCubes) {
     // let p = obj[0].position;
 
-    collidableCubes.set(obj[0], new THREE.Box3().setFromObject(obj[0]))
+    collidableCubes.set(obj[0], new THREE.Box3().setFromObject(obj[0]));
     // obj[1].set(new THREE.Box3().setFromObject(obj[0]));
     // collidableCubes.
   }
 }
-
 
 export function whatTile(position) {
   // const tileSize = 1;
@@ -228,6 +226,5 @@ export function whatTile(position) {
   // if (position.x % 0.5 == 0) { x = position.x; } else { x = parseInt(position.x) + 0.5; }
   // if (position.z % 0.5 == 0) { z = position.z; } else { z = parseInt(position.z) + 0.5; }
   // console.log(position, new THREE.Vector3(x, position.y - 2, z))
-  return new THREE.Vector3(x, position.y - 1, z)// menos dois pra apontar pro lugar onde o bloco vai para
-
+  return new THREE.Vector3(x, position.y - 1, z); // menos dois pra apontar pro lugar onde o bloco vai para
 }
