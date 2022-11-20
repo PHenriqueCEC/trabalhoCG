@@ -70,7 +70,7 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // Cria plano
-const planeMaxSize = 20;
+const planeMaxSize = 40;
 /* let initialPlane = createGroundPlaneXZ(30, 30, 1, 1, "#DBB691");
 
 scene.add(initialPlane); */
@@ -337,7 +337,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateX(25);
+    floorCube.translateX(50);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -358,7 +358,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateX(43);
+    floorCube.translateX(86);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -376,7 +376,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
     );
 
     floorCube.position.set(x, 4, z);
-    floorCube.translateX(-25);
+    floorCube.translateX(-50);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -394,7 +394,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     );
 
     floorCube.position.set(x, 4, z);
-    floorCube.translateX(-38.5);
+    floorCube.translateX(-77);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -412,8 +412,8 @@ for (let z = -6; z < 5; z += 5) {
     cubeSecondAreaGeometry,
     materialCubeSecondArea
   );
-  cubeSecondArea.position.set(-29, 5.4, z);
-  floatingCube.push(cubeSecondArea);
+  cubeSecondArea.position.set(-58, 4.4, z);
+  floatingCube.push(cubeSecondArea)
   scene.add(cubeSecondArea);
 }
 
@@ -427,7 +427,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateZ(25);
+    floorCube.translateZ(50);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -445,7 +445,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateZ(38.5);
+    floorCube.translateZ(77);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -464,7 +464,7 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
     );
 
     floorCube.position.set(x, 5.0, z);
-    floorCube.translateZ(-20);
+    floorCube.translateZ(-40);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -483,10 +483,8 @@ for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
     let platform = new THREE.Mesh(platformGeometry, materialPlatform);
 
     platform.position.set(x, 5.5, z);
-    platform.translateZ(-22);
-    platform.translateX(-2);
-    const platformBB = new THREE.Box3().setFromObject(platform);
-    finalPlatformBB = platformBB;
+    platform.translateZ(-44);
+    platform.translateX(-4);
     scene.add(platform);
 
     /* floorCube.add(auxFloorCube);

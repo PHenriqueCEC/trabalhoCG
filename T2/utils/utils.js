@@ -18,12 +18,12 @@ export function keyboardOn(keyboard) {
 }
 
 const positionCubesFirstArea = [
-  [18.0, -4, 8.0],
-  [25.0, -4, 1.0],
-  [24.0, -4, 5.0],
-  [21.0, -4, 3.0],
-  [22.0, -4, 2.0],
-  [27.0, -4, 4.0],
+  [36, -8, 16.0],
+  [50.0, -8, 2.0],
+  [48.0, -8, 10.0],
+  [42.0, -8, 6.0],
+  [44.0, -8, 4.0],
+  [54.0, -8, 8.0],
 ];
 
 export function insertCubesFirstArea(
@@ -159,12 +159,12 @@ export const getStairsPositionByColor = (planeBorderWidth) => ({
 });
 
 const positionCubesSecondArea = [
-  [-18.0, 5, 8.0],
-  [-25.0, 5, 1.0],
-  [-24.0, 5, 5.0],
-  [-21.0, 5, 3.0],
-  [-22.0, 5, 2.0],
-  [-27.0, 5, 4.0],
+  [-36.0, 10, 16.0],
+  [-50.0, 10, 2.0],
+  [-48.0, 10, 10.0],
+  [-42.0, 10, 6.0],
+  [-44.0, 10, 4.0],
+  [-54.0, 10, 8.0],
 ];
 
 export function insertCubesSecondArea(
