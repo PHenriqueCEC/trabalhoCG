@@ -497,6 +497,11 @@ camera = new THREE.PerspectiveCamera(
 
 camera.position.copy(camPos);
 camera.up.copy(camUp);
+camera.position.setFromSphericalCoords(
+  20,
+  Math.PI / 3, // 60 degrees from positive Y-axis and 30 degrees to XZ-plane
+  Math.PI / 4 // 45 degrees, between positive X and Z axes, thus on XZ-plane
+);
 camera.lookAt(camLook);
 
 let holder = new THREE.Object3D(); // Objeto criado para manter sempre a camera e o personagem alinhados
@@ -605,6 +610,11 @@ function changeProjection() {
     );
     camera.up.copy(camUp);
     camera.position.copy(camPos);
+    camera.position.setFromSphericalCoords(
+      20,
+      Math.PI / 3, // 60 degrees from positive Y-axis and 30 degrees to XZ-plane
+      Math.PI / 4 // 45 degrees, between positive X and Z axes, thus on XZ-plane
+    );
   }
 
   camera.lookAt(camLook);
