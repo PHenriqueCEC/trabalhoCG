@@ -124,7 +124,7 @@ export const keys = {
   blue: {
     object: null,
     boundingBox: null,
-    position: new THREE.Vector3(86, -5, 0),
+    position: new THREE.Vector3(80, -5, 0),
     color: "#0000FF",
   },
   yellow: {

@@ -358,7 +358,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateX(86);
+    floorCube.translateX(80);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
