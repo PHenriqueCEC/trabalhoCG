@@ -97,7 +97,7 @@ var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
 const planeBorderWidth = planeMaxSize / 2 - cubeSize / 2; // Verificando o tamanho da borda do plano
 
-// const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
+const collidableMeshList = []; // Lista de BoundingBoxes que podem colidir(usado para detectar colisões)
 // const collidableCubes = []; // Cubos colidíveis(usado para detectar cliques)
 
 const collidableCubes = new Map(); // Cubos colidíveis(usado para detectar cliques)
@@ -338,7 +338,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
-insertCubesFirstArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+insertCubesFirstArea(cubeMaterial, collidableCubes, scene);
 
 //Chave azul
 let roomKey = tiles / 4;
@@ -567,6 +567,8 @@ Object.keys(keys).forEach((objKey) => {
 
 //insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
 
+
+//Trabalhando o campod e visao do personagem
 const cubeGeometryRange = new THREE.BoxGeometry(6, 0.1, 3);
 const cubeMaterialRange = setDefaultMaterial()
 const cubeRange = new THREE.Mesh(cubeGeometryRange, cubeMaterialRange);
@@ -575,17 +577,11 @@ cubeRangeHelper.translate(new THREE.Vector3(0, 0.5, 1.5));
 let helper = new THREE.Box3Helper(cubeRangeHelper, 'yellow');
 // helper.visible = false;
 manholder.add(helper);
-//Vai virar função pra utilizar com o cubo selecionado por clique
-for (const collidableObj of collidableCubes) {
-  if (cubeRangeHelper.intersectsBox(collidableObj[1])) {
-    // collidableCubes.get(collidableObj).
-    console.log("colide");
-  }
-}
 
 
-insertCubes(cubeMaterial, collidableCubes, scene);
-console.log(collidableCubes)
+
+// insertCubes(cubeMaterial, collidableCubes, scene);
+
 
 render();
 
@@ -645,6 +641,11 @@ function checkCollision() {
     }
   }
   for (const collidableObj of collidableCubesB) {
+    if (collidableObj[1] != null && manBB.intersectsBox(collidableObj[1])) {
+      return true;
+    }
+  }
+  for (const collidableObj of collidableMeshList) {
     if (collidableObj[1] != null && manBB.intersectsBox(collidableObj[1])) {
       return true;
     }

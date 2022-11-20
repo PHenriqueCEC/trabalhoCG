@@ -39,8 +39,10 @@ export function insertCubesFirstArea(
 
     cube.position.set(positionX, positionY, positionZ);
     const cubeBB = new THREE.Box3().setFromObject(cube);
-    collidableCubes.push(cube);
-    collidableMeshList.push(cubeBB);
+    collidableCubes.set(cube, cubeBB);
+
+    // collidableCubes.push(cube);
+    // collidableMeshList.push(cubeBB);
     scene.add(cube);
   });
 }
@@ -186,6 +188,26 @@ export function insertCubesSecondArea(
   });
 }
 
+export function insertCubes(
+  cubeMaterial,
+  collidableCubes,
+  // collidableMeshList,
+  scene
+) {
+  const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  positionCubesFirstArea.forEach(([positionX, positionY, positionZ]) => {
+    const clonedMaterial = cubeMaterial.clone();
+    const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+
+    cube.position.set(positionX, positionY, positionZ);
+    const cubeBB = new THREE.Box3().setFromObject(cube);
+    cube.castShadow = true;
+    collidableCubes.set(cube, cubeBB);
+    // collidableMeshList.push(cubeBB);
+    scene.add(cube);
+    // cube.add(cubeBB);
+  });
+}
 
 export function updateBB(collidableCubes) {
 
