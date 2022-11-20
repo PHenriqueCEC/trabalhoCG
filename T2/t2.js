@@ -50,7 +50,7 @@ let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
-const pa2 = false;//porta da chave da area dois
+let pa2 = false;//porta da chave da area dois
 
 
 renderer = initRenderer(); // View function in util/utils
@@ -968,7 +968,7 @@ function lerps() {
       lerpConfigA2.alpha
     );
   }
-  if (floatingCube.length == 0 && pa2 == false) {
+  if (floatingCube.length <= 0 && pa2 === false) {
     doorA2.position.lerp(new THREE.Vector3(doorA2.position.x, doorA2.position.y - 5, doorA2.position.z, lerpConfig.alpha));
     pa2 = true;
   }
