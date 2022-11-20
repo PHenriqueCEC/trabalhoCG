@@ -113,37 +113,6 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
   }
 }
 
-// Criando chaves
-const blueKey = new THREE.Mesh(
-  cubeGeometry,
-  new THREE.MeshPhongMaterial({ color: "blue" })
-);
-blueKey.position.set(5, cubeSize / 2, 5);
-const blueKeyBB = new THREE.Box3().setFromObject(blueKey);
-
-keys["blue"].object = blueKey;
-keys["blue"].boundingBox = blueKeyBB;
-
-const yellowKey = new THREE.Mesh(
-  cubeGeometry,
-  new THREE.MeshPhongMaterial({ color: "yellow" })
-);
-yellowKey.position.set(-5, cubeSize / 2, 5);
-const yellowKeyBB = new THREE.Box3().setFromObject(yellowKey);
-keys["yellow"].object = yellowKey;
-keys["yellow"].boundingBox = yellowKeyBB;
-
-const redKey = new THREE.Mesh(
-  cubeGeometry,
-  new THREE.MeshPhongMaterial({ color: "red" })
-);
-redKey.position.set(5, cubeSize / 2, -5);
-const redKeyBB = new THREE.Box3().setFromObject(redKey);
-keys["red"].object = redKey;
-keys["red"].boundingBox = redKeyBB;
-
-scene.add(blueKey, yellowKey, redKey);
-
 function updateObject(mesh) {
   mesh.matrixAutoUpdate = false;
   mesh.updateMatrix();
@@ -541,6 +510,39 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   mixer.push(mixerLocal);
 });
 
+// Cria chaves no mapa
+Object.keys(keys).forEach((objKey) => {
+  loader.load("./assets/keys/key.gltf", function (gltf) {
+    const key = gltf.scene;
+    key.traverse(function (child) {
+      if (child) {
+        child.castShadow = true;
+      }
+    });
+    key.traverse(function (node) {
+      if (node.material) {
+        node.material = new THREE.MeshPhongMaterial({
+          color: keys[objKey].color,
+        });
+        node.material.side = THREE.DoubleSide;
+      }
+    });
+    key.scale.set(0.03, 0.03, 0.03);
+    key.position.set(
+      keys[objKey].position.x,
+      keys[objKey].position.y,
+      keys[objKey].position.z
+    );
+    if (keys[objKey].rotate) {
+      key.rotateY(Math.PI / 2);
+    }
+    const keyBB = new THREE.Box3().setFromObject(key);
+    keys[objKey].object = key;
+    keys[objKey].boundingBox = keyBB;
+    scene.add(key);
+  });
+});
+
 //insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
 render();
 
@@ -646,6 +648,7 @@ function checkMovement(axis, distance) {
           const newY = getY(Math.abs(x), base);
           if (newY !== oldY) {
             holder.translateY(aux * 0.5);
+            manBB.translate(new THREE.Vector3(0, aux * 0.5, 0));
             oldY = newY;
           }
         }
@@ -666,6 +669,7 @@ function checkMovement(axis, distance) {
           const newY = getY(Math.abs(z), base);
           if (newY !== oldY) {
             holder.translateY(aux * 0.5);
+            manBB.translate(new THREE.Vector3(0, aux * 0.5, 0));
             oldY = newY;
           }
         }

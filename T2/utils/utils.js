@@ -122,14 +122,21 @@ export const keys = {
   blue: {
     object: null,
     boundingBox: null,
+    position: new THREE.Vector3(42, -5, 0),
+    color: "#0000FF",
   },
   yellow: {
     object: null,
     boundingBox: null,
+    position: new THREE.Vector3(0, -5, 40),
+    color: "#FFFF00",
+    rotate: true,
   },
   red: {
     object: null,
     boundingBox: null,
+    position: new THREE.Vector3(-40, 5, 0),
+    color: "#FF0000",
   },
 };
 export const portalOffsetSize = 2.5;
