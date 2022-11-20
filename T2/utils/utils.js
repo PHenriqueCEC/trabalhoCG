@@ -53,7 +53,7 @@ export const getPortalsObj = (planeBorderWidth, planeMaxSize) => ({
     door: null,
     doorBB: null,
     position: new THREE.Vector3(-planeBorderWidth, 3, 1),
-    doorPosition: new THREE.Vector3(-planeBorderWidth, 201.5, 1),
+    doorPosition: new THREE.Vector3(-planeBorderWidth, 1.5, 1),
     topSpherePosition: new THREE.Vector3(-planeBorderWidth + 1, 6, 1),
     portalBB1: new THREE.Box3().setFromPoints([
       new THREE.Vector3(-planeMaxSize / 2 + 2, 0, -2),
@@ -238,7 +238,9 @@ export function whatTile(position) {
 //   bbox: null,
 // };
 // // collidableCubes;
-// const x = 1, z = 2;
+
+// // ponte
+// const x = 71, z = 0;
 // for (let i = 0; i < 3; i++) {
 //   for (let j = 0; j < 2; j++) {
 //     const cubeGeometryMecs = new THREE.BoxGeometry(1, 1, 1);

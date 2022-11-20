@@ -46,11 +46,19 @@ const lerpConfigA2 = {
   object: null,
 };
 
+const area1Mec = {
+  x: null,
+  z: null,
+  box: null,
+  bbox: null,
+};
+
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
 let pa2 = false;//porta da chave da area dois
+const bridge = [];
 
 
 renderer = initRenderer(); // View function in util/utils
@@ -347,7 +355,6 @@ for (let x = -tiles; x <= tiles; x += 1) {
     auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       // if it is stair position, do not add wall
-      console.log({ x, z });
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
       // add cube above floor
       const clonedMaterial = cubeMaterial.clone();
@@ -363,6 +370,26 @@ for (let x = -tiles; x <= tiles; x += 1) {
 }
 
 insertCubesFirstArea(cubeMaterial, collidableCubes, scene);
+
+
+// ponte
+const x = 71, z = 0;
+for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 2; j++) {
+    const cubeGeometryMecs = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMaterialRangeMecs = setDefaultMaterial()
+    const cubeRangeMecs = new THREE.Mesh(cubeGeometryMecs, cubeMaterialRangeMecs);
+    cubeRangeMecs.position.set(x + i, -4.5, z + j);
+    const cubeBBMecs = new THREE.Box3().setFromObject(cubeRangeMecs);
+    collidableCubes.set(cubeRangeMecs, cubeBBMecs);
+    area1Mec.x = cubeRangeMecs.position.x;
+    area1Mec.z = cubeRangeMecs.position.z;
+    area1Mec.box = cubeRangeMecs;
+    area1Mec.bbox = cubeBBMecs;
+    bridge.push(cubeRangeMecs)
+    scene.add(cubeBBMecs)
+  }
+}
 
 //Chave azul
 let roomKey = tiles / 4;
@@ -400,7 +427,6 @@ for (let x = -tiles; x <= tiles; x += 1) {
     auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       // if it is stair position, do not add wall
-      console.log({ x, z });
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
       // add cube above floor
       const clonedMaterial = cubeMaterial.clone();
@@ -957,7 +983,13 @@ function checkObjectClicked(event) {
           collidableCubes.delete(obj);
           const index = floatingCube.indexOf(o);
           floatingCube.splice(index, 1);
-          console.log(floatingCube);
+        }
+      }
+      for (const bbridge of bridge) {
+        if (p1.x == bbridge.box.position.x && p1.z == bbridge.box.position.z) {
+          p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z)
+          collidableCubes.delete(bbridge.box);
+          bridge.splice(bridge.indexOf(bbridge), 1);
         }
       }
 
@@ -1035,7 +1067,6 @@ function render() {
   }
 
   requestAnimationFrame(render);
-
   // helper.update;
   updateBB(collidableCubes);
   renderer.render(scene, camera);
