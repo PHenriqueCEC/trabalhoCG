@@ -38,6 +38,14 @@ const lerpConfig = {
   move: false,
   object: null
 }
+const lerpConfigA2 = {
+  destination: null,
+  alpha: 0.1,
+  move: false,
+  object: null
+}
+
+
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -368,7 +376,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       materialAuxFloorCube
     );
 
-    floorCube.position.set(x, 5.0, z);
+    floorCube.position.set(x, 4, z);
     floorCube.translateX(-25);
     scene.add(floorCube);
 
@@ -386,7 +394,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       materialAuxFloorCube
     );
 
-    floorCube.position.set(x, 5.0, z);
+    floorCube.position.set(x, 4, z);
     floorCube.translateX(-38.5);
     scene.add(floorCube);
 
@@ -399,13 +407,14 @@ insertCubesSecondArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
 
 var cubeSecondAreaGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
 let materialCubeSecondArea = setDefaultMaterial("#D2B48C");
-
+const floatingCube = []
 for (let z = -6; z < 5; z += 5) {
   let cubeSecondArea = new THREE.Mesh(
     cubeSecondAreaGeometry,
     materialCubeSecondArea
   );
-  cubeSecondArea.position.set(-29, 5.8, z);
+  cubeSecondArea.position.set(-29, 5.4, z);
+  floatingCube.push(cubeSecondArea)
   scene.add(cubeSecondArea);
 }
 
@@ -841,7 +850,7 @@ function checkObjectClicked(event) {
     const currentObjColor = obj.material.color;
     let aux = obj.position;
     // aux = new Vector3(aux.x, 0.5, aux.z)
-    if (currentObjColor.getHex() === cubeMaterial.color.getHex() && (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4 && holder.position.distanceTo(obj.position) > 1)) {
+    if ((collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 5 && holder.position.distanceTo(obj.position) > 1) && currentObjColor.getHex() === cubeMaterial.color.getHex()) {
       obj.material.color = material.color;
       let p = aux.sub(new Vector3(holder.position.x, holder.position.y, holder.position.z));
       manholder.add(obj);
@@ -867,6 +876,19 @@ function checkObjectClicked(event) {
       manholder.remove(obj);
       const quaternion = new THREE.Quaternion();
 
+      for (const o of floatingCube) {
+        const pos = o.position;
+        if (p1.x == pos.x && p1.z == pos.z) {
+          p1 = new THREE.Vector3(p1.x, p1.y + 0.1, p1.z)
+          lerpConfigA2.destination = new THREE.Vector3(pos.x, pos.y - 0.8, pos.z)
+          lerpConfigA2.move = true;
+          lerpConfigA2.object = o;
+          collidableCubes.delete(obj);
+          const index = floatingCube.indexOf(o)
+          floatingCube.splice(index, 1)
+          console.log(floatingCube)
+        }
+      }
 
       slerpConfig.move = true;
       slerpConfig.quaternion = quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(direction % 45));
@@ -891,7 +913,20 @@ function checkObjectClicked(event) {
     }
   }
 }
+function lerps() {
+  if (slerpConfig.move) {
+    slerpConfig.object.quaternion.slerp(slerpConfig.quaternion, slerpConfig.alpha);
+    slerpConfig.object.position.lerp(slerpConfig.destination, slerpConfig.alpha);
+  }
+  if (lerpConfig.move) {
+    lerpConfig.object.position.lerp(lerpConfig.destination, lerpConfig.alpha);
+  }
 
+  if (lerpConfigA2.move) {
+    lerpConfigA2.object.position.lerp(lerpConfigA2.destination, lerpConfigA2.alpha);
+  }
+
+}
 
 // Listener para o evento de click do mouse
 document.addEventListener("mousedown", checkObjectClicked, false);
@@ -901,13 +936,8 @@ function render() {
   checkDistanceBetweenManAndDoors();
   checkKeyCollision();
 
-  if (slerpConfig.move) {
-    slerpConfig.object.quaternion.slerp(slerpConfig.quaternion, slerpConfig.alpha);
-    slerpConfig.object.position.lerp(slerpConfig.destination, slerpConfig.alpha);
-  }
-  if (lerpConfig.move) {
-    lerpConfig.object.position.lerp(lerpConfig.destination, lerpConfig.alpha);
-  }
+  lerps();
+
   requestAnimationFrame(render);
 
   // helper.update;
