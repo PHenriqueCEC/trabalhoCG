@@ -40,6 +40,7 @@ export function keyboardOn(keyboard) {
     const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
 
     cube.position.set(positionX, positionY, positionZ);
+    cube.castShadow = true;
     const cubeBB = new THREE.Box3().setFromObject(cube);
     collidableCubes.push(cube);
     collidableMeshList.push(cubeBB);
