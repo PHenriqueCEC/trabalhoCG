@@ -345,6 +345,20 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
+    if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
+      // if it is stair position, do not add wall
+      console.log({ x, z });
+      if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
+      // add cube above floor
+      const clonedMaterial = cubeMaterial.clone();
+      const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      borderCube.position.set(x, -3.5, z);
+      borderCube.translateX(50);
+      // borderCubeBB
+      const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+      collidableMeshList.push(borderCubeBB);
+      scene.add(borderCube);
+    }
   }
 }
 
@@ -384,6 +398,20 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
+    if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
+      // if it is stair position, do not add wall
+      console.log({ x, z });
+      if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
+      // add cube above floor
+      const clonedMaterial = cubeMaterial.clone();
+      const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      borderCube.position.set(x, 5.5, z);
+      borderCube.translateX(-50);
+      // borderCubeBB
+      const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+      collidableMeshList.push(borderCubeBB);
+      scene.add(borderCube);
+    }
   }
 }
 
@@ -424,8 +452,8 @@ for (let z = -6; z < 5; z += 5) {
     cubeSecondAreaGeometry,
     materialCubeSecondArea
   );
-  cubeSecondArea.position.set(-58, 5.0, z);
-  floatingCube.push(cubeSecondArea)
+  cubeSecondArea.position.set(-58, 4.4, z);
+  floatingCube.push(cubeSecondArea);
   scene.add(cubeSecondArea);
 }
 
@@ -444,6 +472,16 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
+    if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
+      if (Math.abs(x) >= 0 && Math.abs(x) <= 4 && x !== -3) continue;
+      const clonedMaterial = cubeMaterial.clone();
+      const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      borderCube.position.set(x, -3.5, z);
+      borderCube.translateZ(50);
+      const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+      collidableMeshList.push(borderCubeBB);
+      scene.add(borderCube);
+    }
   }
 }
 
