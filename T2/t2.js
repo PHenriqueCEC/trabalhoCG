@@ -1,3 +1,5 @@
+//Criar plano com grid
+
 import * as THREE from "three";
 import KeyboardState from "../libs/util/KeyboardState.js";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
@@ -115,7 +117,34 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
+<<<<<<< Updated upstream
 insertCubesFirstArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
+=======
+insertCubesFirstArea(cubeMaterial, collidableCubes, scene);
+
+// ponte
+const x = 71,
+  z = 0;
+for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 2; j++) {
+    const cubeGeometryMecs = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMaterialRangeMecs = setDefaultMaterial();
+    const cubeRangeMecs = new THREE.Mesh(
+      cubeGeometryMecs,
+      cubeMaterialRangeMecs
+    );
+    cubeRangeMecs.position.set(x + i, -4.5, z + j);
+    const cubeBBMecs = new THREE.Box3().setFromObject(cubeRangeMecs);
+    collidableCubes.set(cubeRangeMecs, cubeBBMecs);
+    area1Mec.x = cubeRangeMecs.position.x; 
+    area1Mec.z = cubeRangeMecs.position.z; 
+    area1Mec.box = cubeRangeMecs; 
+    area1Mec.bbox = cubeBBMecs;
+    bridge.push(cubeRangeMecs);
+    scene.add(cubeBBMecs);
+  }
+}
+>>>>>>> Stashed changes
 
 //Chave azul
 let roomKey = tiles / 4;
