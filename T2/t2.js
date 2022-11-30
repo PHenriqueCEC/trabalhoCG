@@ -1,5 +1,4 @@
 //Criar plano com grid
-
 import * as THREE from "three";
 import KeyboardState from "../libs/util/KeyboardState.js";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
@@ -117,34 +116,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
-<<<<<<< Updated upstream
 insertCubesFirstArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
-=======
-insertCubesFirstArea(cubeMaterial, collidableCubes, scene);
-
-// ponte
-const x = 71,
-  z = 0;
-for (let i = 0; i < 3; i++) {
-  for (let j = 0; j < 2; j++) {
-    const cubeGeometryMecs = new THREE.BoxGeometry(1, 1, 1);
-    const cubeMaterialRangeMecs = setDefaultMaterial();
-    const cubeRangeMecs = new THREE.Mesh(
-      cubeGeometryMecs,
-      cubeMaterialRangeMecs
-    );
-    cubeRangeMecs.position.set(x + i, -4.5, z + j);
-    const cubeBBMecs = new THREE.Box3().setFromObject(cubeRangeMecs);
-    collidableCubes.set(cubeRangeMecs, cubeBBMecs);
-    area1Mec.x = cubeRangeMecs.position.x; 
-    area1Mec.z = cubeRangeMecs.position.z; 
-    area1Mec.box = cubeRangeMecs; 
-    area1Mec.bbox = cubeBBMecs;
-    bridge.push(cubeRangeMecs);
-    scene.add(cubeBBMecs);
-  }
-}
->>>>>>> Stashed changes
 
 //Chave azul
 let roomKey = tiles / 4;
@@ -311,13 +283,13 @@ scene.add(holder);
 holder.add(camera);
 
 //Luz direcional firstArea
-let dirLight = new THREE.DirectionalLight(0xffffff, 0.5)
-dirLight.position.set(25, 0, 0)
+let dirLight = new THREE.DirectionalLight(0xffffff, 1)
+//dirLight.position.set(25, 0, 0)
 
 dirLight.castShadow = true;
 
-dirLight.target.position.set(25, -5, 0);
-dirLight.target.updateMatrixWorld();
+//dirLight.target.position.set(25, -10, 0);
+//dirLight.target.updateMatrixWorld();
 
 //Set up shadow properties for the light
 dirLight.shadow.mapSize.width = 512; // default
@@ -325,20 +297,9 @@ dirLight.shadow.mapSize.height = 512; // default
 dirLight.shadow.camera.near = 0.5; // default
 dirLight.shadow.camera.far = 500; // default
 
-//let dirHelp = new THREE.DirectionalLightHelper(dirLight, 3)
+let dirHelp = new THREE.DirectionalLightHelper(dirLight, 1)
 
-scene.add(dirLight);
-
-//Luz dir area inicial
-let dirLight2 = new THREE.DirectionalLight(0xffffff, 0.3)
-//dirLight2.position.set(25, 5, 0)
-
-
-
-//let dirHelp2 = new THREE.DirectionalLightHelper(dirLight2, 3)
-
-scene.add(dirLight2);
-
+scene.add(dirLight, dirHelp);
 
 
 // Definições do personagem
@@ -362,6 +323,8 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
 
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
+
+  holder.add(dirLight)
 
   // Create animationMixer and push it in the array of mixers
   var mixerLocal = new THREE.AnimationMixer(man);
