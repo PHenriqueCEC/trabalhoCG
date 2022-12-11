@@ -3,7 +3,6 @@ import KeyboardState from "../libs/util/KeyboardState.js";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 import {
   initRenderer,
-  createGroundPlaneXZ,
   setDefaultMaterial,
   onWindowResize,
   initCamera,
@@ -19,7 +18,6 @@ import {
   insertCubesFirstArea,
   insertCubesSecondArea,
   updateBB,
-  insertCubes,
   whatTile,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
@@ -32,6 +30,11 @@ const slerpConfig = {
   quaternion: null,
   object: null,
 };
+const holdB = { // usar essa estrutura para montar a projeção de onde o bloco vai cair
+
+  hold: false,
+  block: null
+}
 const lerpConfig = {
   destination: null,
   alpha: 0.1,
@@ -57,7 +60,6 @@ let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
-let pa2 = false; //porta da chave da area dois
 const bridge = [];
 
 renderer = initRenderer(); // View function in util/utils
@@ -428,7 +430,7 @@ for (let i = 0; i < 3; i++) {
     area1Mec.box = cubeRangeMecs;
     area1Mec.bbox = cubeBBMecs;
     bridge.push(cubeRangeMecs);
-    scene.add(cubeBBMecs);
+    // scene.add(cubeBBMecs);
   }
 }
 
@@ -443,7 +445,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     );
 
     floorCube.position.set(x, -5.0, z);
-    floorCube.translateX(80);
+    floorCube.translateX(79);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -519,7 +521,7 @@ for (let z = -6; z < 5; z += 5) {
     cubeSecondAreaGeometry,
     materialCubeSecondArea
   );
-  cubeSecondArea.position.set(-58, 4.4, z);
+  cubeSecondArea.position.set(-58, 5.4, z);
   floatingCube.push(cubeSecondArea);
   scene.add(cubeSecondArea);
 }
@@ -697,16 +699,6 @@ Object.keys(keys).forEach((objKey) => {
 });
 
 //insertCubes(cubeMaterial, collidableCubes, collidableMeshList, scene);
-
-//Trabalhando o campod e visao do personagem
-const cubeGeometryRange = new THREE.BoxGeometry(6, 0.1, 3);
-const cubeMaterialRange = setDefaultMaterial();
-const cubeRange = new THREE.Mesh(cubeGeometryRange, cubeMaterialRange);
-const cubeRangeHelper = new THREE.Box3().setFromObject(cubeRange);
-cubeRangeHelper.translate(new THREE.Vector3(0, 0.5, 1.5));
-let helper = new THREE.Box3Helper(cubeRangeHelper, "yellow");
-// helper.visible = false;
-manholder.add(helper);
 
 // insertCubes(cubeMaterial, collidableCubes, scene);
 
@@ -950,20 +942,24 @@ function checkObjectClicked(event) {
   slerpConfig.move = false;
   lerpConfig.move = false;
   const obj = intersects[0].object;
-  if (intersects.length > 0 && collidableCubes.has(obj)) {
+  if ((intersects.length > 0 &&
+    collidableCubes.has(obj) &&
+    holder.position.distanceTo(obj.position) <= 5 &&
+    holder.position.distanceTo(obj.position) > 1) ||
+    holdB.block == obj) {
     // const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == obj);
     // // console.log(helper.box)
     // console.log(cbIndex)
     // const cb = collidableMeshList[cbIndex];
     // console.log(cb)
-
+    //
     // console.log(helper.box.intersectsBox(cb))
-
+    //
     // console.log(helper.box.intersectsBox(obj))
     // intersects.remove(cubeRangeHelper);
     // if (helper.box.intersectsBox(cb)) {
     // if (true) {
-
+    //
     // }
     // // Mostra apenas o primeiro objeto
     // if (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4) {
@@ -972,17 +968,15 @@ function checkObjectClicked(event) {
     let aux = obj.position;
     // aux = new Vector3(aux.x, 0.5, aux.z)
 
-    if (
-      collidableCubes.has(obj) &&
-      holder.position.distanceTo(obj.position) <= 5 &&
-      holder.position.distanceTo(obj.position) > 1 &&
-      currentObjColor.getHex() === cubeMaterial.color.getHex()
-    ) {
+    if (currentObjColor.getHex() === cubeMaterial.color.getHex() &&
+      holdB.hold === false) {
       obj.material.color = material.color;
       let p = aux.sub(
         new Vector3(holder.position.x, holder.position.y, holder.position.z)
       );
       manholder.add(obj);
+      holdB.block = obj;
+      holdB.hold = true;
       obj.position.set(p.x, p.y, p.z);
       let rot = obj.position.applyAxisAngle(
         new THREE.Vector3(0, 1, 0),
@@ -990,11 +984,21 @@ function checkObjectClicked(event) {
       );
       obj.rotateY(direction);
       obj.position.set(rot.x, rot.y, rot.z);
-      lerpConfig.destination = new THREE.Vector3(p.x, p.y + 1, p.z);
-      lerpConfig.object = obj;
-      lerpConfig.move = true;
+
+      const quaternion = new THREE.Quaternion();
+
+      slerpConfig.move = true;
+      slerpConfig.quaternion = quaternion.setFromAxisAngle(
+        new THREE.Vector3(0, 1, 0),
+        THREE.MathUtils.degToRad(direction % 45)
+      );
+      slerpConfig.destination = new THREE.Vector3(0, obj.position.y + 1, 3.5);
+      slerpConfig.object = obj;
       collidableCubes.set(obj, null);
+
     } else {
+      holdB.block = null;
+      holdB.hold = false;
       obj.material.color = cubeMaterial.color;
       // obj.translateY(-1);
       let p1 = null;
@@ -1007,13 +1011,14 @@ function checkObjectClicked(event) {
         aux.x + holder.position.x,
         aux.y + holder.position.y,
         aux.z + holder.position.z
-      ); //.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(angle))
-      // addVectors
+      );
       p1 = whatTile(p);
 
       manholder.remove(obj);
       const quaternion = new THREE.Quaternion();
 
+
+      //mec area 2
       for (const o of floatingCube) {
         const pos = o.position;
         if (p1.x == pos.x && p1.z == pos.z) {
@@ -1031,15 +1036,20 @@ function checkObjectClicked(event) {
         }
       }
 
-      // for (const bbridge of bridge) {
-      //   console.log(bbridge)
-      //   if (p1.x === bbridge.box.position.x && p1.z === bbridge.box.position.z) {
-      //     p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z)
-      //     collidableCubes.delete(bbridge.box);
-      //     bridge.splice(bridge.indexOf(bbridge), 1);
-      //   }
-      // }
 
+      //PONTE
+      for (const bbridge of bridge) {
+        // console.log(bbridge)
+        if (p1.x == bbridge.position.x && p1.z == bbridge.position.z) {
+          p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z)
+          collidableCubes.delete(bbridge);
+          collidableCubes.delete(obj);
+          bridge.splice(bridge.indexOf(bbridge), 1);
+        }
+      }
+
+      obj.position.set(p.x, p.y, p.z);
+      obj.rotateY(angle);
       slerpConfig.move = true;
       slerpConfig.quaternion = quaternion.setFromAxisAngle(
         new THREE.Vector3(0, 1, 0),
@@ -1048,7 +1058,6 @@ function checkObjectClicked(event) {
       slerpConfig.destination = p1;
       slerpConfig.object = obj;
 
-      console.log("p1 ", p1, " quaternion ", quaternion, " object ", obj);
       scene.add(obj);
 
       // obj.quaternion.slerp(quaternion, alpha);
@@ -1085,7 +1094,7 @@ function lerps() {
       lerpConfigA2.alpha
     );
   }
-  if (floatingCube.length <= 0 && pa2 === false) {
+  if (floatingCube.length <= 0) {
     doorA2.position.lerp(
       new THREE.Vector3(
         doorA2.position.x,
@@ -1094,7 +1103,6 @@ function lerps() {
         lerpConfig.alpha
       )
     );
-    pa2 = true;
   }
 }
 
