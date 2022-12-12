@@ -283,10 +283,12 @@ scene.add(holder);
 holder.add(camera);
 
 //Luz direcional firstArea
-let dirLight = new THREE.DirectionalLight(0xffffff, 1)
+let dirLightIntensity = 1;
+let dirLight = new THREE.DirectionalLight(0xffffff, dirLightIntensity)
 //dirLight.position.set(25, 0, 0)
 
 dirLight.castShadow = true;
+//man.castShadow = true;
 
 //dirLight.target.position.set(25, -10, 0);
 //dirLight.target.updateMatrixWorld();
@@ -299,7 +301,10 @@ dirLight.shadow.camera.far = 500; // default
 
 let dirHelp = new THREE.DirectionalLightHelper(dirLight, 1)
 
-scene.add(dirLight, dirHelp);
+//scene.add(dirLight, dirHelp);
+
+camera.add(dirLight, dirHelp)
+
 
 
 // Definições do personagem
@@ -324,7 +329,13 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
 
-  holder.add(dirLight)
+  //man.add(dirLight, dirHelp)
+
+
+  //dirLight.position
+
+
+  //setDirectionalLighting()
 
   // Create animationMixer and push it in the array of mixers
   var mixerLocal = new THREE.AnimationMixer(man);
@@ -363,7 +374,9 @@ function changeProjection() {
 
   camera.lookAt(camLook);
   holder.add(camera);
+
 }
+
 
 // rotaciona o personagem
 function rotate() {
@@ -414,8 +427,8 @@ function checkMovement(axis, distance) {
   }
 }
 
-const diagonalDistance = 0.08;
-const normalDistance = 0.12;
+const diagonalDistance = 0.2; //Trocar para 0.02
+const normalDistance = 0.2; //Trocar para 0.12
 
 function keyboardUpdate() {
   keyboard.update();
@@ -526,11 +539,18 @@ function render() {
   if (keyboardOn(keyboard)) {
     for (var i = 0; i < mixer.length; i++) mixer[i].update(delta * 2);
   }
+
+  setDirectionalLighting(camera.position)
+
+
 }
 
 function setDirectionalLighting(position)
 {
+
   dirLight.position.copy(position);
+
+  console.log(position)
 
   // Shadow settings
   dirLight.castShadow = true;
@@ -544,5 +564,5 @@ function setDirectionalLighting(position)
   dirLight.shadow.camera.bottom = -5;
   dirLight.name = "Direction Light";
 
-  scene.add(dirLight);
+  //camera.add(dirLight);
 }
