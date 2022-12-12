@@ -30,11 +30,12 @@ const slerpConfig = {
   quaternion: null,
   object: null,
 };
-const holdB = { // usar essa estrutura para montar a projeção de onde o bloco vai cair
+const holdB = {
+  // usar essa estrutura para montar a projeção de onde o bloco vai cair
 
   hold: false,
-  block: null
-}
+  block: null,
+};
 const lerpConfig = {
   destination: null,
   alpha: 0.1,
@@ -942,11 +943,13 @@ function checkObjectClicked(event) {
   slerpConfig.move = false;
   lerpConfig.move = false;
   const obj = intersects[0].object;
-  if ((intersects.length > 0 &&
-    collidableCubes.has(obj) &&
-    holder.position.distanceTo(obj.position) <= 5 &&
-    holder.position.distanceTo(obj.position) > 1) ||
-    holdB.block == obj) {
+  if (
+    (intersects.length > 0 &&
+      collidableCubes.has(obj) &&
+      holder.position.distanceTo(obj.position) <= 5 &&
+      holder.position.distanceTo(obj.position) > 1) ||
+    holdB.block == obj
+  ) {
     // const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == obj);
     // // console.log(helper.box)
     // console.log(cbIndex)
@@ -968,8 +971,10 @@ function checkObjectClicked(event) {
     let aux = obj.position;
     // aux = new Vector3(aux.x, 0.5, aux.z)
 
-    if (currentObjColor.getHex() === cubeMaterial.color.getHex() &&
-      holdB.hold === false) {
+    if (
+      currentObjColor.getHex() === cubeMaterial.color.getHex() &&
+      holdB.hold === false
+    ) {
       obj.material.color = material.color;
       let p = aux.sub(
         new Vector3(holder.position.x, holder.position.y, holder.position.z)
@@ -995,7 +1000,6 @@ function checkObjectClicked(event) {
       slerpConfig.destination = new THREE.Vector3(0, obj.position.y + 1, 3.5);
       slerpConfig.object = obj;
       collidableCubes.set(obj, null);
-
     } else {
       holdB.block = null;
       holdB.hold = false;
@@ -1017,7 +1021,6 @@ function checkObjectClicked(event) {
       manholder.remove(obj);
       const quaternion = new THREE.Quaternion();
 
-
       //mec area 2
       for (const o of floatingCube) {
         const pos = o.position;
@@ -1036,12 +1039,11 @@ function checkObjectClicked(event) {
         }
       }
 
-
       //PONTE
       for (const bbridge of bridge) {
         // console.log(bbridge)
         if (p1.x == bbridge.position.x && p1.z == bbridge.position.z) {
-          p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z)
+          p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z);
           collidableCubes.delete(bbridge);
           collidableCubes.delete(obj);
           bridge.splice(bridge.indexOf(bbridge), 1);
@@ -1095,6 +1097,7 @@ function lerps() {
     );
   }
   if (floatingCube.length <= 0) {
+    collidableCubes.delete(doorA2);
     doorA2.position.lerp(
       new THREE.Vector3(
         doorA2.position.x,
