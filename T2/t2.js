@@ -303,7 +303,7 @@ let dirHelp = new THREE.DirectionalLightHelper(dirLight, 1)
 
 //scene.add(dirLight, dirHelp);
 
-camera.add(dirLight, dirHelp)
+//camera.add(dirLight, dirHelp)
 
 
 
@@ -329,11 +329,12 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
 
-  //man.add(dirLight, dirHelp)
+  holder.add(dirLight, dirHelp)
 
 
   //dirLight.position
 
+  //dirLight.position.set(45, 45, 45)
 
   //setDirectionalLighting()
 
@@ -540,8 +541,27 @@ function render() {
     for (var i = 0; i < mixer.length; i++) mixer[i].update(delta * 2);
   }
 
-  setDirectionalLighting(camera.position)
+  //setDirectionalLighting(manholder.position)
+  let target = new THREE.Vector3()
+  let targetDir = new THREE.Vector3()
+  
+  holder.getWorldPosition(target)
+  holder.position.copy(target)
 
+
+
+  dirLight.target.position.set(target.x, target.y, target.z )
+  
+  
+
+  //holder.setRotationFromQuaternion(dirLight.quaternion);
+
+  console.log("Aux:" , target)
+ 
+  console.log("Holder", holder.position)
+
+
+  
 
 }
 
@@ -550,7 +570,7 @@ function setDirectionalLighting(position)
 
   dirLight.position.copy(position);
 
-  console.log(position)
+  //console.log(position)
 
   // Shadow settings
   dirLight.castShadow = true;
@@ -564,5 +584,5 @@ function setDirectionalLighting(position)
   dirLight.shadow.camera.bottom = -5;
   dirLight.name = "Direction Light";
 
-  //camera.add(dirLight);
+  holder.add(dirLight);
 }
