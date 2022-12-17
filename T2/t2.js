@@ -256,14 +256,28 @@ const createPortal = (color) => {
 };
 const stairsPositionByColor = getStairsPositionByColor(planeBorderWidth);
 const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
+  const rails = [];
   const stairs = new THREE.Group();
   const aux = direction === "up" ? 1 : -1;
   const stepGeometry = new THREE.BoxGeometry(1, 0.5, 5);
+  const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
   const stepMaterial = new THREE.MeshPhongMaterial({ color: "brown" });
   for (let i = 0; i < numberOfSteps; i++) {
     const step = new THREE.Mesh(stepGeometry, stepMaterial);
     step.position.set(i * aux, i * 0.5 * aux, 0);
+    // add limit box to stairs
+    const stepLimitLeftBox = new THREE.Mesh(boxGeometry, stepMaterial);
+    stepLimitLeftBox.position.set(i * aux, i * 0.5 * aux + 0.5, 2.5);
+    updateObject(stepLimitLeftBox);
+    const stepLimitRightBox = new THREE.Mesh(boxGeometry, stepMaterial);
+    stepLimitRightBox.position.set(i * aux, i * 0.5 * aux + 0.5, -2.5);
+    updateObject(stepLimitRightBox);
+    rails.push(stepLimitLeftBox);
+    rails.push(stepLimitRightBox);
+
     stairs.add(step);
+    stairs.add(stepLimitLeftBox);
+    stairs.add(stepLimitRightBox);
   }
   const pos = stairsPositionByColor[portalColor];
   if (portalColor === "blue" || portalColor === "default") {
@@ -274,48 +288,19 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   if (rotation) {
     stairs.rotateY(rotation);
   }
+  // update rails bounding box based on rails world position
+  rails.forEach((rail) => {
+    rail.updateMatrixWorld();
+    const worldCoords = new THREE.Vector3();
+    rail.getWorldPosition(worldCoords);
+    const railBB = new THREE.Box3().setFromObject(rail);
+
+    collidableMeshList.push(railBB);
+  });
+
   scene.add(stairs);
 };
-const stairsLeftRailBB = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(22, 3, -2),
-  new THREE.Vector3(32, -5, -2),
-]);
-const stairsRightRailBB = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(22, 3, 4),
-  new THREE.Vector3(32, -5, 4),
-]);
-const stairsLeftRailBB2 = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(-22, 3, -2),
-  new THREE.Vector3(-32, 5, -2),
-]);
-const stairsRightRailBB2 = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(-22, 3, 4),
-  new THREE.Vector3(-32, 5, 4),
-]);
-const stairsLeftRailBB3 = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(-2, 3, 22),
-  new THREE.Vector3(-2, -5, 32),
-]);
-const stairsRightRailBB3 = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(4, 3, 22),
-  new THREE.Vector3(4, -5, 32),
-]);
-const stairsLeftRailBB4 = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(-2, 3, -22),
-  new THREE.Vector3(-2, 5, -30),
-]);
-const stairsRightRailBB4 = new THREE.Box3().setFromPoints([
-  new THREE.Vector3(4, 3, -22),
-  new THREE.Vector3(4, 5, -30),
-]);
-collidableMeshList.push(stairsLeftRailBB);
-collidableMeshList.push(stairsRightRailBB);
-collidableMeshList.push(stairsLeftRailBB2);
-collidableMeshList.push(stairsRightRailBB2);
-collidableMeshList.push(stairsLeftRailBB3);
-collidableMeshList.push(stairsRightRailBB3);
-collidableMeshList.push(stairsLeftRailBB4);
-collidableMeshList.push(stairsRightRailBB4);
+
 createStairs({
   numberOfSteps: 10,
   direction: "down",
@@ -388,7 +373,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       materialAuxFloorCube
     );
 
-    floorCube.position.set(x, -5.0, z);
+    floorCube.position.set(x + 1, -5.0, z);
     floorCube.translateX(50);
     scene.add(floorCube);
 
@@ -400,7 +385,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       // add cube above floor
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
-      borderCube.position.set(x, -3.5, z);
+      borderCube.position.set(x + 0.5, -3.5, z);
       borderCube.translateX(50);
       // borderCubeBB
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -463,7 +448,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       materialAuxFloorCube
     );
 
-    floorCube.position.set(x, 4, z);
+    floorCube.position.set(x - 1, 4, z - 0.5);
     floorCube.translateX(-50);
     scene.add(floorCube);
 
@@ -475,7 +460,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       // add cube above floor
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
-      borderCube.position.set(x, 5.5, z);
+      borderCube.position.set(x - 0.5, 5.5, z);
       borderCube.translateX(-50);
       // borderCubeBB
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -536,7 +521,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       materialAuxFloorCube
     );
 
-    floorCube.position.set(x, -5.0, z);
+    floorCube.position.set(x - 0.5, -5.0, z + 1);
     floorCube.translateZ(50);
     scene.add(floorCube);
 
@@ -546,7 +531,7 @@ for (let x = -tiles; x <= tiles; x += 1) {
       if (Math.abs(x) >= 0 && Math.abs(x) <= 4 && x !== -3) continue;
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
-      borderCube.position.set(x, -3.5, z);
+      borderCube.position.set(x, -3.5, z + 0.5);
       borderCube.translateZ(50);
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
@@ -583,12 +568,23 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
       materialAuxFloorCube
     );
 
-    floorCube.position.set(x, 5.0, z);
+    floorCube.position.set(x, 4.0, z - 1);
     floorCube.translateZ(-40);
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
+
+    if (Math.abs(x) === finalArea || Math.abs(z) === finalArea) {
+      if (Math.abs(x) >= 0 && Math.abs(x) <= 4 && x !== -3 && z > 0) continue;
+      const clonedMaterial = cubeMaterial.clone();
+      const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      borderCube.position.set(x + 0.5 * (x > 0 ? -1 : 1), 5.5, z - 1.5);
+      borderCube.translateZ(-40);
+      const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+      collidableMeshList.push(borderCubeBB);
+      scene.add(borderCube);
+    }
   }
 }
 
@@ -602,9 +598,9 @@ for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
   for (let z = -finalArea + 5; z <= finalArea; z += 0.9) {
     let platform = new THREE.Mesh(platformGeometry, materialPlatform);
 
-    platform.position.set(x, 5.5, z);
-    platform.translateZ(-44);
-    platform.translateX(-4);
+    platform.position.set(x, 4.5, z);
+    platform.translateZ(-45);
+    platform.translateX(-2.5);
     scene.add(platform);
 
     /* floorCube.add(auxFloorCube);
