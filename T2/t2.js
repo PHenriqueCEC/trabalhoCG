@@ -860,7 +860,12 @@ function keyboardUpdate() {
   if (keyboard.down("C")) {
     changeProjection();
   }
+  if (keyboard.down("T")) {
+    characterCollectedKeys.blue = true;
+    characterCollectedKeys.red = true;
+    characterCollectedKeys.yellow = true;
 
+  }
   if (
     (keyboard.pressed("W") || keyboard.pressed("up")) &&
     (keyboard.pressed("D") || keyboard.pressed("right"))
@@ -919,10 +924,6 @@ function keyboardUpdate() {
 // Checa se o mouse está sobre algum dos cubos
 
 //  To-do
-//  Ao remover os cubos dos holders, excluir a bb deles e remover da lista de clicaveis
-//  adicionar o lerp e slerp
-//  testar posição final
-//  abaixar a bb pra verificar apenas os blocos que se encontram no chão
 
 function checkObjectClicked(event) {
   // Checa se o mouse foi pressionado
@@ -950,22 +951,6 @@ function checkObjectClicked(event) {
       holder.position.distanceTo(obj.position) > 1) ||
     holdB.block == obj
   ) {
-    // const cbIndex = collidableCubes.findIndex((cbbb) => cbbb == obj);
-    // // console.log(helper.box)
-    // console.log(cbIndex)
-    // const cb = collidableMeshList[cbIndex];
-    // console.log(cb)
-    //
-    // console.log(helper.box.intersectsBox(cb))
-    //
-    // console.log(helper.box.intersectsBox(obj))
-    // intersects.remove(cubeRangeHelper);
-    // if (helper.box.intersectsBox(cb)) {
-    // if (true) {
-    //
-    // }
-    // // Mostra apenas o primeiro objeto
-    // if (collidableCubes.has(obj) && holder.position.distanceTo(obj.position) <= 4) {
     // Da um toggle na cor do objeto
     const currentObjColor = obj.material.color;
     let aux = obj.position;
@@ -1061,16 +1046,6 @@ function checkObjectClicked(event) {
       slerpConfig.object = obj;
 
       scene.add(obj);
-
-      // obj.quaternion.slerp(quaternion, alpha);
-      // obj.position.lerp(vector, alpha);
-
-      // insertCube(cubeMaterial,
-      //   collidableCubes,
-      //   collidableMeshList,
-      //   scene, p, p1, direction % 90)
-
-      // obj.setPosition(aux.add(holder.position))
     }
   }
 }
