@@ -172,6 +172,8 @@ for (let i = -planeBorderWidth; i <= planeBorderWidth; i += cubeSize) {
     const clonedMaterial = cubeMaterial.clone();
     const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
     borderCube.position.set(i, cubeSize / 2, j);
+    borderCube.castShadow = true;
+    borderCube.receiveShadow = true;
     const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
     collidableCubesBB.set(borderCube, borderCubeBB);
     // collidableCubes.push(borderCube);
@@ -420,6 +422,8 @@ for (let x = -tiles; x <= tiles - 1; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
       borderCube.translateX(50);
+      borderCube.castShadow = true;
+      borderCube.receiveShadow = true;
       // borderCubeBB
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
@@ -508,6 +512,8 @@ for (let x = -tiles; x <= tiles; x += 1) {
       borderCube.position.set(x - 0.5, 5.5, z);
       borderCube.translateX(-50);
       // borderCubeBB
+      borderCube.castShadow = true;
+      borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
       scene.add(borderCube);
@@ -590,6 +596,8 @@ for (let x = -tiles; x <= tiles; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x, -3.5, z + 0.5);
       borderCube.translateZ(50);
+      borderCube.castShadow = true;
+      borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
       scene.add(borderCube);
@@ -650,6 +658,8 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5 * (x > 0 ? -1 : 1), 5.5, z - 1.5);
       borderCube.translateZ(-40);
+      borderCube.castShadow = true;
+      borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
       scene.add(borderCube);
