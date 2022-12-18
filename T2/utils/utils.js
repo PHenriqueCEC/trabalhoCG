@@ -227,3 +227,31 @@ export function whatTile(position) {
 }
 
 
+const positionCubesThirdArea = [
+  [10, -4, 41],
+  [-10, -4, 57],
+  [10, -4, 64],
+  [-10, -4, 47]
+
+];
+
+export function insertCubesThirdArea(
+  cubeMaterial,
+  collidableCubes,
+  collidableMeshList,
+  scene
+) {
+  const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  positionCubesThirdArea.forEach(([positionX, positionY, positionZ]) => {
+    const clonedMaterial = cubeMaterial.clone();
+    const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+
+    cube.position.set(positionX, positionY, positionZ);
+    const cubeBB = new THREE.Box3().setFromObject(cube);
+    cube.castShadow = true;
+    collidableCubes.set(cube, cubeBB);
+    // collidableMeshList.push(cubeBB);
+    scene.add(cube);
+    // cube.add(cubeBB);
+  });
+}

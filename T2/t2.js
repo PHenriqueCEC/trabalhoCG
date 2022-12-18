@@ -21,6 +21,7 @@ import {
   updateBB,
   insertCubes,
   whatTile,
+  insertCubesThirdArea,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 import { Vector3 } from "../build/three.module.js";
@@ -62,7 +63,7 @@ const bridge = [];
 
 renderer = initRenderer(); // View function in util/utils
 let light = new THREE.AmbientLight();
-light.intensity = 0.03
+light.intensity = 0.1
 scene.add(light);
 
 material = setDefaultMaterial("#8B4513"); // Create a basic material
@@ -541,23 +542,50 @@ for (let x = -tiles; x <= tiles; x += 1) {
 }
 
 //Cria interruptores 
-let materialInterruptor = setDefaultMaterial();
 var interruptorGeometry = new THREE.BoxGeometry(0.25, 1, 1);
 
-let interruptorCube = new THREE.Mesh(interruptorGeometry, materialInterruptor);
+let numInterruptor = 0;
 
-interruptorCube.translateZ(58)
-interruptorCube.translateY(-3.5)
-interruptorCube.translateX(-17.9)
+let xT = 17.9;
+let yT = -2.8;
+let zT = 42;
 
-let pointLight = new THREE.PointLight(0xFFFFFFFF, 0.2);
+while ( numInterruptor < 8 ) {
 
-interruptorCube.add(pointLight)
+  let materialInterruptor = new THREE.MeshPhongMaterial({
+    color: "rgb(255, 20, 20)",
+    shininess: "100",
+    specular: "rgb(255, 255, 255)",
+    emissive: new THREE.Color("#ffdb71")
+  
+   });
+  
+  let interruptorCube = new THREE.Mesh(interruptorGeometry, materialInterruptor);
 
+  if(numInterruptor % 2 == 0 )
+  {
+    interruptorCube.translateZ(zT)
+    interruptorCube.translateY(yT)
+    interruptorCube.translateX(xT)
+  }
 
+  else {
 
-scene.add(interruptorCube)
+    interruptorCube.translateZ(zT)
+    interruptorCube.translateY(yT)
+    interruptorCube.translateX(-xT)
 
+    zT += 7
+
+  }
+  
+  scene.add(interruptorCube)
+
+  numInterruptor++;
+
+}
+
+insertCubesThirdArea(cubeMaterial, collidableCubes, collidableMeshList, scene)
 
 
 
