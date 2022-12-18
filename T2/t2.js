@@ -546,7 +546,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 }
 //porta para a chave
 var doorGeometry = new THREE.BoxGeometry(1, 1, 1);
-let materialDoor = setDefaultMaterial("#000");
+let materialDoor = setDefaultMaterial("#32b20b");
 let doorA2 = new THREE.Mesh(doorGeometry, materialDoor);
 doorA2.scale.set(1, 3, 10);
 doorA2.position.set(-71, 6, 0);
@@ -669,23 +669,21 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
 
 //Cria a plataforma sobre a area final
 
-var platformGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
+var platformGeometry = new THREE.BoxGeometry(10, 0.2, 10);
 let materialPlatform = setDefaultMaterial("#DEB887");
 
-let finalPlatformBB;
-for (let x = -finalArea + 5; x <= finalArea; x += 0.9) {
-  for (let z = -finalArea + 5; z <= finalArea; z += 0.9) {
-    let platform = new THREE.Mesh(platformGeometry, materialPlatform);
+let platform = new THREE.Mesh(platformGeometry, materialPlatform);
 
-    platform.position.set(x, 4.5, z);
-    platform.translateZ(-45);
-    platform.translateX(-2.5);
-    scene.add(platform);
+platform.position.set(0, 4.5, 0);
+platform.translateZ(-40);
+let finalPlatformBB = new THREE.Box3().setFromObject(platform);
+// platform.translateX(-2.5);
+scene.add(platform);
+console.log("aqui")
+/* floorCube.add(auxFloorCube);
+auxFloorCube.translateY(0.01); */
 
-    /* floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01); */
-  }
-}
+
 
 // Definições da câmera
 let camPos = new THREE.Vector3(10.5, 10.5, 10.5);

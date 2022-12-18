@@ -39,13 +39,13 @@ export function insertCubesFirstArea(
 
     cube.position.set(positionX, positionY, positionZ);
     const cubeBB = new THREE.Box3().setFromObject(cube);
+    cube.castShadow = true;
     collidableCubes.set(cube, cubeBB);
-
-    // cube.castShadow = true;
-    cube.receiveShadow = true;
-    // collidableCubes.push(cube);
     // collidableMeshList.push(cubeBB);
+    cube.castShadow = true;
+    cube.receiveShadow = true;
     scene.add(cube);
+    // cube.add(cubeBB);
   });
 }
 
