@@ -18,12 +18,12 @@ export function keyboardOn(keyboard) {
 }
 
 const positionCubesFirstArea = [
-  [36, -4, 16.0],
-  [50.0, -4, 2.0],
-  [48.0, -4, 10.0],
-  [42.0, -4, 6.0],
-  [44.0, -4, 4.0],
-  [54.0, -4, 8.0],
+  [58, -4, 5.0],
+  [56.0, -4, 2.0],
+  [58.0, -4, 10.0],
+  [52.0, -4, 6.0],
+  [54.0, -4, 4.0],
+  [50.0, -4, 5.0],
 ];
 
 export function insertCubesFirstArea(
@@ -41,6 +41,8 @@ export function insertCubesFirstArea(
     const cubeBB = new THREE.Box3().setFromObject(cube);
     collidableCubes.set(cube, cubeBB);
 
+    // cube.castShadow = true;
+    cube.receiveShadow = true;
     // collidableCubes.push(cube);
     // collidableMeshList.push(cubeBB);
     scene.add(cube);
@@ -183,6 +185,8 @@ export function insertCubesSecondArea(
     cube.castShadow = true;
     collidableCubes.set(cube, cubeBB);
     // collidableMeshList.push(cubeBB);
+    cube.castShadow = true;
+    cube.receiveShadow = true;
     scene.add(cube);
     // cube.add(cubeBB);
   });
@@ -202,6 +206,8 @@ export function insertCubes(
     cube.position.set(positionX, positionY, positionZ);
     const cubeBB = new THREE.Box3().setFromObject(cube);
     cube.castShadow = true;
+    cube.receiveShadow = true;
+
     collidableCubes.set(cube, cubeBB);
     // collidableMeshList.push(cubeBB);
     scene.add(cube);
