@@ -234,11 +234,16 @@ export function whatTile(position) {
 
 
 const positionCubesThirdArea = [
-  [10, -4, 41],
-  [-10, -4, 57],
-  [10, -4, 64],
-  [-10, -4, 47]
-
+  [10, -4, 42],
+  [-10, -4, 56],
+  [10, -4, 63],
+  [-10, -4, 49],
+  [-10, -4, 42],
+  [10, -4, 56],
+  [-10, -4, 63],
+  [10, -4, 49]
+  
+  
 ];
 
 export function insertCubesThirdArea(
@@ -248,16 +253,34 @@ export function insertCubesThirdArea(
   scene
 ) {
   const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+  let cont = 0
   positionCubesThirdArea.forEach(([positionX, positionY, positionZ]) => {
     const clonedMaterial = cubeMaterial.clone();
     const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
 
-    cube.position.set(positionX, positionY, positionZ);
-    const cubeBB = new THREE.Box3().setFromObject(cube);
-    cube.castShadow = true;
-    collidableCubes.set(cube, cubeBB);
-    // collidableMeshList.push(cubeBB);
-    scene.add(cube);
-    // cube.add(cubeBB);
+    if(cont < 4) { //Só entra aqui os 4 primeiros blocos da matriz
+      cube.position.set(positionX, positionY, positionZ);
+      const cubeBB = new THREE.Box3().setFromObject(cube);
+      cube.castShadow = true;
+      collidableCubes.set(cube, cubeBB);
+      // collidableMeshList.push(cubeBB);
+      scene.add(cube);
+      // cube.add(cubeBB);
+    }
+
+    const spotLight = new THREE.SpotLight( 0xffffff, 0.3 );
+    spotLight.position.set( positionX, 3, positionZ );
+    scene.add( spotLight );
+    spotLight.angle = THREE.MathUtils.degToRad(25);
+    spotLight.castShadow = true;
+
+    spotLight.target.position.set(positionX, -3, positionZ);
+    spotLight.target.updateMatrixWorld();
+
+    /* const spotLightHelper = new THREE.SpotLightHelper( spotLight );
+
+    scene.add(spotLightHelper) */
+
+    cont++;
   });
 }

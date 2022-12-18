@@ -22,7 +22,7 @@ import {
   insertCubesThirdArea,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
-import { Vector3 } from "../build/three.module.js";
+import { SpotLight, Vector3 } from "../build/three.module.js";
 
 const slerpConfig = {
   destination: null,
@@ -67,11 +67,11 @@ const bridge = [];
 renderer = initRenderer(); // View function in util/utils
 // initDefaultBasicLight(scene);
 let ambient = new THREE.AmbientLight();
-ambient.intensity = 0.3
+ambient.intensity = 0.02
 scene.add(ambient)
 // renderer.shadowMap.type = THREE.VSMShadowMap;
-let lightColor = "rgb(255,255,255";
-let dirLight = new THREE.DirectionalLight(lightColor, 1)
+let lightColor = "rgb(255,255, 255)";
+let dirLight = new THREE.DirectionalLight(lightColor, 0.1)
 dirLight.position.copy(new THREE.Vector3(5, 20, 20));
 // Shadow settings
 dirLight.castShadow = true;
@@ -627,11 +627,13 @@ while ( numInterruptor < 8 ) {
   
   let interruptorCube = new THREE.Mesh(interruptorGeometry, materialInterruptor);
 
+
   if(numInterruptor % 2 == 0 )
   {
     interruptorCube.translateZ(zT)
     interruptorCube.translateY(yT)
     interruptorCube.translateX(xT)
+
   }
 
   else {
@@ -651,7 +653,6 @@ while ( numInterruptor < 8 ) {
 }
 
 insertCubesThirdArea(cubeMaterial, collidableCubes, collidableMeshList, scene)
-
 
 
 //Chave Amarela
