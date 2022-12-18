@@ -64,7 +64,28 @@ clock = new THREE.Clock();
 const bridge = [];
 
 renderer = initRenderer(); // View function in util/utils
-initDefaultBasicLight(scene);
+// initDefaultBasicLight(scene);
+let ambient = new THREE.AmbientLight();
+ambient.intensity = 0.3
+scene.add(ambient)
+// renderer.shadowMap.type = THREE.VSMShadowMap;
+let lightColor = "rgb(255,255,255";
+let dirLight = new THREE.DirectionalLight(lightColor, 1)
+dirLight.position.copy(new THREE.Vector3(5, 20, 20));
+// Shadow settings
+dirLight.castShadow = true;
+// dirLight.shadow.camera.far = 4000;
+console.log(dirLight.shadow.camera.far);
+dirLight.shadow.camera.left = -20;
+dirLight.shadow.camera.right = 20;
+dirLight.shadow.camera.top = 20;
+dirLight.shadow.camera.bottom = -20;
+dirLight.name = "Direction Light";
+
+dirLight.visible = true;
+
+
+
 material = setDefaultMaterial("#8B4513"); // Create a basic material
 const cubeMaterial = setDefaultMaterial("#C8996C");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
@@ -104,7 +125,11 @@ for (let x = -tiles; x <= tiles; x += 1) {
     );
 
     floorCube.position.set(x, -0.5, z);
+    floorCube.receiveShadow = true;
+
     scene.add(floorCube);
+
+    auxFloorCube.receiveShadow = true;
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
@@ -274,9 +299,14 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
     updateObject(stepLimitRightBox);
     rails.push(stepLimitLeftBox);
     rails.push(stepLimitRightBox);
-
+    step.castShadow = true;
+    step.receiveShadow = true;
     stairs.add(step);
+    stepLimitLeftBox.castShadow = true;
+    stepLimitLeftBox.receiveShadow = true;
     stairs.add(stepLimitLeftBox);
+    stepLimitRightBox.castShadow = true;
+    stepLimitRightBox.receiveShadow = true;
     stairs.add(stepLimitRightBox);
   }
   const pos = stairsPositionByColor[portalColor];
@@ -365,19 +395,22 @@ const checkDistanceBetweenManAndDoors = () => {
   });
 };
 //Cria primeira area
-for (let x = -tiles; x <= tiles; x += 1) {
-  for (let z = -tiles; z <= tiles; z += 1) {
+for (let x = -tiles; x <= tiles - 1; x += 1) {
+  for (let z = -tiles; z <= tiles - 1; z += 1) {
     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
     let auxFloorCube = new THREE.Mesh(
       auxFloorCubeGeometry,
       materialAuxFloorCube
     );
+    floorCube.receiveShadow = true;
+    auxFloorCube.receiveShadow = true;
 
     floorCube.position.set(x + 1, -5.0, z);
     floorCube.translateX(50);
-    scene.add(floorCube);
 
+    scene.add(floorCube);
     floorCube.add(auxFloorCube);
+
     auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       // if it is stair position, do not add wall
@@ -432,6 +465,12 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
     floorCube.position.set(x, -5.0, z);
     floorCube.translateX(79);
+
+    floorCube.receiveShadow = true;
+
+
+    auxFloorCube.receiveShadow = true;
+
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -450,6 +489,12 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
     floorCube.position.set(x - 1, 4, z - 0.5);
     floorCube.translateX(-50);
+
+    floorCube.receiveShadow = true;
+
+
+    auxFloorCube.receiveShadow = true;
+
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -481,6 +526,12 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
     floorCube.position.set(x, 4, z);
     floorCube.translateX(-77);
+
+    floorCube.receiveShadow = true;
+
+
+    auxFloorCube.receiveShadow = true;
+
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -523,6 +574,12 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
     floorCube.position.set(x - 0.5, -5.0, z + 1);
     floorCube.translateZ(50);
+
+    floorCube.receiveShadow = true;
+
+
+    auxFloorCube.receiveShadow = true;
+
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -551,6 +608,12 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
     floorCube.position.set(x, -5.0, z);
     floorCube.translateZ(77);
+
+    floorCube.receiveShadow = true;
+
+
+    auxFloorCube.receiveShadow = true;
+
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -570,6 +633,12 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
 
     floorCube.position.set(x, 4.0, z - 1);
     floorCube.translateZ(-40);
+
+    floorCube.receiveShadow = true;
+
+
+    auxFloorCube.receiveShadow = true;
+
     scene.add(floorCube);
 
     floorCube.add(auxFloorCube);
@@ -650,8 +719,11 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   man.traverse(function (node) {
     if (node.material) node.material.side = THREE.DoubleSide;
   });
-
+  man.castShadow = true;
+  man.receiveShadow = true;
   manholder.add(man);
+  holder.add(dirLight)
+  holder.add(dirLight.target)
 
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
