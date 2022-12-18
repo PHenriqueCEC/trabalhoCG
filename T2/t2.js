@@ -71,7 +71,8 @@ ambient.intensity = 0.02
 scene.add(ambient)
 // renderer.shadowMap.type = THREE.VSMShadowMap;
 let lightColor = "rgb(255,255, 255)";
-let dirLight = new THREE.DirectionalLight(lightColor, 0.1)
+//var dirLightIntensity = 1
+let dirLight = new THREE.DirectionalLight(lightColor, 1)
 dirLight.position.copy(new THREE.Vector3(5, 20, 20));
 // Shadow settings
 dirLight.castShadow = true;
@@ -332,6 +333,7 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   });
 
   scene.add(stairs);
+
 };
 
 createStairs({
@@ -927,6 +929,25 @@ const getY = (posY, base) => {
   }
 };
 
+function checkStairPosition() {
+
+  let pos = parseInt(holder.position.z)
+  console.log("position holder", pos)
+  
+  if (pos >= 20 && pos<= 30) {
+
+    let calculo = (19 - parseInt(holder.position.z ))  
+    dirLight.intensity = 1 - (Math.abs(calculo) * 0.09 )
+
+  }
+
+  /* if (parseInt(holder.position.z) >= 30) {
+    dirLight.intensity = 0.02
+  } */
+
+
+}
+
 let oldY = 0;
 
 function checkMovement(axis, distance) {
@@ -974,6 +995,8 @@ function checkMovement(axis, distance) {
             oldY = newY;
           }
         }
+
+        checkStairPosition();
       }
       break;
   }
