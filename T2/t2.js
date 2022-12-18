@@ -61,7 +61,10 @@ let pa2 = false; //porta da chave da area dois
 const bridge = [];
 
 renderer = initRenderer(); // View function in util/utils
-initDefaultBasicLight(scene);
+let light = new THREE.AmbientLight();
+light.intensity = 0.03
+scene.add(light);
+
 material = setDefaultMaterial("#8B4513"); // Create a basic material
 const cubeMaterial = setDefaultMaterial("#C8996C");
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
@@ -537,6 +540,27 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
+//Cria interruptores 
+let materialInterruptor = setDefaultMaterial();
+var interruptorGeometry = new THREE.BoxGeometry(0.25, 1, 1);
+
+let interruptorCube = new THREE.Mesh(interruptorGeometry, materialInterruptor);
+
+interruptorCube.translateZ(58)
+interruptorCube.translateY(-3.5)
+interruptorCube.translateX(-17.9)
+
+let pointLight = new THREE.PointLight(0xFFFFFFFF, 0.2);
+
+interruptorCube.add(pointLight)
+
+
+
+scene.add(interruptorCube)
+
+
+
+
 //Chave Amarela
 for (let x = -roomKey; x <= roomKey; x += 1) {
   for (let z = -roomKey; z <= roomKey; z += 1) {
@@ -854,8 +878,8 @@ function checkMovement(axis, distance) {
   }
 }
 
-const diagonalDistance = 0.08;
-const normalDistance = 0.12;
+const diagonalDistance = 0.3; //Trocar para 0.02
+const normalDistance = 0.3; //Trocar para 0.12
 
 function keyboardUpdate() {
   keyboard.update();
