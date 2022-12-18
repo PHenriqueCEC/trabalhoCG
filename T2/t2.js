@@ -12,6 +12,7 @@ import {
   
 } from "../libs/util/util.js";
 import { insertCubesFirstArea, insertCubesSecondArea, keyboardOn } from "./utils/utils.js";
+import { Vector3 } from "../build/three.module.js";
 
 let scene, renderer, camera, keyboard, material, clock;
 scene = new THREE.Scene(); // Create main scene
@@ -285,7 +286,8 @@ holder.add(camera);
 //Luz direcional firstArea
 let dirLightIntensity = 1;
 let dirLight = new THREE.DirectionalLight(0xffffff, dirLightIntensity)
-//dirLight.position.set(25, 0, 0)
+let position = new THREE.Vector3(0, 20, 20)
+dirLight.position.copy(position)
 
 dirLight.castShadow = true;
 //man.castShadow = true;
@@ -541,25 +543,7 @@ function render() {
     for (var i = 0; i < mixer.length; i++) mixer[i].update(delta * 2);
   }
 
-  //setDirectionalLighting(manholder.position)
-  let target = new THREE.Vector3()
-  //let targetDir = new THREE.Vector3()
-  
-  holder.getWorldPosition(target)
-  //holder.position.copy(target)
-
-
-  dirLight.target.position.set(target.x, target.y, target.z)
-
-  dirLight.target = holder 
-  
-  
-
-  //holder.setRotationFromQuaternion(dirLight.quaternion);
-
-  console.log("Aux:" , target)
  
-  console.log("Holder", holder.position)
 
 
   
