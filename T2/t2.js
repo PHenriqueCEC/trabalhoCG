@@ -543,14 +543,15 @@ function render() {
 
   //setDirectionalLighting(manholder.position)
   let target = new THREE.Vector3()
-  let targetDir = new THREE.Vector3()
+  //let targetDir = new THREE.Vector3()
   
   holder.getWorldPosition(target)
-  holder.position.copy(target)
+  //holder.position.copy(target)
 
 
+  dirLight.target.position.set(target.x, target.y, target.z)
 
-  dirLight.target.position.set(target.x, target.y, target.z )
+  dirLight.target = holder 
   
   
 
