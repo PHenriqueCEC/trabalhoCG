@@ -117,7 +117,7 @@ export const getPortalsObj = (planeBorderWidth, planeMaxSize) => ({
 });
 
 export const characterCollectedKeys = {
-  blue: true, 
+  blue: true,
   yellow: true,
   red: true,
 };
@@ -232,7 +232,6 @@ export function whatTile(position) {
   return new THREE.Vector3(x, position.y - 1, z); // menos dois pra apontar pro lugar onde o bloco vai para
 }
 
-
 const positionCubesThirdArea = [
   [10, -4, 42],
   [-10, -4, 56],
@@ -241,24 +240,29 @@ const positionCubesThirdArea = [
   [-10, -4, 42],
   [10, -4, 56],
   [-10, -4, 63],
-  [10, -4, 49]
-  
-  
+  [10, -4, 49],
 ];
 
-export function insertCubesThirdArea(
-  cubeMaterial,
-  collidableCubes,
-  collidableMeshList,
-  scene
-) {
+export const positionSpotlightsThirdArea = [
+  [10, 6, 42],
+  [-10, 6, 42],
+  [10, 6, 49],
+  [-10, 6, 49],
+  [10, 6, 56],
+  [-10, 6, 56],
+  [10, 6, 63],
+  [-10, 6, 63],
+];
+
+export function insertCubesThirdArea(cubeMaterial, collidableCubes, scene) {
   const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-  let cont = 0
+  let cont = 0;
   positionCubesThirdArea.forEach(([positionX, positionY, positionZ]) => {
     const clonedMaterial = cubeMaterial.clone();
     const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
 
-    if(cont < 4) { //Só entra aqui os 4 primeiros blocos da matriz
+    if (cont < 4) {
+      //Só entra aqui os 4 primeiros blocos da matriz
       cube.position.set(positionX, positionY, positionZ);
       const cubeBB = new THREE.Box3().setFromObject(cube);
       cube.castShadow = true;
@@ -267,19 +271,6 @@ export function insertCubesThirdArea(
       scene.add(cube);
       // cube.add(cubeBB);
     }
-
-    const spotLight = new THREE.SpotLight( 0xffffff, 0.3 );
-    spotLight.position.set( positionX, 3, positionZ );
-    scene.add( spotLight );
-    spotLight.angle = THREE.MathUtils.degToRad(25);
-    spotLight.castShadow = true;
-
-    spotLight.target.position.set(positionX, -3, positionZ);
-    spotLight.target.updateMatrixWorld();
-
-    /* const spotLightHelper = new THREE.SpotLightHelper( spotLight );
-
-    scene.add(spotLightHelper) */
 
     cont++;
   });
