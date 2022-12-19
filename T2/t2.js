@@ -456,6 +456,29 @@ for (let i = 0; i < 3; i++) {
     // scene.add(cubeBBMecs);
   }
 }
+// cercando a ponte
+for (let i = -1.5; i < 3; i += 2) {
+  const clonedMaterial = cubeMaterial.clone();
+  const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+  borderCube.position.set(x + i, -3.5, z - 3);
+  // borderCubeBB
+  borderCube.castShadow = true;
+  borderCube.receiveShadow = true;
+  const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+  collidableMeshList.push(borderCubeBB);
+  scene.add(borderCube);
+
+  const borderCube2 = new THREE.Mesh(cubeGeometry, clonedMaterial);
+  borderCube2.position.set(x + i, -3.5, z + 4)
+  borderCube2.castShadow = true;
+  borderCube2.receiveShadow = true;
+  const borderCubeBB2 = new THREE.Box3().setFromObject(borderCube2);
+  collidableMeshList.push(borderCubeBB2);
+  scene.add(borderCube2);
+  // z - 1
+  // z + 2
+
+}
 
 //Chave azul
 let roomKey = tiles / 4;
@@ -479,6 +502,20 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
+
+
+    if (Math.abs(z) === roomKey || Math.abs(x) === roomKey) {
+      if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && x <= 0 && z >= -2) continue;
+      const clonedMaterial = cubeMaterial.clone();
+      const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      borderCube.position.set(x + 0.5, -3.5, z);
+      borderCube.translateX(79);
+      borderCube.castShadow = true;
+      borderCube.receiveShadow = true;
+      const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
+      collidableMeshList.push(borderCubeBB);
+      scene.add(borderCube);
+    }
   }
 }
 
@@ -1020,12 +1057,12 @@ function checkObjectClicked(event) {
   slerpConfig.move = false;
   lerpConfig.move = false;
   const obj = intersects[0].object;
-  if (
+  if (holdB.block == obj ||
     (intersects.length > 0 &&
       collidableCubes.has(obj) &&
       holder.position.distanceTo(obj.position) <= 5 &&
-      holder.position.distanceTo(obj.position) > 1) ||
-    holdB.block == obj
+      holder.position.distanceTo(obj.position) > 1 &&
+      !holdB.hold)
   ) {
     // Da um toggle na cor do objeto
     const currentObjColor = obj.material.color;
