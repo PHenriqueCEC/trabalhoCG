@@ -402,7 +402,7 @@ const checkDistanceBetweenManAndInterruptors = () => {
   if (!manBB) return;
   interruptors.forEach(({ interruptorCube, spotLight }) => {
     const interruptorPos = interruptorCube.position.clone();
-    const radiusDistance = 1;
+    const radiusDistance = 3;
     const distance = manBB.distanceToPoint(interruptorPos);
     if (distance < radiusDistance) {
       spotLight.intensity = 0.3;
