@@ -19,9 +19,11 @@ import {
   insertCubesSecondArea,
   updateBB,
   whatTile,
+  insertCubesThirdArea,
+  positionSpotlightsThirdArea,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
-import { Vector3 } from "../build/three.module.js";
+import { SpotLight, Vector3 } from "../build/three.module.js";
 
 const slerpConfig = {
   destination: null,
@@ -66,11 +68,12 @@ const bridge = [];
 renderer = initRenderer(); // View function in util/utils
 // initDefaultBasicLight(scene);
 let ambient = new THREE.AmbientLight();
-ambient.intensity = 0.3
-scene.add(ambient)
+ambient.intensity = 0.02;
+scene.add(ambient);
 // renderer.shadowMap.type = THREE.VSMShadowMap;
-let lightColor = "rgb(255,255,255";
-let dirLight = new THREE.DirectionalLight(lightColor, 1)
+let lightColor = "rgb(255,255, 255)";
+//var dirLightIntensity = 1
+let dirLight = new THREE.DirectionalLight(lightColor, 1);
 dirLight.position.copy(new THREE.Vector3(5, 20, 20));
 // Shadow settings
 dirLight.castShadow = true;
@@ -83,8 +86,6 @@ dirLight.shadow.camera.bottom = -20;
 dirLight.name = "Direction Light";
 
 dirLight.visible = true;
-
-
 
 material = setDefaultMaterial("#8B4513"); // Create a basic material
 const cubeMaterial = setDefaultMaterial("#C8996C");
@@ -396,6 +397,20 @@ const checkDistanceBetweenManAndDoors = () => {
     }
   });
 };
+
+const checkDistanceBetweenManAndInterruptors = () => {
+  if (!manBB) return;
+  interruptors.forEach(({ interruptorCube, spotLight }) => {
+    const interruptorPos = interruptorCube.position.clone();
+    const radiusDistance = 3;
+    const distance = manBB.distanceToPoint(interruptorPos);
+    if (distance < radiusDistance) {
+      spotLight.intensity = 0.3;
+    } else {
+      spotLight.intensity = 0;
+    }
+  });
+};
 //Cria primeira area
 for (let x = -tiles; x <= tiles - 1; x += 1) {
   for (let z = -tiles; z <= tiles - 1; z += 1) {
@@ -495,7 +510,6 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
     floorCube.receiveShadow = true;
 
-
     auxFloorCube.receiveShadow = true;
 
     scene.add(floorCube);
@@ -532,7 +546,6 @@ for (let x = -tiles; x <= tiles; x += 1) {
     floorCube.translateX(-50);
 
     floorCube.receiveShadow = true;
-
 
     auxFloorCube.receiveShadow = true;
 
@@ -571,7 +584,6 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     floorCube.translateX(-77);
 
     floorCube.receiveShadow = true;
-
 
     auxFloorCube.receiveShadow = true;
 
@@ -620,7 +632,6 @@ for (let x = -tiles; x <= tiles; x += 1) {
 
     floorCube.receiveShadow = true;
 
-
     auxFloorCube.receiveShadow = true;
 
     scene.add(floorCube);
@@ -642,6 +653,61 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
+//Cria interruptores
+let interruptors = [];
+var interruptorGeometry = new THREE.BoxGeometry(0.25, 1, 1);
+
+let numInterruptor = 0;
+
+let xT = 17.9;
+let yT = -2.8;
+let zT = 42;
+
+while (numInterruptor < 8) {
+  let materialInterruptor = new THREE.MeshPhongMaterial({
+    color: "rgb(255, 20, 20)",
+    shininess: "100",
+    specular: "rgb(255, 255, 255)",
+    emissive: new THREE.Color("#ffdb71"),
+  });
+
+  let interruptorCube = new THREE.Mesh(
+    interruptorGeometry,
+    materialInterruptor
+  );
+
+  if (numInterruptor % 2 == 0) {
+    interruptorCube.translateZ(zT);
+    interruptorCube.translateY(yT);
+    interruptorCube.translateX(xT);
+  } else {
+    interruptorCube.translateZ(zT);
+    interruptorCube.translateY(yT);
+    interruptorCube.translateX(-xT);
+
+    zT += 7;
+  }
+
+  scene.add(interruptorCube);
+
+  const spotLightPos = positionSpotlightsThirdArea[numInterruptor];
+  const [x, _, z] = spotLightPos;
+
+  const spotLight = new THREE.SpotLight(0xffffff, 0);
+  spotLight.position.set(x, 3, z);
+  scene.add(spotLight);
+  spotLight.angle = THREE.MathUtils.degToRad(25);
+  spotLight.castShadow = true;
+
+  spotLight.target.position.set(x, -3, z);
+  spotLight.target.updateMatrixWorld();
+  interruptors.push({ interruptorCube, spotLight });
+
+  numInterruptor++;
+}
+
+insertCubesThirdArea(cubeMaterial, collidableCubes, scene);
+
 //Chave Amarela
 for (let x = -roomKey; x <= roomKey; x += 1) {
   for (let z = -roomKey; z <= roomKey; z += 1) {
@@ -655,7 +721,6 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     floorCube.translateZ(77);
 
     floorCube.receiveShadow = true;
-
 
     auxFloorCube.receiveShadow = true;
 
@@ -680,7 +745,6 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
     floorCube.translateZ(-40);
 
     floorCube.receiveShadow = true;
-
 
     auxFloorCube.receiveShadow = true;
 
@@ -767,8 +831,8 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   man.castShadow = true;
   man.receiveShadow = true;
   manholder.add(man);
-  holder.add(dirLight)
-  holder.add(dirLight.target)
+  holder.add(dirLight);
+  holder.add(dirLight.target);
 
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
@@ -912,6 +976,20 @@ const getY = (posY, base) => {
   }
 };
 
+function checkStairPosition() {
+  let pos = parseInt(holder.position.z);
+  console.log("position holder", pos);
+
+  if (pos >= 20 && pos <= 30) {
+    let calculo = 19 - parseInt(holder.position.z);
+    dirLight.intensity = 1 - Math.abs(calculo) * 0.09;
+  }
+
+  /* if (parseInt(holder.position.z) >= 30) {
+    dirLight.intensity = 0.02
+  } */
+}
+
 let oldY = 0;
 
 function checkMovement(axis, distance) {
@@ -959,13 +1037,15 @@ function checkMovement(axis, distance) {
             oldY = newY;
           }
         }
+
+        checkStairPosition();
       }
       break;
   }
 }
 
-const diagonalDistance = 0.08;
-const normalDistance = 0.12;
+const diagonalDistance = 0.3; //Trocar para 0.02
+const normalDistance = 0.3; //Trocar para 0.12
 
 function keyboardUpdate() {
   keyboard.update();
@@ -977,7 +1057,6 @@ function keyboardUpdate() {
     characterCollectedKeys.blue = true;
     characterCollectedKeys.red = true;
     characterCollectedKeys.yellow = true;
-
   }
   if (
     (keyboard.pressed("W") || keyboard.pressed("up")) &&
@@ -1203,6 +1282,7 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 function render() {
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
   checkDistanceBetweenManAndDoors();
+  checkDistanceBetweenManAndInterruptors();
   checkKeyCollision();
 
   lerps();
