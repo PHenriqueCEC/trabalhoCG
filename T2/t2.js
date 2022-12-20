@@ -23,7 +23,7 @@ import {
   positionSpotlightsThirdArea,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
-import { SpotLight, Vector3 } from "../build/three.module.js";
+import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
 
 const slerpConfig = {
   destination: null,
@@ -68,7 +68,7 @@ const bridge = [];
 renderer = initRenderer(); // View function in util/utils
 // initDefaultBasicLight(scene);
 let ambient = new THREE.AmbientLight();
-ambient.intensity = 0.02;
+ambient.intensity = 0.04;
 scene.add(ambient);
 // renderer.shadowMap.type = THREE.VSMShadowMap;
 let lightColor = "rgb(255,255, 255)";
@@ -981,6 +981,7 @@ function checkStairPosition() {
     let calculo = 19 - parseInt(holder.position.z);
     dirLight.intensity = 1 - Math.abs(calculo) * 0.09;
   }
+
 
   /* if (parseInt(holder.position.z) >= 30) {
     dirLight.intensity = 0.02
