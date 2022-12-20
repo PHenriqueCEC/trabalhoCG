@@ -117,9 +117,9 @@ export const getPortalsObj = (planeBorderWidth, planeMaxSize) => ({
 });
 
 export const characterCollectedKeys = {
-  blue: true,
-  yellow: true,
-  red: true,
+  blue: false,
+  yellow: false,
+  red: false,
 };
 
 export const keys = {

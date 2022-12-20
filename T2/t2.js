@@ -78,7 +78,6 @@ dirLight.position.copy(new THREE.Vector3(5, 20, 20));
 // Shadow settings
 dirLight.castShadow = true;
 // dirLight.shadow.camera.far = 4000;
-console.log(dirLight.shadow.camera.far);
 dirLight.shadow.camera.left = -20;
 dirLight.shadow.camera.right = 20;
 dirLight.shadow.camera.top = 20;
@@ -780,7 +779,6 @@ platform.translateZ(-40);
 let finalPlatformBB = new THREE.Box3().setFromObject(platform);
 // platform.translateX(-2.5);
 scene.add(platform);
-console.log("aqui")
 /* floorCube.add(auxFloorCube);
 auxFloorCube.translateY(0.01); */
 
@@ -978,7 +976,6 @@ const getY = (posY, base) => {
 
 function checkStairPosition() {
   let pos = parseInt(holder.position.z);
-  console.log("position holder", pos);
 
   if (pos >= 20 && pos <= 30) {
     let calculo = 19 - parseInt(holder.position.z);
@@ -1218,7 +1215,6 @@ function checkObjectClicked(event) {
 
       //PONTE
       for (const bbridge of bridge) {
-        // console.log(bbridge)
         if (p1.x == bbridge.position.x && p1.z == bbridge.position.z) {
           p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z);
           collidableCubes.delete(bbridge);
