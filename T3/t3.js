@@ -22,7 +22,6 @@ import {
   insertCubesThirdArea,
   positionSpotlightsThirdArea,
 } from "./utils/utils.js";
-import { collectedKeys } from "./assets/sounds"
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
 
@@ -653,6 +652,8 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
+
+
 //Cria interruptores
 let interruptors = [];
 var interruptorGeometry = new THREE.BoxGeometry(0.25, 1, 1);
@@ -915,6 +916,9 @@ function changeProjection() {
   camera.lookAt(camLook);
   holder.add(camera);
 }
+
+const music = new THREE.AudioListener();
+camera.add(music);
 
 // rotaciona o personagem
 function rotate() {
