@@ -920,6 +920,42 @@ function changeProjection() {
 const music = new THREE.AudioListener();
 camera.add(music);
 
+const allAudios = new THREE.AudioLoader();
+
+const backgroundSound = new THREE.Audio(music);
+
+allAudios.load('./assets/sounds/trilha.mp3', function( buffer ) {
+  backgroundSound.setBuffer( buffer );
+  backgroundSound.setLoop( true );
+  backgroundSound.setVolume(0.4);
+  backgroundSound.play();
+});
+
+const keySound = new THREE.Audio(music)
+allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer ) {
+  keySound.setBuffer( buffer );
+  keySound.setLoop(false);
+  keySound.setVolume(1);
+
+})
+
+const plataformaSound = new THREE.Audio(music)
+allAudios.load('./assets/sounds/plataforma.wav', function (buffer ) {
+  plataformaSound.setBuffer( buffer );
+  plataformaSound.setLoop(false);
+  plataformaSound.setVolume(1);
+
+})
+
+const ponteSound = new THREE.Audio(music)
+allAudios.load('./assets/sounds/bloco.wav', function (buffer ) {
+  ponteSound.setBuffer( buffer );
+  ponteSound.setLoop(false);
+  ponteSound.setVolume(1);
+
+})
+
+
 // rotaciona o personagem
 function rotate() {
   if (new_direction != direction) {
@@ -961,6 +997,7 @@ function checkKeyCollision() {
   if (manBB === null || man === null) return;
   Object.keys(keys).forEach((color) => {
     if (manBB.intersectsBox(keys[color].boundingBox)) {
+      keySound.play();
       scene.remove(keys[color].object);
       keys[color].boundingBox.translate(new THREE.Vector3(0, -10, 0));
       characterCollectedKeys[color] = true;
@@ -1206,6 +1243,7 @@ function checkObjectClicked(event) {
         const pos = o.position;
         if (p1.x == pos.x && p1.z == pos.z) {
           p1 = new THREE.Vector3(p1.x, p1.y + 0.1, p1.z);
+          plataformaSound.play();
           lerpConfigA2.destination = new THREE.Vector3(
             pos.x,
             pos.y - 0.8,
@@ -1222,6 +1260,7 @@ function checkObjectClicked(event) {
       //PONTE
       for (const bbridge of bridge) {
         if (p1.x == bbridge.position.x && p1.z == bbridge.position.z) {
+          ponteSound.play()
           p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z);
           collidableCubes.delete(bbridge);
           collidableCubes.delete(obj);
