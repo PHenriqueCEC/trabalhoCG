@@ -368,6 +368,7 @@ const openDoor = (color) => {
   // set position to open with lerping
   const openPosition = door.position.clone();
   openPosition.y = -5;
+  
   const animateDoorOpening = () => {
     door.position.lerp(openPosition, 0.0005);
     // if door is open, remove BB
@@ -376,6 +377,7 @@ const openDoor = (color) => {
       doorBB.translate(new THREE.Vector3(0, -10, 0));
     }
     if (door.position.distanceTo(openPosition) > 0.1) {
+      doorSound.play();
       requestAnimationFrame(animateDoorOpening);
     }
   };
@@ -927,8 +929,8 @@ const backgroundSound = new THREE.Audio(music);
 allAudios.load('./assets/sounds/trilha.mp3', function( buffer ) {
   backgroundSound.setBuffer( buffer );
   backgroundSound.setLoop( true );
-  backgroundSound.setVolume(0.4);
-  backgroundSound.play();
+  backgroundSound.setVolume(0.2);
+  //backgroundSound.play();
 });
 
 const keySound = new THREE.Audio(music)
@@ -952,6 +954,14 @@ allAudios.load('./assets/sounds/bloco.wav', function (buffer ) {
   ponteSound.setBuffer( buffer );
   ponteSound.setLoop(false);
   ponteSound.setVolume(1);
+
+})
+
+const doorSound = new THREE.Audio(music)
+allAudios.load('./assets/sounds/porta.wav', function (buffer ) {
+  doorSound.setBuffer( buffer );
+  doorSound.setLoop(false);
+  doorSound.setVolume(1);
 
 })
 
