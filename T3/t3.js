@@ -6,6 +6,7 @@ import {
   setDefaultMaterial,
   onWindowResize,
   initCamera,
+  createGroundPlaneXZ,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
 import {
@@ -60,6 +61,8 @@ const area1Mec = {
 };
 
 let scene, renderer, camera, keyboard, material, clock;
+var textureLoader = new THREE.TextureLoader();
+var tex;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
 
@@ -86,8 +89,12 @@ dirLight.name = "Direction Light";
 
 dirLight.visible = true;
 
-material = setDefaultMaterial("#8B4513"); // Create a basic material
-const cubeMaterial = setDefaultMaterial("#C8996C");
+tex = textureLoader.load('./assets/textures/malik-skydsgaard-ylGcmefqE_I-unsplash.jpg')
+material = new THREE.MeshLambertMaterial(); // Create a basic material
+material.map = tex;
+const cubeMaterial = new THREE.MeshLambertMaterial();
+tex = textureLoader.load('./assets/textures/colin-watts-u4ijcCaprRc-unsplash.jpg')
+cubeMaterial.map = tex;
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
 var mixer = new Array();
@@ -104,10 +111,20 @@ window.addEventListener(
 keyboard = new KeyboardState();
 
 // Cria plano
-const planeMaxSize = 40;
-/* let initialPlane = createGroundPlaneXZ(30, 30, 1, 1, "#DBB691");
-
-scene.add(initialPlane); */
+const planeMaxSize = 42;
+let planeGeometry = new THREE.PlaneGeometry(planeMaxSize + 1, planeMaxSize + 1, planeMaxSize + 1, planeMaxSize + 1);
+planeGeometry.rotateX(-Math.PI / 2)
+tex = textureLoader.load('./assets/textures/colin-watts-u4ijcCaprRc-unsplash.jpg')
+let planeMaterial = new THREE.MeshLambertMaterial({ color: '#EFDAB4' });
+planeMaterial.map = tex;
+planeMaterial.map.wrapS = THREE.RepeatWrapping;
+planeMaterial.map.wrapT = THREE.RepeatWrapping;
+planeMaterial.map.minFilter = THREE.LinearFilter;
+planeMaterial.map.magFilter = THREE.NearestFilter;
+planeMaterial.map.repeat.set(1, 1)
+var plan = new THREE.Mesh(planeGeometry, planeMaterial)
+plan.receiveShadow = true;
+scene.add(plan);
 
 // Criando o chão
 var floorCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -116,25 +133,25 @@ let materialFloorCube = setDefaultMaterial("#CFB48F");
 let materialAuxFloorCube = setDefaultMaterial("#EFDAB4");
 
 var tiles = planeMaxSize / 2;
-for (let x = -tiles; x <= tiles; x += 1) {
-  for (let z = -tiles; z <= tiles; z += 1) {
-    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(
-      auxFloorCubeGeometry,
-      materialAuxFloorCube
-    );
+// for (let x = -tiles; x <= tiles; x += 1) {
+//   for (let z = -tiles; z <= tiles; z += 1) {
+//     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+//     let auxFloorCube = new THREE.Mesh(
+//       auxFloorCubeGeometry,
+//       materialAuxFloorCube
+//     );
 
-    floorCube.position.set(x, -0.5, z);
-    floorCube.receiveShadow = true;
+//     floorCube.position.set(x, -0.5, z);
+//     floorCube.receiveShadow = true;
 
-    scene.add(floorCube);
+//     scene.add(floorCube);
 
-    auxFloorCube.receiveShadow = true;
+//     auxFloorCube.receiveShadow = true;
 
-    floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01);
-  }
-}
+//     floorCube.add(auxFloorCube);
+//     auxFloorCube.translateY(0.01);
+//   }
+// }
 
 // Cria cubos
 const cubeSize = 2;
@@ -368,7 +385,7 @@ const openDoor = (color) => {
   // set position to open with lerping
   const openPosition = door.position.clone();
   openPosition.y = -5;
-  
+
   const animateDoorOpening = () => {
     door.position.lerp(openPosition, 0.0005);
     // if door is open, remove BB
@@ -926,40 +943,40 @@ const allAudios = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(music);
 
-allAudios.load('./assets/sounds/trilha.mp3', function( buffer ) {
-  backgroundSound.setBuffer( buffer );
-  backgroundSound.setLoop( true );
+allAudios.load('./assets/sounds/trilha.mp3', function (buffer) {
+  backgroundSound.setBuffer(buffer);
+  backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.2);
   //backgroundSound.play();
 });
 
 const keySound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer ) {
-  keySound.setBuffer( buffer );
+allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer) {
+  keySound.setBuffer(buffer);
   keySound.setLoop(false);
   keySound.setVolume(1);
 
 })
 
 const plataformaSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/plataforma.wav', function (buffer ) {
-  plataformaSound.setBuffer( buffer );
+allAudios.load('./assets/sounds/plataforma.wav', function (buffer) {
+  plataformaSound.setBuffer(buffer);
   plataformaSound.setLoop(false);
   plataformaSound.setVolume(1);
 
 })
 
 const ponteSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/bloco.wav', function (buffer ) {
-  ponteSound.setBuffer( buffer );
+allAudios.load('./assets/sounds/bloco.wav', function (buffer) {
+  ponteSound.setBuffer(buffer);
   ponteSound.setLoop(false);
   ponteSound.setVolume(1);
 
 })
 
 const doorSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/porta.wav', function (buffer ) {
-  doorSound.setBuffer( buffer );
+allAudios.load('./assets/sounds/porta.wav', function (buffer) {
+  doorSound.setBuffer(buffer);
   doorSound.setLoop(false);
   doorSound.setVolume(1);
 
