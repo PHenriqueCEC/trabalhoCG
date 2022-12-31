@@ -112,18 +112,19 @@ keyboard = new KeyboardState();
 
 // Cria plano
 const planeMaxSize = 42;
-let planeGeometry = new THREE.PlaneGeometry(planeMaxSize + 1, planeMaxSize + 1, planeMaxSize + 1, planeMaxSize + 1);
+let planeGeometry = new THREE.PlaneGeometry(planeMaxSize + 1, planeMaxSize + 1, 1, 1);
 planeGeometry.rotateX(-Math.PI / 2)
 tex = textureLoader.load('./assets/textures/colin-watts-u4ijcCaprRc-unsplash.jpg')
 let planeMaterial = new THREE.MeshLambertMaterial({ color: '#EFDAB4' });
-planeMaterial.map = tex;
-planeMaterial.map.wrapS = THREE.RepeatWrapping;
-planeMaterial.map.wrapT = THREE.RepeatWrapping;
-planeMaterial.map.minFilter = THREE.LinearFilter;
-planeMaterial.map.magFilter = THREE.NearestFilter;
-planeMaterial.map.repeat.set(1, 1)
 var plan = new THREE.Mesh(planeGeometry, planeMaterial)
+plan.material.map = tex;
+plan.material.map.wrapS = THREE.RepeatWrapping;
+plan.material.map.wrapT = THREE.RepeatWrapping;
+plan.material.map.minFilter = THREE.LinearFilter;
+plan.material.map.magFilter = THREE.NearestFilter;
+plan.material.map.repeat.set(1, 1)
 plan.receiveShadow = true;
+plan.translateY(0.1)
 scene.add(plan);
 
 // Criando o chão
@@ -305,7 +306,9 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   const aux = direction === "up" ? 1 : -1;
   const stepGeometry = new THREE.BoxGeometry(1, 0.5, 5);
   const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-  const stepMaterial = new THREE.MeshPhongMaterial({ color: "brown" });
+  const stepMaterial = new THREE.MeshPhongMaterial({ color: "white" });
+  tex = textureLoader.load('./assets/textures/5-Stone-Block-Wall-Background-Texture-copy.jpg')
+  stepMaterial.map = tex;
   for (let i = 0; i < numberOfSteps; i++) {
     const step = new THREE.Mesh(stepGeometry, stepMaterial);
     step.position.set(i * aux, i * 0.5 * aux, 0);
@@ -430,23 +433,36 @@ const checkDistanceBetweenManAndInterruptors = () => {
   });
 };
 //Cria primeira area
+let planeMaterial1 = new THREE.MeshLambertMaterial({ color: 'gray' });
+
+let planA1 = new THREE.Mesh(planeGeometry, planeMaterial1);
+tex = textureLoader.load('./assets/textures/white-stone-dark-ground-texture-background_125540-1800.jpg');
+planA1.material.map = tex;
+planA1.receiveShadow = true;
+planA1.material.map.wrapS = THREE.RepeatWrapping;
+planA1.material.map.wrapT = THREE.RepeatWrapping;
+planA1.material.map.minFilter = THREE.LinearFilter;
+planA1.material.map.magFilter = THREE.NearestFilter;
+planA1.material.map.repeat.set(1, 1)
+planA1.position.set(49, -4.6, 0);
+scene.add(planA1);
 for (let x = -tiles; x <= tiles - 1; x += 1) {
   for (let z = -tiles; z <= tiles - 1; z += 1) {
-    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(
-      auxFloorCubeGeometry,
-      materialAuxFloorCube
-    );
-    floorCube.receiveShadow = true;
-    auxFloorCube.receiveShadow = true;
+    // let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
+    // let auxFloorCube = new THREE.Mesh(
+    //   auxFloorCubeGeometry,
+    //   materialAuxFloorCube
+    // );
+    // floorCube.receiveShadow = true;
+    // auxFloorCube.receiveShadow = true;
 
-    floorCube.position.set(x + 1, -5.0, z);
-    floorCube.translateX(50);
+    // floorCube.position.set(x + 1, -5.0, z);
+    // floorCube.translateX(50);
 
-    scene.add(floorCube);
-    floorCube.add(auxFloorCube);
+    // scene.add(floorCube);
+    // floorCube.add(auxFloorCube);
 
-    auxFloorCube.translateY(0.01);
+    // auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       // if it is stair position, do not add wall
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
@@ -455,6 +471,7 @@ for (let x = -tiles; x <= tiles - 1; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
       borderCube.translateX(50);
+      borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       // borderCubeBB
@@ -495,6 +512,7 @@ for (let i = -1.5; i < 3; i += 2) {
   const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
   borderCube.position.set(x + i, -3.5, z - 3);
   // borderCubeBB
+  borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
   borderCube.castShadow = true;
   borderCube.receiveShadow = true;
   const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -542,6 +560,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
       borderCube.translateX(79);
+      borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -820,7 +839,7 @@ camera = new THREE.PerspectiveCamera(
 camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.position.setFromSphericalCoords(
-  20,
+  200,
   Math.PI / 3, // 60 degrees from positive Y-axis and 30 degrees to XZ-plane
   Math.PI / 4 // 45 degrees, between positive X and Z axes, thus on XZ-plane
 );
