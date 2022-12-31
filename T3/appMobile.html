@@ -23,14 +23,6 @@
     touch-action: manipulation;
   }
 
-  #joystickWrapper2 {
-    pointer-events: auto;
-    position: absolute;       
-    bottom: 0;
-    right: 0;
-    display: block; 
-    touch-action: manipulation;
-  }
 </style>
 </head>
 
@@ -40,6 +32,10 @@
   <script type="importmap">
       { "imports": { "three": "../build/three.module.js" } }
     </script>
+
+    
+  <div id="joystickWrapper1"></div>
+  <script src="../libs/other/nipplejs.js"></script>     
 
   <div id="webgl-output">
     <script type="module" src="appMobile.js"></script>

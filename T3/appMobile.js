@@ -24,7 +24,8 @@ import {
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
-import nipplejs from 'nipplejs';
+import {OrbitControls} from '../build/jsm/controls/OrbitControls.js';
+//import nipplejs from 'nipplejs';
 
 const slerpConfig = {
   destination: null,
@@ -815,6 +816,7 @@ scene.add(holder);
 
 holder.add(camera);
 
+
 // Definições do personagem
 let manholder = new THREE.Object3D(); // Objeto de auxilio para manejamento do personagem
 
@@ -839,6 +841,7 @@ loader.load("../assets/objects/walkingMan.glb", function (gltf) {
 
   holder.add(manholder);
   manBB = new THREE.Box3().setFromObject(man);
+
 
   // Create animationMixer and push it in the array of mixers
   var mixerLocal = new THREE.AnimationMixer(man);
@@ -883,6 +886,9 @@ Object.keys(keys).forEach((objKey) => {
 
 // insertCubes(cubeMaterial, collidableCubes, scene);
 
+var controls = new OrbitControls(camera, renderer.domElement);
+
+
 let scale = 1;
 let previousScale = 0;
 let size = 5;
@@ -893,11 +899,7 @@ let lftValue = 0;
 let tempVector = new THREE.Vector3();
 let upVector = new THREE.Vector3(0, 1, 0);
 
-addJoystick();
-
-render();
-
-function addJoysticks(){
+function addJoystick(){
    
   // Details in the link bellow:
   // https://yoannmoi.net/nipplejs/
@@ -931,24 +933,13 @@ function addJoysticks(){
     rgtValue = 0
   })
 
-  let joystickR = nipplejs.create({
-    zone: document.getElementById('joystickWrapper2'),
-    mode: 'static',
-    lockY: true, // only move on the Y axis
-    position: { top: '-80px', right: '80px' },
-  });
-
-  joystickR.on('move', function (evt, data) {
-    const changeScale = data.vector.y;
-
-    if(changeScale > previousScale) scale+=0.1;
-    if(changeScale < previousScale) scale-=0.1;
-    if(scale > 4.0) scale = 4.0;
-    if(scale < 0.5) scale = 0.5;
-
-    previousScale = changeScale;
-  })
 }
+
+addJoystick();
+
+render();
+
+
 
 // Funções auxiliares
 function changeProjection() {
@@ -1396,7 +1387,15 @@ function lerps() {
 // Listener para o evento de click do mouse
 document.addEventListener("mousedown", checkObjectClicked, false);
 
+function updatePlayer() {
+
+  const angle = controls.getAzimuthalAngle()
+
+
+}
+
 function render() {
+  //updatePlayer();
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
   checkDistanceBetweenManAndDoors();
   checkDistanceBetweenManAndInterruptors();
