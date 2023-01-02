@@ -368,7 +368,7 @@ const openDoor = (color) => {
   // set position to open with lerping
   const openPosition = door.position.clone();
   openPosition.y = -5;
-  
+
   const animateDoorOpening = () => {
     door.position.lerp(openPosition, 0.0005);
     // if door is open, remove BB
@@ -401,14 +401,20 @@ const checkDistanceBetweenManAndDoors = () => {
 
 const checkDistanceBetweenManAndInterruptors = () => {
   if (!manBB) return;
-  interruptors.forEach(({ interruptorCube, spotLight }) => {
+  interruptors.forEach(({ interruptorCube, spotLight, catchableCube }) => {
     const interruptorPos = interruptorCube.position.clone();
-    const radiusDistance = 3;
+    const radiusDistance = 2;
     const distance = manBB.distanceToPoint(interruptorPos);
     if (distance < radiusDistance) {
       spotLight.intensity = 0.3;
+      if (catchableCube) {
+        catchableCube.visible = true;
+      }
     } else {
       spotLight.intensity = 0;
+      if (catchableCube) {
+        catchableCube.visible = catchableCube.position.y === -4 ? false : true;
+      }
     }
   });
 };
@@ -485,7 +491,7 @@ for (let i = -1.5; i < 3; i += 2) {
   scene.add(borderCube);
 
   const borderCube2 = new THREE.Mesh(cubeGeometry, clonedMaterial);
-  borderCube2.position.set(x + i, -3.5, z + 4)
+  borderCube2.position.set(x + i, -3.5, z + 4);
   borderCube2.castShadow = true;
   borderCube2.receiveShadow = true;
   const borderCubeBB2 = new THREE.Box3().setFromObject(borderCube2);
@@ -493,7 +499,6 @@ for (let i = -1.5; i < 3; i += 2) {
   scene.add(borderCube2);
   // z - 1
   // z + 2
-
 }
 
 //Chave azul
@@ -517,7 +522,6 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
-
 
     if (Math.abs(z) === roomKey || Math.abs(x) === roomKey) {
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && x <= 0 && z >= -2) continue;
@@ -654,8 +658,6 @@ for (let x = -tiles; x <= tiles; x += 1) {
   }
 }
 
-
-
 //Cria interruptores
 let interruptors = [];
 var interruptorGeometry = new THREE.BoxGeometry(0.25, 1, 1);
@@ -709,7 +711,7 @@ while (numInterruptor < 8) {
   numInterruptor++;
 }
 
-insertCubesThirdArea(cubeMaterial, collidableCubes, scene);
+insertCubesThirdArea(cubeMaterial, collidableCubes, scene, interruptors);
 
 //Chave Amarela
 for (let x = -roomKey; x <= roomKey; x += 1) {
@@ -785,8 +787,6 @@ let finalPlatformBB = new THREE.Box3().setFromObject(platform);
 scene.add(platform);
 /* floorCube.add(auxFloorCube);
 auxFloorCube.translateY(0.01); */
-
-
 
 // Definições da câmera
 let camPos = new THREE.Vector3(10.5, 10.5, 10.5);
@@ -926,45 +926,40 @@ const allAudios = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(music);
 
-allAudios.load('./assets/sounds/trilha.mp3', function( buffer ) {
-  backgroundSound.setBuffer( buffer );
-  backgroundSound.setLoop( true );
+allAudios.load("./assets/sounds/trilha.mp3", function (buffer) {
+  backgroundSound.setBuffer(buffer);
+  backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.2);
   //backgroundSound.play();
 });
 
-const keySound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer ) {
-  keySound.setBuffer( buffer );
+const keySound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/collectedKeys.mp3", function (buffer) {
+  keySound.setBuffer(buffer);
   keySound.setLoop(false);
   keySound.setVolume(1);
+});
 
-})
-
-const plataformaSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/plataforma.wav', function (buffer ) {
-  plataformaSound.setBuffer( buffer );
+const plataformaSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/plataforma.wav", function (buffer) {
+  plataformaSound.setBuffer(buffer);
   plataformaSound.setLoop(false);
   plataformaSound.setVolume(1);
+});
 
-})
-
-const ponteSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/bloco.wav', function (buffer ) {
-  ponteSound.setBuffer( buffer );
+const ponteSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/bloco.wav", function (buffer) {
+  ponteSound.setBuffer(buffer);
   ponteSound.setLoop(false);
   ponteSound.setVolume(1);
+});
 
-})
-
-const doorSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/porta.wav', function (buffer ) {
-  doorSound.setBuffer( buffer );
+const doorSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/porta.wav", function (buffer) {
+  doorSound.setBuffer(buffer);
   doorSound.setLoop(false);
   doorSound.setVolume(1);
-
-})
-
+});
 
 // rotaciona o personagem
 function rotate() {
@@ -1033,7 +1028,6 @@ function checkStairPosition() {
     let calculo = 19 - parseInt(holder.position.z);
     dirLight.intensity = 1 - Math.abs(calculo) * 0.09;
   }
-
 
   /* if (parseInt(holder.position.z) >= 30) {
     dirLight.intensity = 0.02
@@ -1186,7 +1180,8 @@ function checkObjectClicked(event) {
   slerpConfig.move = false;
   lerpConfig.move = false;
   const obj = intersects[0].object;
-  if (holdB.block == obj ||
+  if (
+    holdB.block == obj ||
     (intersects.length > 0 &&
       collidableCubes.has(obj) &&
       holder.position.distanceTo(obj.position) <= 5 &&
@@ -1270,7 +1265,7 @@ function checkObjectClicked(event) {
       //PONTE
       for (const bbridge of bridge) {
         if (p1.x == bbridge.position.x && p1.z == bbridge.position.z) {
-          ponteSound.play()
+          ponteSound.play();
           p1 = new THREE.Vector3(p1.x, p1.y - 1, p1.z);
           collidableCubes.delete(bbridge);
           collidableCubes.delete(obj);

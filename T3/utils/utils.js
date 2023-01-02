@@ -233,28 +233,33 @@ export function whatTile(position) {
 }
 
 const positionCubesThirdArea = [
-  [10, -4, 42],
-  [-10, -4, 56],
-  [10, -4, 63],
-  [-10, -4, 49],
-  [-10, -4, 42],
-  [10, -4, 56],
-  [-10, -4, 63],
-  [10, -4, 49],
+  [13, -4, 42],
+  [-13, -4, 56],
+  [13, -4, 63],
+  [-13, -4, 49],
+  [-13, -4, 42],
+  [13, -4, 56],
+  [-13, -4, 63],
+  [13, -4, 49],
 ];
 
 export const positionSpotlightsThirdArea = [
-  [10, 6, 42],
-  [-10, 6, 42],
-  [10, 6, 49],
-  [-10, 6, 49],
-  [10, 6, 56],
-  [-10, 6, 56],
-  [10, 6, 63],
-  [-10, 6, 63],
+  [13, 6, 42],
+  [-13, 6, 42],
+  [13, 6, 49],
+  [-13, 6, 49],
+  [13, 6, 56],
+  [-13, 6, 56],
+  [13, 6, 63],
+  [-13, 6, 63],
 ];
 
-export function insertCubesThirdArea(cubeMaterial, collidableCubes, scene) {
+export function insertCubesThirdArea(
+  cubeMaterial,
+  collidableCubes,
+  scene,
+  interruptors
+) {
   const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
   let cont = 0;
   positionCubesThirdArea.forEach(([positionX, positionY, positionZ]) => {
@@ -266,8 +271,14 @@ export function insertCubesThirdArea(cubeMaterial, collidableCubes, scene) {
       cube.position.set(positionX, positionY, positionZ);
       const cubeBB = new THREE.Box3().setFromObject(cube);
       cube.castShadow = true;
+      cube.visible = false;
       collidableCubes.set(cube, cubeBB);
       // collidableMeshList.push(cubeBB);
+      interruptors.find(
+        ({ spotLight }) =>
+          spotLight.position.x === positionX &&
+          spotLight.position.z === positionZ
+      ).catchableCube = cube;
       scene.add(cube);
       // cube.add(cubeBB);
     }
