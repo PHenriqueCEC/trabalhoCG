@@ -25,6 +25,8 @@ import {
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
 
+var thirdAreaCompleted = false;
+
 const slerpConfig = {
   destination: null,
   alpha: 0.1,
@@ -46,6 +48,13 @@ const lerpConfig = {
 };
 
 const lerpConfigA2 = {
+  destination: null,
+  alpha: 0.1,
+  move: false,
+  object: null,
+};
+
+const lerpConfigA3 = {
   destination: null,
   alpha: 0.1,
   move: false,
@@ -610,17 +619,30 @@ scene.add(doorA2);
 
 insertCubesSecondArea(cubeMaterial, collidableCubes, collidableMeshList, scene);
 
-var cubeSecondAreaGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
+var cubeSecondAndThirdAreaGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.9);
 let materialCubeSecondArea = setDefaultMaterial("#D2B48C");
 const floatingCube = [];
+// adiciona cubos flutuantes da segunda area
 for (let z = -6; z < 5; z += 5) {
   let cubeSecondArea = new THREE.Mesh(
-    cubeSecondAreaGeometry,
+    cubeSecondAndThirdAreaGeometry,
     materialCubeSecondArea
   );
   cubeSecondArea.position.set(-58, 5.4, z);
   floatingCube.push(cubeSecondArea);
   scene.add(cubeSecondArea);
+}
+
+const floatingCubesThirdArea = [];
+// adiciona cubos flutuantes da terceira area
+for (let x = -6; x < 5; x += 5) {
+  let cubeThirdArea = new THREE.Mesh(
+    cubeSecondAndThirdAreaGeometry,
+    materialCubeSecondArea
+  );
+  cubeThirdArea.position.set(x, -3.6, 63);
+  floatingCubesThirdArea.push(cubeThirdArea);
+  scene.add(cubeThirdArea);
 }
 
 //Cria terceira area
@@ -657,6 +679,15 @@ for (let x = -tiles; x <= tiles; x += 1) {
     }
   }
 }
+//porta para a chave
+let materialDoorA3 = setDefaultMaterial("yellow");
+let doorA3 = new THREE.Mesh(doorGeometry, materialDoorA3);
+doorA3.scale.set(1, 3, 10);
+doorA3.position.set(0, -3, 71);
+doorA3.rotateY(Math.PI / 2);
+let doorA3bb = new THREE.Box3().setFromObject(doorA3);
+collidableCubes.set(doorA3, doorA3bb);
+scene.add(doorA3);
 
 //Cria interruptores
 let interruptors = [];
@@ -1022,6 +1053,7 @@ const getY = (posY, base) => {
 };
 
 function checkStairPosition() {
+  if (thirdAreaCompleted) return;
   let pos = parseInt(holder.position.z);
 
   if (pos >= 20 && pos <= 30) {
@@ -1262,6 +1294,25 @@ function checkObjectClicked(event) {
         }
       }
 
+      //mec area 3
+      for (const o of floatingCubesThirdArea) {
+        const pos = o.position;
+        if (p1.x == pos.x && p1.z == pos.z) {
+          p1 = new THREE.Vector3(p1.x, p1.y + 0.1, p1.z);
+          plataformaSound.play();
+          lerpConfigA3.destination = new THREE.Vector3(
+            pos.x,
+            pos.y - 0.8,
+            pos.z
+          );
+          lerpConfigA3.move = true;
+          lerpConfigA3.object = o;
+          collidableCubes.delete(obj);
+          const index = floatingCubesThirdArea.indexOf(o);
+          floatingCubesThirdArea.splice(index, 1);
+        }
+      }
+
       //PONTE
       for (const bbridge of bridge) {
         if (p1.x == bbridge.position.x && p1.z == bbridge.position.z) {
@@ -1309,6 +1360,12 @@ function lerps() {
       lerpConfigA2.alpha
     );
   }
+  if (lerpConfigA3.move) {
+    lerpConfigA3.object.position.lerp(
+      lerpConfigA3.destination,
+      lerpConfigA3.alpha
+    );
+  }
   if (floatingCube.length <= 0) {
     collidableCubes.delete(doorA2);
     doorA2.position.lerp(
@@ -1316,6 +1373,19 @@ function lerps() {
         doorA2.position.x,
         doorA2.position.y - 5,
         doorA2.position.z,
+        lerpConfig.alpha
+      )
+    );
+  }
+  if (floatingCubesThirdArea.length <= 0) {
+    thirdAreaCompleted = true;
+    dirLight.intensity = 1;
+    collidableCubes.delete(doorA3);
+    doorA3.position.lerp(
+      new THREE.Vector3(
+        doorA3.position.x,
+        doorA3.position.y - 5,
+        doorA3.position.z,
         lerpConfig.alpha
       )
     );
