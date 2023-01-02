@@ -24,7 +24,7 @@ import {
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
-import {OrbitControls} from '../build/jsm/controls/OrbitControls.js';
+import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 //import nipplejs from 'nipplejs';
 
 const slerpConfig = {
@@ -370,7 +370,7 @@ const openDoor = (color) => {
   // set position to open with lerping
   const openPosition = door.position.clone();
   openPosition.y = -5;
-  
+
   const animateDoorOpening = () => {
     door.position.lerp(openPosition, 0.0005);
     // if door is open, remove BB
@@ -888,19 +888,26 @@ Object.keys(keys).forEach((objKey) => {
 
 var controls = new OrbitControls(camera, renderer.domElement);
 
+controls.keys = {
+  LEFT: 'ArrowLeft', //left arrow
+  UP: 'ArrowUp', // up arrow
+  RIGHT: 'ArrowRight', // right arrow
+  BOTTOM: 'ArrowDown' // down arrow
+}
+
 
 let scale = 1;
 let previousScale = 0;
 let size = 5;
-let fwdValue = 0;
-let bkdValue = 0;
-let rgtValue = 0;
-let lftValue = 0;
+let up = 0;
+let down = 0;
+let right = 0;
+let left = 0;
 let tempVector = new THREE.Vector3();
 let upVector = new THREE.Vector3(0, 1, 0);
 
-function addJoystick(){
-   
+function addJoystick() {
+
   // Details in the link bellow:
   // https://yoannmoi.net/nipplejs/
 
@@ -909,28 +916,35 @@ function addJoystick(){
     mode: 'static',
     position: { top: '-80px', left: '80px' }
   });
-  
+
   joystickL.on('move', function (evt, data) {
     const forward = data.vector.y
     const turn = data.vector.x
-    fwdValue = bkdValue = lftValue = rgtValue = 0;
+    up = down = left = right = 0;
 
-    if (forward > 0) 
-      fwdValue = Math.abs(forward)
-    else if (forward < 0)
-      bkdValue = Math.abs(forward)
+   /*  console.log("Valor turn: ", turn)
+    console.log("Valor forward: ", forward) */
 
-    if (turn > 0) 
-      rgtValue = Math.abs(turn)
-    else if (turn < 0)
-      lftValue = Math.abs(turn)
+    if (Math.abs(forward) >= Math.abs(turn)) {
+      if (forward > 0)
+        up = Math.abs(forward)
+      else if (forward < 0)
+        down = Math.abs(forward)
+    }
+    else {
+      if (turn > 0)
+        right = Math.abs(turn)
+      else if (turn < 0)
+        left = Math.abs(turn)
+    }
+  
   })
 
   joystickL.on('end', function (evt) {
-    bkdValue = 0
-    fwdValue = 0
-    lftValue = 0
-    rgtValue = 0
+    down = 0
+    up = 0
+    left = 0
+    right = 0
   })
 
 }
@@ -983,40 +997,40 @@ const allAudios = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(music);
 
-allAudios.load('./assets/sounds/trilha.mp3', function( buffer ) {
-  backgroundSound.setBuffer( buffer );
-  backgroundSound.setLoop( true );
+allAudios.load('./assets/sounds/trilha.mp3', function (buffer) {
+  backgroundSound.setBuffer(buffer);
+  backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.2);
   //backgroundSound.play();
 });
 
 const keySound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer ) {
-  keySound.setBuffer( buffer );
+allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer) {
+  keySound.setBuffer(buffer);
   keySound.setLoop(false);
   keySound.setVolume(1);
 
 })
 
 const plataformaSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/plataforma.wav', function (buffer ) {
-  plataformaSound.setBuffer( buffer );
+allAudios.load('./assets/sounds/plataforma.wav', function (buffer) {
+  plataformaSound.setBuffer(buffer);
   plataformaSound.setLoop(false);
   plataformaSound.setVolume(1);
 
 })
 
 const ponteSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/bloco.wav', function (buffer ) {
-  ponteSound.setBuffer( buffer );
+allAudios.load('./assets/sounds/bloco.wav', function (buffer) {
+  ponteSound.setBuffer(buffer);
   ponteSound.setLoop(false);
   ponteSound.setVolume(1);
 
 })
 
 const doorSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/porta.wav', function (buffer ) {
-  doorSound.setBuffer( buffer );
+allAudios.load('./assets/sounds/porta.wav', function (buffer) {
+  doorSound.setBuffer(buffer);
   doorSound.setLoop(false);
   doorSound.setVolume(1);
 
@@ -1384,18 +1398,45 @@ function lerps() {
   }
 }
 
+
 // Listener para o evento de click do mouse
 document.addEventListener("mousedown", checkObjectClicked, false);
 
 function updatePlayer() {
 
-  const angle = controls.getAzimuthalAngle()
+  const angle = controls.getAzimuthalAngle();
 
+  if (up > 0) {
+    new_direction = 135;
+    checkMovement("x", -diagonalDistance);
+    checkMovement("z", -diagonalDistance);
+
+  }
+
+   else if (down > 0) {
+    new_direction = 315;
+    checkMovement("x", diagonalDistance);
+    checkMovement("z", diagonalDistance);
+  }
+
+  else if (right > 0) {
+    console.log('Entrei aqui')
+    new_direction = 45;
+    checkMovement("x", diagonalDistance);
+    checkMovement("z", -diagonalDistance);
+  }
+
+  else if (left > 0) {
+    new_direction = 225;
+    checkMovement("x", -diagonalDistance);
+    checkMovement("z", diagonalDistance);
+
+  }
 
 }
 
 function render() {
-  //updatePlayer();
+  updatePlayer();
   var delta = clock.getDelta(); // Get the seconds passed since the time 'oldTime' was set and sets 'oldTime' to the current time.
   checkDistanceBetweenManAndDoors();
   checkDistanceBetweenManAndInterruptors();
