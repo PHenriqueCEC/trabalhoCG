@@ -24,7 +24,7 @@ import {
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
-import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
+//import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 //import nipplejs from 'nipplejs';
 
 const slerpConfig = {
@@ -886,14 +886,14 @@ Object.keys(keys).forEach((objKey) => {
 
 // insertCubes(cubeMaterial, collidableCubes, scene);
 
-var controls = new OrbitControls(camera, renderer.domElement);
+//var controls = new OrbitControls(camera, renderer.domElement);
 
-controls.keys = {
+/* controls.keys = {
   LEFT: 'ArrowLeft', //left arrow
   UP: 'ArrowUp', // up arrow
   RIGHT: 'ArrowRight', // right arrow
   BOTTOM: 'ArrowDown' // down arrow
-}
+} */
 
 
 let scale = 1;
@@ -1407,7 +1407,6 @@ document.addEventListener("mousedown", checkObjectClicked, false);
 
 function updatePlayer() {
 
-  const angle = controls.getAzimuthalAngle();
 
   if (up > 0) {
     new_direction = 135;
