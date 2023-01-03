@@ -5,9 +5,7 @@ import {
   initRenderer,
   setDefaultMaterial,
   onWindowResize,
-  initCamera,
-  createGroundPlaneXZ,
-  initDefaultBasicLight,
+  initCamera
 } from "../libs/util/util.js";
 import {
   keyboardOn,
@@ -98,11 +96,11 @@ dirLight.name = "Direction Light";
 
 dirLight.visible = true;
 
-tex = textureLoader.load('./assets/textures/malik-skydsgaard-ylGcmefqE_I-unsplash.jpg')
+tex = textureLoader.load('./assets/textures/WoodFine0090_1_download600.jpg')
 material = new THREE.MeshLambertMaterial(); // Create a basic material
 material.map = tex;
 const cubeMaterial = new THREE.MeshLambertMaterial();
-tex = textureLoader.load('./assets/textures/colin-watts-u4ijcCaprRc-unsplash.jpg')
+tex = textureLoader.load('./assets/textures/seamless_beach_sand_texture_by_hhh316_d4hr45u-pre.jpg')
 cubeMaterial.map = tex;
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
@@ -123,7 +121,7 @@ keyboard = new KeyboardState();
 const planeMaxSize = 42;
 let planeGeometry = new THREE.PlaneGeometry(planeMaxSize + 1, planeMaxSize + 1, 1, 1);
 planeGeometry.rotateX(-Math.PI / 2)
-tex = textureLoader.load('./assets/textures/colin-watts-u4ijcCaprRc-unsplash.jpg')
+tex = textureLoader.load('./assets/textures/istockphoto-1221955356-612x612.jpg')
 let planeMaterial = new THREE.MeshLambertMaterial({ color: '#EFDAB4' });
 var plan = new THREE.Mesh(planeGeometry, planeMaterial)
 plan.material.map = tex;
@@ -131,7 +129,7 @@ plan.material.map.wrapS = THREE.RepeatWrapping;
 plan.material.map.wrapT = THREE.RepeatWrapping;
 plan.material.map.minFilter = THREE.LinearFilter;
 plan.material.map.magFilter = THREE.NearestFilter;
-plan.material.map.repeat.set(1, 1)
+plan.material.map.repeat.set(15, 15)
 plan.receiveShadow = true;
 plan.translateY(0.1)
 scene.add(plan);
@@ -143,25 +141,6 @@ let materialFloorCube = setDefaultMaterial("#CFB48F");
 let materialAuxFloorCube = setDefaultMaterial("#EFDAB4");
 
 var tiles = planeMaxSize / 2;
-// for (let x = -tiles; x <= tiles; x += 1) {
-//   for (let z = -tiles; z <= tiles; z += 1) {
-//     let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-//     let auxFloorCube = new THREE.Mesh(
-//       auxFloorCubeGeometry,
-//       materialAuxFloorCube
-//     );
-
-//     floorCube.position.set(x, -0.5, z);
-//     floorCube.receiveShadow = true;
-
-//     scene.add(floorCube);
-
-//     auxFloorCube.receiveShadow = true;
-
-//     floorCube.add(auxFloorCube);
-//     auxFloorCube.translateY(0.01);
-//   }
-// }
 
 // Cria cubos
 const cubeSize = 2;
@@ -316,7 +295,7 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   const stepGeometry = new THREE.BoxGeometry(1, 0.5, 5);
   const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
   const stepMaterial = new THREE.MeshPhongMaterial({ color: "white" });
-  tex = textureLoader.load('./assets/textures/5-Stone-Block-Wall-Background-Texture-copy.jpg')
+  tex = textureLoader.load('./assets/textures/b01774b7a07dbf7112edec64a21e9f94.jpg')
   stepMaterial.map = tex;
   for (let i = 0; i < numberOfSteps; i++) {
     const step = new THREE.Mesh(stepGeometry, stepMaterial);
@@ -448,36 +427,21 @@ const checkDistanceBetweenManAndInterruptors = () => {
   });
 };
 //Cria primeira area
-let planeMaterial1 = new THREE.MeshLambertMaterial({ color: 'gray' });
+let planeMaterial1 = new THREE.MeshLambertMaterial();
 
 let planA1 = new THREE.Mesh(planeGeometry, planeMaterial1);
-tex = textureLoader.load('./assets/textures/white-stone-dark-ground-texture-background_125540-1800.jpg');
+tex = textureLoader.load('./assets/textures/istockphoto-1182146265-612x612.jpg');
 planA1.material.map = tex;
 planA1.receiveShadow = true;
 planA1.material.map.wrapS = THREE.RepeatWrapping;
 planA1.material.map.wrapT = THREE.RepeatWrapping;
 planA1.material.map.minFilter = THREE.LinearFilter;
 planA1.material.map.magFilter = THREE.NearestFilter;
-planA1.material.map.repeat.set(1, 1)
+planA1.material.map.repeat.set(10, 10)
 planA1.position.set(49, -4.6, 0);
 scene.add(planA1);
 for (let x = -tiles; x <= tiles - 1; x += 1) {
   for (let z = -tiles; z <= tiles - 1; z += 1) {
-    // let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    // let auxFloorCube = new THREE.Mesh(
-    //   auxFloorCubeGeometry,
-    //   materialAuxFloorCube
-    // );
-    // floorCube.receiveShadow = true;
-    // auxFloorCube.receiveShadow = true;
-
-    // floorCube.position.set(x + 1, -5.0, z);
-    // floorCube.translateX(50);
-
-    // scene.add(floorCube);
-    // floorCube.add(auxFloorCube);
-
-    // auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       // if it is stair position, do not add wall
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
@@ -485,7 +449,7 @@ for (let x = -tiles; x <= tiles - 1; x += 1) {
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
-      borderCube.translateX(50);
+      borderCube.translateX(49);
       borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
@@ -554,19 +518,13 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       auxFloorCubeGeometry,
       materialAuxFloorCube
     );
-
     floorCube.position.set(x, -5.0, z);
     floorCube.translateX(79);
-
     floorCube.receiveShadow = true;
-
     auxFloorCube.receiveShadow = true;
-
     scene.add(floorCube);
-
     floorCube.add(auxFloorCube);
     auxFloorCube.translateY(0.01);
-
     if (Math.abs(z) === roomKey || Math.abs(x) === roomKey) {
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && x <= 0 && z >= -2) continue;
       const clonedMaterial = cubeMaterial.clone();
@@ -584,34 +542,33 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 }
 
 //Cria segunda area
+let planeMaterial2 = new THREE.MeshLambertMaterial();
+
+let planA2 = new THREE.Mesh(planeGeometry, planeMaterial2);
+tex = textureLoader.load('./assets/textures/c3621bb4707f392070dc03a64ef5086c.jpg');
+planA2.material.map = tex;
+planA2.receiveShadow = true;
+planA2.material.map.wrapS = THREE.RepeatWrapping;
+planA2.material.map.wrapT = THREE.RepeatWrapping;
+planA2.material.map.minFilter = THREE.LinearFilter;
+planA2.material.map.magFilter = THREE.NearestFilter;
+planA2.material.map.repeat.set(15, 15)
+planA2.position.set(-53.1, 4.5, 0);
+scene.add(planA2);
+tex = textureLoader.load('./assets/textures/11746.jpg');
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
-    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(
-      auxFloorCubeGeometry,
-      materialAuxFloorCube
-    );
-
-    floorCube.position.set(x - 1, 4, z - 0.5);
-    floorCube.translateX(-50);
-
-    floorCube.receiveShadow = true;
-
-    auxFloorCube.receiveShadow = true;
-
-    scene.add(floorCube);
-
-    floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       // if it is stair position, do not add wall
       if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && z !== -3) continue;
       // add cube above floor
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
+      //  PngItem_201268.png
       borderCube.position.set(x - 0.5, 5.5, z);
-      borderCube.translateX(-50);
+      borderCube.translateX(-53);
       // borderCubeBB
+      borderCube.material.map = tex;
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -631,7 +588,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     );
 
     floorCube.position.set(x, 4, z);
-    floorCube.translateX(-77);
+    floorCube.translateX(-79.5);
 
     floorCube.receiveShadow = true;
 
@@ -645,10 +602,11 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 }
 //porta para a chave
 var doorGeometry = new THREE.BoxGeometry(1, 1, 1);
-let materialDoor = setDefaultMaterial("#32b20b");
+let materialDoor = new THREE.MeshLambertMaterial();
 let doorA2 = new THREE.Mesh(doorGeometry, materialDoor);
 doorA2.scale.set(1, 3, 10);
-doorA2.position.set(-71, 6, 0);
+doorA2.position.set(-75, 6, 1);
+doorA2.material.map = textureLoader.load('./assets/textures/WoodFine0090_1_download600.jpg');
 let doorbb = new THREE.Box3().setFromObject(doorA2);
 collidableCubes.set(doorA2, doorbb);
 scene.add(doorA2);
@@ -682,31 +640,31 @@ for (let x = -6; x < 5; x += 5) {
 }
 
 //Cria terceira area
+let planeMaterial3 = new THREE.MeshLambertMaterial();
+
+let planA3 = new THREE.Mesh(planeGeometry, planeMaterial3);
+tex = textureLoader.load('./assets/textures/designer-floor-tiles-500x500.jpg');
+planA3.material.map = tex;
+planA3.receiveShadow = true;
+planA3.material.map.wrapS = THREE.RepeatWrapping;
+planA3.material.map.wrapT = THREE.RepeatWrapping;
+planA3.material.map.minFilter = THREE.LinearFilter;
+planA3.material.map.magFilter = THREE.NearestFilter;
+planA3.material.map.repeat.set(15, 15)
+planA3.position.set(0, -4.6, 50);
+scene.add(planA3);
+
+tex = textureLoader.load('./assets/textures/istockphoto-619525286-612x612.jpg')
+
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
-    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(
-      auxFloorCubeGeometry,
-      materialAuxFloorCube
-    );
-
-    floorCube.position.set(x - 0.5, -5.0, z + 1);
-    floorCube.translateZ(50);
-
-    floorCube.receiveShadow = true;
-
-    auxFloorCube.receiveShadow = true;
-
-    scene.add(floorCube);
-
-    floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01);
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
       if (Math.abs(x) >= 0 && Math.abs(x) <= 4 && x !== -3) continue;
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x, -3.5, z + 0.5);
       borderCube.translateZ(50);
+      borderCube.material.map = tex;
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -722,6 +680,7 @@ doorA3.scale.set(1, 3, 10);
 doorA3.position.set(0, -3, 71);
 doorA3.rotateY(Math.PI / 2);
 let doorA3bb = new THREE.Box3().setFromObject(doorA3);
+doorA3.material.map = textureLoader.load('./assets/textures/WoodFine0090_1_download600.jpg');
 collidableCubes.set(doorA3, doorA3bb);
 scene.add(doorA3);
 
@@ -804,33 +763,30 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 }
 
 //Cria a area final
-let finalArea = tiles / 2;
+let planeGeometryF = new THREE.PlaneGeometry(tiles + 1, tiles + 1, 1, 1);
+planeGeometryF.rotateX(-Math.PI / 2)
+tex = textureLoader.load('./assets/textures/5fc69124c9b450d6b8c4fbf0e39c4ee3.jpg')
+let planeMaterialF = new THREE.MeshLambertMaterial();
+var planF = new THREE.Mesh(planeGeometryF, planeMaterialF)
+planF.material.map = tex;
+planF.material.map.wrapS = THREE.RepeatWrapping;
+planF.material.map.wrapT = THREE.RepeatWrapping;
+planF.material.map.minFilter = THREE.LinearFilter;
+planF.material.map.magFilter = THREE.NearestFilter;
+planF.material.map.repeat.set(6, 6),
+  planF.receiveShadow = true;
+planF.position.set(0, 4.5, -42.5)
+scene.add(planF);
+let finalArea = tiles / 2
 for (let x = -finalArea; x <= finalArea; x += 1) {
   for (let z = -finalArea; z <= finalArea; z += 1) {
-    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(
-      auxFloorCubeGeometry,
-      materialAuxFloorCube
-    );
-
-    floorCube.position.set(x, 4.0, z - 1);
-    floorCube.translateZ(-40);
-
-    floorCube.receiveShadow = true;
-
-    auxFloorCube.receiveShadow = true;
-
-    scene.add(floorCube);
-
-    floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01);
-
     if (Math.abs(x) === finalArea || Math.abs(z) === finalArea) {
       if (Math.abs(x) >= 0 && Math.abs(x) <= 4 && x !== -3 && z > 0) continue;
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5 * (x > 0 ? -1 : 1), 5.5, z - 1.5);
-      borderCube.translateZ(-40);
+      borderCube.material.map = textureLoader.load('./assets/textures/il_794xN.3444038400_e029.jpg')
+      borderCube.translateZ(-42.5);
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -848,7 +804,7 @@ let materialPlatform = setDefaultMaterial("#DEB887");
 let platform = new THREE.Mesh(platformGeometry, materialPlatform);
 
 platform.position.set(0, 4.5, 0);
-platform.translateZ(-40);
+platform.translateZ(-44);
 let finalPlatformBB = new THREE.Box3().setFromObject(platform);
 // platform.translateX(-2.5);
 scene.add(platform);
@@ -870,7 +826,7 @@ camera = new THREE.PerspectiveCamera(
 camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.position.setFromSphericalCoords(
-  200,
+  20,
   Math.PI / 3, // 60 degrees from positive Y-axis and 30 degrees to XZ-plane
   Math.PI / 4 // 45 degrees, between positive X and Z axes, thus on XZ-plane
 );
@@ -1007,7 +963,6 @@ allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer) {
   keySound.setVolume(1);
 });
 
-})
 
 const plataformaSound = new THREE.Audio(music)
 allAudios.load('./assets/sounds/plataforma.wav', function (buffer) {
@@ -1016,7 +971,7 @@ allAudios.load('./assets/sounds/plataforma.wav', function (buffer) {
   plataformaSound.setVolume(1);
 });
 
-})
+
 
 const ponteSound = new THREE.Audio(music)
 allAudios.load('./assets/sounds/bloco.wav', function (buffer) {
@@ -1025,7 +980,7 @@ allAudios.load('./assets/sounds/bloco.wav', function (buffer) {
   ponteSound.setVolume(1);
 });
 
-})
+
 
 const doorSound = new THREE.Audio(music)
 allAudios.load('./assets/sounds/porta.wav', function (buffer) {
