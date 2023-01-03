@@ -905,6 +905,7 @@ let right = 0;
 let left = 0;
 let tempVector = new THREE.Vector3();
 let upVector = new THREE.Vector3(0, 1, 0);
+var joystickMoviment = false;
 
 function addJoystick() {
 
@@ -921,9 +922,10 @@ function addJoystick() {
     const forward = data.vector.y
     const turn = data.vector.x
     up = down = left = right = 0;
+    joystickMoviment = true;
 
-   /*  console.log("Valor turn: ", turn)
-    console.log("Valor forward: ", forward) */
+    console.log("Valor turn: ", turn)
+    console.log("Valor forward: ", forward) 
 
     if (Math.abs(forward) >= Math.abs(turn)) {
       if (forward > 0)
@@ -945,6 +947,7 @@ function addJoystick() {
     up = 0
     left = 0
     right = 0
+    joystickMoviment = false;
   })
 
 }
@@ -1463,7 +1466,7 @@ function render() {
 
   keyboardUpdate();
 
-  if (keyboardOn(keyboard)) {
+  if (keyboardOn(keyboard) || joystickMoviment == true) {
     for (var i = 0; i < mixer.length; i++) mixer[i].update(delta * 2);
   }
 }
