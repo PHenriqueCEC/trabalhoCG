@@ -5,7 +5,7 @@ import {
   initRenderer,
   setDefaultMaterial,
   onWindowResize,
-  initCamera
+  initCamera,
 } from "../libs/util/util.js";
 import {
   keyboardOn,
@@ -20,6 +20,7 @@ import {
   whatTile,
   insertCubesThirdArea,
   positionSpotlightsThirdArea,
+  collectKey,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
@@ -96,11 +97,13 @@ dirLight.name = "Direction Light";
 
 dirLight.visible = true;
 
-tex = textureLoader.load('./assets/textures/WoodFine0090_1_download600.jpg')
+tex = textureLoader.load("./assets/textures/WoodFine0090_1_download600.jpg");
 material = new THREE.MeshLambertMaterial(); // Create a basic material
 material.map = tex;
 const cubeMaterial = new THREE.MeshLambertMaterial();
-tex = textureLoader.load('./assets/textures/seamless_beach_sand_texture_by_hhh316_d4hr45u-pre.jpg')
+tex = textureLoader.load(
+  "./assets/textures/seamless_beach_sand_texture_by_hhh316_d4hr45u-pre.jpg"
+);
 cubeMaterial.map = tex;
 camera = initCamera(new THREE.Vector3(0, 20, 20)); // Init camera in this position
 
@@ -119,19 +122,26 @@ keyboard = new KeyboardState();
 
 // Cria plano
 const planeMaxSize = 42;
-let planeGeometry = new THREE.PlaneGeometry(planeMaxSize + 1, planeMaxSize + 1, 1, 1);
-planeGeometry.rotateX(-Math.PI / 2)
-tex = textureLoader.load('./assets/textures/istockphoto-1221955356-612x612.jpg')
-let planeMaterial = new THREE.MeshLambertMaterial({ color: '#EFDAB4' });
-var plan = new THREE.Mesh(planeGeometry, planeMaterial)
+let planeGeometry = new THREE.PlaneGeometry(
+  planeMaxSize + 1,
+  planeMaxSize + 1,
+  1,
+  1
+);
+planeGeometry.rotateX(-Math.PI / 2);
+tex = textureLoader.load(
+  "./assets/textures/istockphoto-1221955356-612x612.jpg"
+);
+let planeMaterial = new THREE.MeshLambertMaterial({ color: "#EFDAB4" });
+var plan = new THREE.Mesh(planeGeometry, planeMaterial);
 plan.material.map = tex;
 plan.material.map.wrapS = THREE.RepeatWrapping;
 plan.material.map.wrapT = THREE.RepeatWrapping;
 plan.material.map.minFilter = THREE.LinearFilter;
 plan.material.map.magFilter = THREE.NearestFilter;
-plan.material.map.repeat.set(15, 15)
+plan.material.map.repeat.set(15, 15);
 plan.receiveShadow = true;
-plan.translateY(0.1)
+plan.translateY(0.1);
 scene.add(plan);
 
 // Criando o chão
@@ -295,7 +305,9 @@ const createStairs = ({ numberOfSteps, direction, rotation, portalColor }) => {
   const stepGeometry = new THREE.BoxGeometry(1, 0.5, 5);
   const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
   const stepMaterial = new THREE.MeshPhongMaterial({ color: "white" });
-  tex = textureLoader.load('./assets/textures/b01774b7a07dbf7112edec64a21e9f94.jpg')
+  tex = textureLoader.load(
+    "./assets/textures/b01774b7a07dbf7112edec64a21e9f94.jpg"
+  );
   stepMaterial.map = tex;
   for (let i = 0; i < numberOfSteps; i++) {
     const step = new THREE.Mesh(stepGeometry, stepMaterial);
@@ -430,14 +442,16 @@ const checkDistanceBetweenManAndInterruptors = () => {
 let planeMaterial1 = new THREE.MeshLambertMaterial();
 
 let planA1 = new THREE.Mesh(planeGeometry, planeMaterial1);
-tex = textureLoader.load('./assets/textures/istockphoto-1182146265-612x612.jpg');
+tex = textureLoader.load(
+  "./assets/textures/istockphoto-1182146265-612x612.jpg"
+);
 planA1.material.map = tex;
 planA1.receiveShadow = true;
 planA1.material.map.wrapS = THREE.RepeatWrapping;
 planA1.material.map.wrapT = THREE.RepeatWrapping;
 planA1.material.map.minFilter = THREE.LinearFilter;
 planA1.material.map.magFilter = THREE.NearestFilter;
-planA1.material.map.repeat.set(10, 10)
+planA1.material.map.repeat.set(10, 10);
 planA1.position.set(49, -4.6, 0);
 scene.add(planA1);
 for (let x = -tiles; x <= tiles - 1; x += 1) {
@@ -450,7 +464,9 @@ for (let x = -tiles; x <= tiles - 1; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
       borderCube.translateX(49);
-      borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
+      borderCube.material.map = textureLoader.load(
+        "./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg"
+      );
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       // borderCubeBB
@@ -491,7 +507,9 @@ for (let i = -1.5; i < 3; i += 2) {
   const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
   borderCube.position.set(x + i, -3.5, z - 3);
   // borderCubeBB
-  borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
+  borderCube.material.map = textureLoader.load(
+    "./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg"
+  );
   borderCube.castShadow = true;
   borderCube.receiveShadow = true;
   const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -531,7 +549,9 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
       borderCube.translateX(79);
-      borderCube.material.map = textureLoader.load('./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg');
+      borderCube.material.map = textureLoader.load(
+        "./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg"
+      );
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -545,17 +565,19 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 let planeMaterial2 = new THREE.MeshLambertMaterial();
 
 let planA2 = new THREE.Mesh(planeGeometry, planeMaterial2);
-tex = textureLoader.load('./assets/textures/c3621bb4707f392070dc03a64ef5086c.jpg');
+tex = textureLoader.load(
+  "./assets/textures/c3621bb4707f392070dc03a64ef5086c.jpg"
+);
 planA2.material.map = tex;
 planA2.receiveShadow = true;
 planA2.material.map.wrapS = THREE.RepeatWrapping;
 planA2.material.map.wrapT = THREE.RepeatWrapping;
 planA2.material.map.minFilter = THREE.LinearFilter;
 planA2.material.map.magFilter = THREE.NearestFilter;
-planA2.material.map.repeat.set(15, 15)
+planA2.material.map.repeat.set(15, 15);
 planA2.position.set(-53.1, 4.5, 0);
 scene.add(planA2);
-tex = textureLoader.load('./assets/textures/11746.jpg');
+tex = textureLoader.load("./assets/textures/11746.jpg");
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
     if (Math.abs(x) === planeBorderWidth || Math.abs(z) === planeBorderWidth) {
@@ -606,7 +628,9 @@ let materialDoor = new THREE.MeshLambertMaterial();
 let doorA2 = new THREE.Mesh(doorGeometry, materialDoor);
 doorA2.scale.set(1, 3, 10);
 doorA2.position.set(-75, 6, 1);
-doorA2.material.map = textureLoader.load('./assets/textures/WoodFine0090_1_download600.jpg');
+doorA2.material.map = textureLoader.load(
+  "./assets/textures/WoodFine0090_1_download600.jpg"
+);
 let doorbb = new THREE.Box3().setFromObject(doorA2);
 collidableCubes.set(doorA2, doorbb);
 scene.add(doorA2);
@@ -643,18 +667,18 @@ for (let x = -6; x < 5; x += 5) {
 let planeMaterial3 = new THREE.MeshLambertMaterial();
 
 let planA3 = new THREE.Mesh(planeGeometry, planeMaterial3);
-tex = textureLoader.load('./assets/textures/designer-floor-tiles-500x500.jpg');
+tex = textureLoader.load("./assets/textures/designer-floor-tiles-500x500.jpg");
 planA3.material.map = tex;
 planA3.receiveShadow = true;
 planA3.material.map.wrapS = THREE.RepeatWrapping;
 planA3.material.map.wrapT = THREE.RepeatWrapping;
 planA3.material.map.minFilter = THREE.LinearFilter;
 planA3.material.map.magFilter = THREE.NearestFilter;
-planA3.material.map.repeat.set(15, 15)
+planA3.material.map.repeat.set(15, 15);
 planA3.position.set(0, -4.6, 50);
 scene.add(planA3);
 
-tex = textureLoader.load('./assets/textures/istockphoto-619525286-612x612.jpg')
+tex = textureLoader.load("./assets/textures/istockphoto-619525286-612x612.jpg");
 
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
@@ -680,7 +704,9 @@ doorA3.scale.set(1, 3, 10);
 doorA3.position.set(0, -3, 71);
 doorA3.rotateY(Math.PI / 2);
 let doorA3bb = new THREE.Box3().setFromObject(doorA3);
-doorA3.material.map = textureLoader.load('./assets/textures/WoodFine0090_1_download600.jpg');
+doorA3.material.map = textureLoader.load(
+  "./assets/textures/WoodFine0090_1_download600.jpg"
+);
 collidableCubes.set(doorA3, doorA3bb);
 scene.add(doorA3);
 
@@ -764,20 +790,21 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
 
 //Cria a area final
 let planeGeometryF = new THREE.PlaneGeometry(tiles + 1, tiles + 1, 1, 1);
-planeGeometryF.rotateX(-Math.PI / 2)
-tex = textureLoader.load('./assets/textures/5fc69124c9b450d6b8c4fbf0e39c4ee3.jpg')
+planeGeometryF.rotateX(-Math.PI / 2);
+tex = textureLoader.load(
+  "./assets/textures/5fc69124c9b450d6b8c4fbf0e39c4ee3.jpg"
+);
 let planeMaterialF = new THREE.MeshLambertMaterial();
-var planF = new THREE.Mesh(planeGeometryF, planeMaterialF)
+var planF = new THREE.Mesh(planeGeometryF, planeMaterialF);
 planF.material.map = tex;
 planF.material.map.wrapS = THREE.RepeatWrapping;
 planF.material.map.wrapT = THREE.RepeatWrapping;
 planF.material.map.minFilter = THREE.LinearFilter;
 planF.material.map.magFilter = THREE.NearestFilter;
-planF.material.map.repeat.set(6, 6),
-  planF.receiveShadow = true;
-planF.position.set(0, 4.5, -42.5)
+planF.material.map.repeat.set(6, 6), (planF.receiveShadow = true);
+planF.position.set(0, 4.5, -42.5);
 scene.add(planF);
-let finalArea = tiles / 2
+let finalArea = tiles / 2;
 for (let x = -finalArea; x <= finalArea; x += 1) {
   for (let z = -finalArea; z <= finalArea; z += 1) {
     if (Math.abs(x) === finalArea || Math.abs(z) === finalArea) {
@@ -785,7 +812,9 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5 * (x > 0 ? -1 : 1), 5.5, z - 1.5);
-      borderCube.material.map = textureLoader.load('./assets/textures/il_794xN.3444038400_e029.jpg')
+      borderCube.material.map = textureLoader.load(
+        "./assets/textures/il_794xN.3444038400_e029.jpg"
+      );
       borderCube.translateZ(-42.5);
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
@@ -949,41 +978,36 @@ const allAudios = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(music);
 
-allAudios.load('./assets/sounds/trilha.mp3', function (buffer) {
+allAudios.load("./assets/sounds/trilha.mp3", function (buffer) {
   backgroundSound.setBuffer(buffer);
   backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.2);
   //backgroundSound.play();
 });
 
-const keySound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/collectedKeys.mp3', function (buffer) {
+const keySound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/collectedKeys.mp3", function (buffer) {
   keySound.setBuffer(buffer);
   keySound.setLoop(false);
   keySound.setVolume(1);
 });
 
-
-const plataformaSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/plataforma.wav', function (buffer) {
+const plataformaSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/plataforma.wav", function (buffer) {
   plataformaSound.setBuffer(buffer);
   plataformaSound.setLoop(false);
   plataformaSound.setVolume(1);
 });
 
-
-
-const ponteSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/bloco.wav', function (buffer) {
+const ponteSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/bloco.wav", function (buffer) {
   ponteSound.setBuffer(buffer);
   ponteSound.setLoop(false);
   ponteSound.setVolume(1);
 });
 
-
-
-const doorSound = new THREE.Audio(music)
-allAudios.load('./assets/sounds/porta.wav', function (buffer) {
+const doorSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/porta.wav", function (buffer) {
   doorSound.setBuffer(buffer);
   doorSound.setLoop(false);
   doorSound.setVolume(1);
@@ -1033,8 +1057,7 @@ function checkKeyCollision() {
       keySound.play();
       scene.remove(keys[color].object);
       keys[color].boundingBox.translate(new THREE.Vector3(0, -10, 0));
-      characterCollectedKeys[color] = true;
-      document.getElementById(color + "-key-quantity").innerHTML = "x1";
+      collectKey(color);
     }
   });
 }
@@ -1128,12 +1151,9 @@ function keyboardUpdate() {
     changeProjection();
   }
   if (keyboard.down("T")) {
-    characterCollectedKeys.blue = true;
-    characterCollectedKeys.red = true;
-    characterCollectedKeys.yellow = true;
-    document.getElementById("blue-key-quantity").innerHTML = "x1";
-    document.getElementById("red-key-quantity").innerHTML = "x1";
-    document.getElementById("yellow-key-quantity").innerHTML = "x1";
+    collectKey("red");
+    collectKey("blue");
+    collectKey("yellow");
   }
   if (
     (keyboard.pressed("W") || keyboard.pressed("up")) &&

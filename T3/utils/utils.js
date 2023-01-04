@@ -286,3 +286,11 @@ export function insertCubesThirdArea(
     cont++;
   });
 }
+
+export function collectKey(keyColor) {
+  characterCollectedKeys[keyColor] = true;
+  document.getElementById(`${keyColor}-key`).style.visibility = "visible";
+  const $p = document.getElementById(`${keyColor}-key-quantity`);
+  $p.style.visibility = "visible";
+  $p.innerHTML = "x1";
+}
