@@ -1037,6 +1037,7 @@ function checkKeyCollision() {
       scene.remove(keys[color].object);
       keys[color].boundingBox.translate(new THREE.Vector3(0, -10, 0));
       characterCollectedKeys[color] = true;
+      document.getElementById(color + "-key-quantity").innerHTML = "x1";
     }
   });
 }
@@ -1133,6 +1134,9 @@ function keyboardUpdate() {
     characterCollectedKeys.blue = true;
     characterCollectedKeys.red = true;
     characterCollectedKeys.yellow = true;
+    document.getElementById("blue-key-quantity").innerHTML = "x1";
+    document.getElementById("red-key-quantity").innerHTML = "x1";
+    document.getElementById("yellow-key-quantity").innerHTML = "x1";
   }
   if (
     (keyboard.pressed("W") || keyboard.pressed("up")) &&
