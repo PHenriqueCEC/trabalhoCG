@@ -1238,8 +1238,8 @@ function checkMovement(axis, distance) {
   }
 }
 
-const diagonalDistance = 0.02; //Trocar para 0.02
-const normalDistance = 0.12; //Trocar para 0.12
+const diagonalDistance = 0.08; 
+const normalDistance = 0.12; 
 
 function keyboardUpdate() {
   keyboard.update();

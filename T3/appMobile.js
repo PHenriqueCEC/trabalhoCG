@@ -973,6 +973,9 @@ Object.keys(keys).forEach((objKey) => {
 
 // insertCubes(cubeMaterial, collidableCubes, scene);
 
+let esqInf = 0
+let esqSup = 0
+let dirInf = 0;
 let dirSup = 0;
 let up = 0;
 let down = 0;
@@ -981,9 +984,6 @@ let left = 0;
 var joystickMoviment = false;
 
 function addJoystick() {
-
-  // Details in the link bellow:
-  // https://yoannmoi.net/nipplejs/
 
   let joystickL = nipplejs.create({
     zone: document.getElementById('joystickWrapper1'),
@@ -994,11 +994,31 @@ function addJoystick() {
   joystickL.on('move', function (evt, data) {
     const forward = data.vector.y
     const turn = data.vector.x
-    up = down = left = right = dirSup = 0;
+    up = down = left = right = dirSup = dirInf = esqInf = esqSup = 0;
     joystickMoviment = true;
 
     console.log("Valor turn: ", turn)
-    console.log("Valor forward: ", forward) 
+    console.log("Valor forward: ", forward)
+
+    //Direita diagonal
+    if (Math.abs(forward) >= 0.5 && Math.abs(turn) >= 0.5) {
+      if (forward > 0 && turn > 0) {
+        dirSup = Math.abs(forward)
+      }
+      else if (forward < 0 && turn > 0) {
+        dirInf = Math.abs(forward)
+      }
+
+      else if(forward > 0 && turn < 0) {
+        esqSup = Math.abs(forward)
+      }
+
+      else if(forward < 0 && turn < 0) {
+        esqInf = Math.abs(forward)
+      }
+
+    }
+
 
     if (Math.abs(forward) >= Math.abs(turn)) {
       if (forward > 0)
@@ -1012,7 +1032,7 @@ function addJoystick() {
       else if (turn < 0)
         left = Math.abs(turn)
     }
-  
+
   })
 
   joystickL.on('end', function (evt) {
@@ -1021,6 +1041,8 @@ function addJoystick() {
     left = 0
     right = 0
     dirSup = 0
+    esqInf = 0
+    esqSup = 0
     joystickMoviment = false;
   })
 
@@ -1107,7 +1129,7 @@ allAudios.load("./assets/sounds/porta.wav", function (buffer) {
 });
 
 const winSound = new THREE.Audio(music);
-allAudios.load("./assets/sounds/win.wav", function (buffer) { 
+allAudios.load("./assets/sounds/win.wav", function (buffer) {
   winSound.setBuffer(buffer);
   winSound.setLoop(false);
   winSound.setVolume(1);
@@ -1242,9 +1264,8 @@ function checkMovement(axis, distance) {
   }
 }
 
-const diagonalDistance = 0.2; //Trocar para 0.02
-const normalDistance = 0.2; //Trocar para 0.12
-
+const diagonalDistance = 0.08;
+const normalDistance = 0.12;
 function keyboardUpdate() {
   keyboard.update();
 
@@ -1518,8 +1539,27 @@ function lerps() {
 document.addEventListener("mousedown", checkObjectClicked, false);
 function updatePlayer() {
 
+  if (dirSup > 0) {
+    new_direction = 90;
+    checkMovement("z", -normalDistance);
+  }
 
-  if (up > 0) {
+  else if (dirInf > 0) {
+    new_direction = 0;
+    checkMovement("x", normalDistance);
+  }
+
+  else if (esqSup > 0) {
+    new_direction = 180;
+    checkMovement("x", -normalDistance);
+  }
+
+  else if(esqInf > 0) {
+    new_direction = 270;
+    checkMovement("z", normalDistance);
+  }
+
+  else if (up > 0) {
     //console.log("Valor up: ", up);
     new_direction = 135;
     checkMovement("x", -diagonalDistance);
@@ -1527,7 +1567,7 @@ function updatePlayer() {
 
   }
 
-   else if (down > 0) {
+  else if (down > 0) {
     //console.log("Valor down: ", down);
     new_direction = 315;
     checkMovement("x", diagonalDistance);
@@ -1536,7 +1576,6 @@ function updatePlayer() {
 
   else if (right > 0) {
     //console.log("valor right: ", right);
-    //console.log('Entrei aqui')
     new_direction = 45;
     checkMovement("x", diagonalDistance);
     checkMovement("z", -diagonalDistance);
