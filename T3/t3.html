@@ -1,29 +1,106 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>t3</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link rel="stylesheet" href="../html/resources/default.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-  <title>t3</title>
-  <link rel="shortcut icon" href="../favicon.ico" />
-  <link rel="stylesheet" href="../html/resources/default.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <script>
-    window.onload = function() {
-      var context = new AudioContext();
-    }
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"
+    ></script>
+    <script>
+      window.onload = function () {
+        var context = new AudioContext();
+      };
     </script>
-</head>
+    <style>
+      body {
+        position: relative;
+      }
+      #key1,
+      #key2,
+      #key3 {
+        position: absolute;
+        height: 100px;
+        width: 100px;
+        bottom: 0;
+        opacity: 0.5;
+      }
+      #key1 {
+        left: 0;
+      }
+      #key2 {
+        left: 200px;
+      }
+      #key3 {
+        left: 400px;
+      }
+      p {
+        position: absolute;
+        bottom: 25px;
+        font-size: 50px;
+        padding: 0;
+        margin: 0;
+        opacity: 0.7;
+        color: white;
+      }
+      #blue-key-quantity {
+        left: 115px;
+      }
+      #red-key-quantity {
+        left: 315px;
+      }
+      #yellow-key-quantity {
+        left: 515px;
+      }
+    </style>
+  </head>
 
-<body>
-  <!-- Import maps polyfill -- Remove this when import maps will be widely supported-->
-  <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
-  <script type="importmap">
+  <body>
+    <!-- Import maps polyfill -- Remove this when import maps will be widely supported-->
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"
+    ></script>
+    <script type="importmap">
       { "imports": { "three": "../build/three.module.js" } }
     </script>
 
-  <div id="webgl-output">
-    <script type="module" src="t3.js"></script>
-  </div>
-</body>
-
+    <div id="webgl-output">
+      <script type="module" src="t3.js"></script>
+    </div>
+    <model-viewer
+      id="key1"
+      src="./assets/keys/blueKey.gltf"
+      alt="Key"
+      camera-orbit="90deg 0 0"
+      ar
+      ios-src="./assets/keys/key.gltf"
+    ></model-viewer>
+    <model-viewer
+      id="key2"
+      src="./assets/keys/redKey.gltf"
+      alt="Key"
+      camera-orbit="90deg 0 0"
+      ar
+      ios-src="./assets/keys/key.gltf"
+    ></model-viewer>
+    <model-viewer
+      id="key3"
+      src="./assets/keys/yellowKey.gltf"
+      alt="Key"
+      camera-orbit="90deg 0 0"
+      ar
+      ios-src="./assets/keys/key.gltf"
+    ></model-viewer>
+    <p id="blue-key-quantity">x0</p>
+    <p id="red-key-quantity">x0</p>
+    <p id="yellow-key-quantity">x0</p>
+  </body>
 </html>
