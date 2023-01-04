@@ -478,6 +478,10 @@ const checkDistanceBetweenManAndInterruptors = () => {
     }
   });
 };
+let sk = tiles / 2;
+let planeGeometryK = new THREE.PlaneGeometry(sk, sk, 1, 1);
+planeGeometryK.rotateX(-Math.PI / 2);
+
 //Cria primeira area
 let planeMaterial1 = new THREE.MeshLambertMaterial();
 
@@ -568,23 +572,23 @@ for (let i = -1.5; i < 3; i += 2) {
 }
 
 //Chave azul
-let roomKey = tiles / 4;
+let planKeyAMaterial = new THREE.MeshLambertMaterial();
+let planKeyA = new THREE.Mesh(planeGeometryK, planKeyAMaterial);
+planKeyA.material.map = textureLoader.load("./assets/textures/istockphoto-1182146265-612x612.jpg");
+planKeyA.receiveShadow = true;
+planKeyA.material.map.wrapS = THREE.RepeatWrapping;
+planKeyA.material.map.wrapT = THREE.RepeatWrapping;
+planKeyA.material.map.minFilter = THREE.LinearFilter;
+planKeyA.material.map.magFilter = THREE.NearestFilter;
+planKeyA.material.map.repeat.set(2.5, 2.5);
+planKeyA.position.set(79, -4.6, 0);
+scene.add(planKeyA);
+
+let roomKey = tiles / 4 - 0.25;
 for (let x = -roomKey; x <= roomKey; x += 1) {
   for (let z = -roomKey; z <= roomKey; z += 1) {
-    let floorCube = new THREE.Mesh(floorCubeGeometry, materialFloorCube);
-    let auxFloorCube = new THREE.Mesh(
-      auxFloorCubeGeometry,
-      materialAuxFloorCube
-    );
-    floorCube.position.set(x, -5.0, z);
-    floorCube.translateX(79);
-    floorCube.receiveShadow = true;
-    auxFloorCube.receiveShadow = true;
-    scene.add(floorCube);
-    floorCube.add(auxFloorCube);
-    auxFloorCube.translateY(0.01);
     if (Math.abs(z) === roomKey || Math.abs(x) === roomKey) {
-      if (Math.abs(z) >= 0 && Math.abs(z) <= 4 && x <= 0 && z >= -2) continue;
+      if (x === -roomKey && !(z <= 4 && z >= 0)) break;
       const clonedMaterial = cubeMaterial.clone();
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, -3.5, z);
@@ -597,6 +601,7 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
       scene.add(borderCube);
+
     }
   }
 }
@@ -895,7 +900,7 @@ camera = new THREE.PerspectiveCamera(
 camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.position.setFromSphericalCoords(
-  20,
+  200,
   Math.PI / 3, // 60 degrees from positive Y-axis and 30 degrees to XZ-plane
   Math.PI / 4 // 45 degrees, between positive X and Z axes, thus on XZ-plane
 );
