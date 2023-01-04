@@ -25,6 +25,47 @@ import {
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
 
+const progressBarFill = document.querySelector(".progress-bar-fill");
+const progressBarText = document.querySelector(".progress-bar-text");
+// Create the loading manager
+const loadingManager = new THREE.LoadingManager(
+  () => {
+    console.log("loaded");
+    const onStartButtonClick = () => {
+      const loadingScreen = document.getElementById("loading-screen");
+      loadingScreen.classList.add("fade-out");
+      loadingScreen.addEventListener("transitionend", () => {
+        loadingScreen.style.display = "none";
+      });
+    };
+
+    // timeout para que seja possível ver o loading completando
+    setTimeout(() => {
+      const startButton = document.querySelector(".button");
+      startButton.addEventListener("click", onStartButtonClick);
+      startButton.style.visibility = "visible";
+
+      const progressBar = document.querySelector(".progress-bar");
+      progressBar.style.display = "none";
+      const spinner = document.querySelector(".spinner");
+      spinner.style.display = "none";
+    }, 500);
+  },
+  (_, itemsLoaded, itemsTotal) => {
+    const progress = Math.round((itemsLoaded / itemsTotal) * 100);
+    progressBarFill.style.width = `${progress}%`;
+    progressBarText.textContent = `${progress}%`;
+  },
+  (url) => {
+    console.log("There was an error loading " + url);
+  }
+);
+
+// Loaders
+var textureLoader = new THREE.TextureLoader(loadingManager);
+var loader = new GLTFLoader(loadingManager);
+const allAudios = new THREE.AudioLoader(loadingManager);
+
 var thirdAreaCompleted = false;
 
 const slerpConfig = {
@@ -69,7 +110,6 @@ const area1Mec = {
 };
 
 let scene, renderer, camera, keyboard, material, clock;
-var textureLoader = new THREE.TextureLoader();
 var tex;
 scene = new THREE.Scene(); // Create main scene
 clock = new THREE.Clock();
@@ -871,7 +911,6 @@ let manholder = new THREE.Object3D(); // Objeto de auxilio para manejamento do p
 
 var man = null;
 let manBB = null;
-var loader = new GLTFLoader();
 loader.load("../assets/objects/walkingMan.glb", function (gltf) {
   man = gltf.scene;
   man.traverse(function (child) {
@@ -973,8 +1012,6 @@ function changeProjection() {
 
 const music = new THREE.AudioListener();
 camera.add(music);
-
-const allAudios = new THREE.AudioLoader();
 
 const backgroundSound = new THREE.Audio(music);
 
