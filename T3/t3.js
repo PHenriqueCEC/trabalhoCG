@@ -1050,6 +1050,13 @@ allAudios.load("./assets/sounds/porta.wav", function (buffer) {
   doorSound.setVolume(1);
 });
 
+const winSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/win.wav", function (buffer) { 
+  winSound.setBuffer(buffer);
+  winSound.setLoop(false);
+  winSound.setVolume(1);
+
+})
 // rotaciona o personagem
 function rotate() {
   if (new_direction != direction) {
@@ -1462,6 +1469,7 @@ function render() {
   lerps();
 
   if (manBB && finalPlatformBB && manBB.intersectsBox(finalPlatformBB)) {
+    winSound.play();
     // mensagem de alerta para fim do jogo
     alert("Fim de jogo!\n\n Parabéns, você conseguiu!");
 

@@ -973,6 +973,7 @@ Object.keys(keys).forEach((objKey) => {
 
 // insertCubes(cubeMaterial, collidableCubes, scene);
 
+let dirSup = 0;
 let up = 0;
 let down = 0;
 let right = 0;
@@ -993,7 +994,7 @@ function addJoystick() {
   joystickL.on('move', function (evt, data) {
     const forward = data.vector.y
     const turn = data.vector.x
-    up = down = left = right = 0;
+    up = down = left = right = dirSup = 0;
     joystickMoviment = true;
 
     console.log("Valor turn: ", turn)
@@ -1019,6 +1020,7 @@ function addJoystick() {
     up = 0
     left = 0
     right = 0
+    dirSup = 0
     joystickMoviment = false;
   })
 
@@ -1103,6 +1105,14 @@ allAudios.load("./assets/sounds/porta.wav", function (buffer) {
   doorSound.setLoop(false);
   doorSound.setVolume(1);
 });
+
+const winSound = new THREE.Audio(music);
+allAudios.load("./assets/sounds/win.wav", function (buffer) { 
+  winSound.setBuffer(buffer);
+  winSound.setLoop(false);
+  winSound.setVolume(1);
+
+})
 
 // rotaciona o personagem
 function rotate() {
@@ -1232,8 +1242,8 @@ function checkMovement(axis, distance) {
   }
 }
 
-const diagonalDistance = 0.3; //Trocar para 0.02
-const normalDistance = 0.3; //Trocar para 0.12
+const diagonalDistance = 0.2; //Trocar para 0.02
+const normalDistance = 0.2; //Trocar para 0.12
 
 function keyboardUpdate() {
   keyboard.update();
@@ -1510,6 +1520,7 @@ function updatePlayer() {
 
 
   if (up > 0) {
+    //console.log("Valor up: ", up);
     new_direction = 135;
     checkMovement("x", -diagonalDistance);
     checkMovement("z", -diagonalDistance);
@@ -1517,19 +1528,22 @@ function updatePlayer() {
   }
 
    else if (down > 0) {
+    //console.log("Valor down: ", down);
     new_direction = 315;
     checkMovement("x", diagonalDistance);
     checkMovement("z", diagonalDistance);
   }
 
   else if (right > 0) {
-    console.log('Entrei aqui')
+    //console.log("valor right: ", right);
+    //console.log('Entrei aqui')
     new_direction = 45;
     checkMovement("x", diagonalDistance);
     checkMovement("z", -diagonalDistance);
   }
 
   else if (left > 0) {
+    //console.log("valor left: ", left)
     new_direction = 225;
     checkMovement("x", -diagonalDistance);
     checkMovement("z", diagonalDistance);
@@ -1548,6 +1562,7 @@ function render() {
   lerps();
 
   if (manBB && finalPlatformBB && manBB.intersectsBox(finalPlatformBB)) {
+    winSound.play();
     // mensagem de alerta para fim do jogo
     alert("Fim de jogo!\n\n Parabéns, você conseguiu!");
 
