@@ -109,3 +109,12 @@ body {
   border-color: #ff3d00;
   animation-delay: 1s;
 }
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
