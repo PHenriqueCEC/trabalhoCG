@@ -556,7 +556,7 @@ for (let i = 0; i < 3; i++) {
 for (let i = -1.5; i < 3; i += 2) {
   const clonedMaterial = cubeMaterial.clone();
   const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
-  borderCube.position.set(x + i, -3.5, z - 3);
+  borderCube.position.set(x + i, -4.5, z - 3);
   // borderCubeBB
   borderCube.material.map = textureLoader.load(
     "./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg"
@@ -571,7 +571,7 @@ for (let i = -1.5; i < 3; i += 2) {
   scene.add(borderCube);
 
   const borderCube2 = new THREE.Mesh(cubeGeometry, clonedMaterial);
-  borderCube2.position.set(x + i, -3.5, z + 4);
+  borderCube2.position.set(x + i, -4.5, z + 4);
   borderCube2.castShadow = true;
   borderCube2.receiveShadow = true;
   const borderCubeBB2 = new THREE.Box3().setFromObject(borderCube2);
