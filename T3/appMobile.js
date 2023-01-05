@@ -25,13 +25,15 @@ import {
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
 
+
+const joystickWrapper = document.getElementById('joystickWrapper1')
 const progressBarFill = document.querySelector(".progress-bar-fill");
 const progressBarText = document.querySelector(".progress-bar-text");
 // Create the loading manager
 const loadingManager = new THREE.LoadingManager(
   () => {
-    console.log("loaded");
     const onStartButtonClick = () => {
+      joystickWrapper.style.visibility = "visible"
       const loadingScreen = document.getElementById("loading-screen");
       loadingScreen.classList.add("fade-out");
       loadingScreen.addEventListener("transitionend", () => {
@@ -985,11 +987,13 @@ var joystickMoviment = false;
 
 function addJoystick() {
 
+
   let joystickL = nipplejs.create({
-    zone: document.getElementById('joystickWrapper1'),
+    zone: joystickWrapper,
     mode: 'static',
     position: { top: '-80px', left: '80px' }
   });
+  joystickWrapper.style.visibility = "hidden"
 
   joystickL.on('move', function (evt, data) {
     const forward = data.vector.y
@@ -1517,7 +1521,7 @@ function lerps() {
         doorA2.position.y - 5,
         doorA2.position.z,
         lerpConfig.alpha
-      )
+      ),
     );
   }
   if (floatingCubesThirdArea.length <= 0) {
