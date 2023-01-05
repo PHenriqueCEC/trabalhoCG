@@ -561,9 +561,6 @@ for (let i = -1.5; i < 3; i += 2) {
   borderCube.material.map = textureLoader.load(
     "./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg"
   );
-  borderCube.material.map = textureLoader.load(
-    "./assets/textures/360_F_362952640_nPNPT14Jf1VtZLuJBT7snEK2OBgrmwhQ.jpg"
-  );
   borderCube.castShadow = true;
   borderCube.receiveShadow = true;
   const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
