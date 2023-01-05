@@ -1104,7 +1104,7 @@ allAudios.load("./assets/sounds/porta.wav", function (buffer) {
 });
 
 const winSound = new THREE.Audio(music);
-allAudios.load("./assets/sounds/win.wav", function (buffer) { 
+allAudios.load("./assets/sounds/win.wav", function (buffer) {
   winSound.setBuffer(buffer);
   winSound.setLoop(false);
   winSound.setVolume(1);
@@ -1238,8 +1238,8 @@ function checkMovement(axis, distance) {
   }
 }
 
-const diagonalDistance = 0.08; 
-const normalDistance = 0.12; 
+const diagonalDistance = 0.08;
+const normalDistance = 0.12;
 
 function keyboardUpdate() {
   keyboard.update();
@@ -1457,6 +1457,25 @@ function checkObjectClicked(event) {
   }
 }
 
+var musicaPorta2 = false
+var musicaPorta3 = false
+
+function tocaMusicaPorta2() {
+
+  if (musicaPorta2 == false) {
+    doorSound.play();
+    musicaPorta2 = true;
+  }
+}
+
+function tocaMusicaPorta3() {
+
+  if (musicaPorta3 == false) {
+    doorSound.play();
+    musicaPorta3 = true;
+  }
+}
+
 function lerps() {
   if (slerpConfig.move) {
     slerpConfig.object.quaternion.slerp(
@@ -1486,6 +1505,7 @@ function lerps() {
   }
   if (floatingCube.length <= 0) {
     collidableCubes.delete(doorA2);
+    tocaMusicaPorta2();
     doorA2.position.lerp(
       new THREE.Vector3(
         doorA2.position.x,
@@ -1499,6 +1519,7 @@ function lerps() {
     thirdAreaCompleted = true;
     dirLight.intensity = 1;
     collidableCubes.delete(doorA3);
+    tocaMusicaPorta3();
     doorA3.position.lerp(
       new THREE.Vector3(
         doorA3.position.x,
