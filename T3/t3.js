@@ -21,6 +21,7 @@ import {
   insertCubesThirdArea,
   positionSpotlightsThirdArea,
   collectKey,
+  positionCubesThirdArea,
 } from "./utils/utils.js";
 import { CSG } from "../libs/other/CSGMesh.js";
 import { AmbientLight, SpotLight, Vector3 } from "../build/three.module.js";
@@ -583,7 +584,9 @@ for (let i = -1.5; i < 3; i += 2) {
 //Chave azul
 let planKeyAMaterial = new THREE.MeshLambertMaterial();
 let planKeyA = new THREE.Mesh(planeGeometryK, planKeyAMaterial);
-planKeyA.material.map = textureLoader.load("./assets/textures/istockphoto-1182146265-612x612.jpg");
+planKeyA.material.map = textureLoader.load(
+  "./assets/textures/istockphoto-1182146265-612x612.jpg"
+);
 planKeyA.receiveShadow = true;
 planKeyA.material.map.wrapS = THREE.RepeatWrapping;
 planKeyA.material.map.wrapT = THREE.RepeatWrapping;
@@ -614,8 +617,6 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
       collidableMeshList.push(borderCubeBB);
       scene.add(borderCube);
-
-
     }
   }
 }
@@ -687,7 +688,9 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x + 0.5, 5.5, z + 1);
       borderCube.translateX(-79.5);
-      borderCube.material.map = textureLoader.load("./assets/textures/11746.jpg");
+      borderCube.material.map = textureLoader.load(
+        "./assets/textures/11746.jpg"
+      );
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -696,7 +699,6 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
     }
   }
 }
-
 
 //porta para a chave
 var doorGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -730,18 +732,6 @@ for (let z = -6; z < 5; z += 5) {
   scene.add(cubeSecondArea);
 }
 
-const floatingCubesThirdArea = [];
-// adiciona cubos flutuantes da terceira area
-for (let x = -6; x < 5; x += 5) {
-  let cubeThirdArea = new THREE.Mesh(
-    cubeSecondAndThirdAreaGeometry,
-    materialCubeSecondArea
-  );
-  cubeThirdArea.position.set(x, -3.6, 63);
-  floatingCubesThirdArea.push(cubeThirdArea);
-  scene.add(cubeThirdArea);
-}
-
 //Cria terceira area
 let planeMaterial3 = new THREE.MeshLambertMaterial();
 
@@ -760,7 +750,6 @@ planA3.position.set(0, -4.6, 50);
 scene.add(planA3);
 
 tex = textureLoader.load("./assets/textures/istockphoto-619525286-612x612.jpg");
-
 
 for (let x = -tiles; x <= tiles; x += 1) {
   for (let z = -tiles; z <= tiles; z += 1) {
@@ -850,10 +839,25 @@ while (numInterruptor < 8) {
 
 insertCubesThirdArea(cubeMaterial, collidableCubes, scene, interruptors);
 
+const floatingCubesThirdArea = [];
+// adiciona cubos flutuantes da terceira area
+positionCubesThirdArea.slice(4, 6).forEach(([x, _, z]) => {
+  let cubeThirdArea = new THREE.Mesh(
+    cubeSecondAndThirdAreaGeometry,
+    materialCubeSecondArea
+  );
+
+  cubeThirdArea.position.set(x, -3.6, z);
+  floatingCubesThirdArea.push(cubeThirdArea);
+  scene.add(cubeThirdArea);
+});
+
 //Chave Amarela
 let planKeyAmMaterial = new THREE.MeshLambertMaterial();
 let planKeyAm = new THREE.Mesh(planeGeometryK, planKeyAmMaterial);
-planKeyAm.material.map = textureLoader.load("./assets/textures/designer-floor-tiles-500x500.jpg");
+planKeyAm.material.map = textureLoader.load(
+  "./assets/textures/designer-floor-tiles-500x500.jpg"
+);
 planKeyAm.receiveShadow = true;
 planKeyAm.material.map.wrapS = THREE.RepeatWrapping;
 planKeyAm.material.map.wrapT = THREE.RepeatWrapping;
@@ -871,7 +875,9 @@ for (let x = -roomKey; x <= roomKey; x += 1) {
       const borderCube = new THREE.Mesh(cubeGeometry, clonedMaterial);
       borderCube.position.set(x, -3.5, z);
       borderCube.translateZ(77);
-      borderCube.material.map = textureLoader.load("./assets/textures/istockphoto-619525286-612x612.jpg");
+      borderCube.material.map = textureLoader.load(
+        "./assets/textures/istockphoto-619525286-612x612.jpg"
+      );
       borderCube.castShadow = true;
       borderCube.receiveShadow = true;
       const borderCubeBB = new THREE.Box3().setFromObject(borderCube);
@@ -923,7 +929,9 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
 var platformGeometry = new THREE.BoxGeometry(10, 0.2, 10);
 let materialPlatform = setDefaultMaterial("#ffff");
 let platform = new THREE.Mesh(platformGeometry, materialPlatform);
-platform.material.map = textureLoader.load('./assets/textures/Logo_da_UFJF.png')
+platform.material.map = textureLoader.load(
+  "./assets/textures/Logo_da_UFJF.png"
+);
 
 platform.position.set(0, 4.5, 0);
 platform.translateZ(-44);
@@ -1072,7 +1080,7 @@ allAudios.load("./assets/sounds/trilha.mp3", function (buffer) {
   backgroundSound.setBuffer(buffer);
   backgroundSound.setLoop(true);
   backgroundSound.setVolume(0.2);
-  //backgroundSound.play();
+  backgroundSound.play();
 });
 
 const keySound = new THREE.Audio(music);
@@ -1108,8 +1116,7 @@ allAudios.load("./assets/sounds/win.wav", function (buffer) {
   winSound.setBuffer(buffer);
   winSound.setLoop(false);
   winSound.setVolume(1);
-
-})
+});
 // rotaciona o personagem
 function rotate() {
   if (new_direction != direction) {
@@ -1457,11 +1464,10 @@ function checkObjectClicked(event) {
   }
 }
 
-var musicaPorta2 = false
-var musicaPorta3 = false
+var musicaPorta2 = false;
+var musicaPorta3 = false;
 
 function tocaMusicaPorta2() {
-
   if (musicaPorta2 == false) {
     doorSound.play();
     musicaPorta2 = true;
@@ -1469,7 +1475,6 @@ function tocaMusicaPorta2() {
 }
 
 function tocaMusicaPorta3() {
-
   if (musicaPorta3 == false) {
     doorSound.play();
     musicaPorta3 = true;

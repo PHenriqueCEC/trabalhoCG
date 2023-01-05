@@ -232,7 +232,7 @@ export function whatTile(position) {
   return new THREE.Vector3(x, position.y - 1, z); // menos dois pra apontar pro lugar onde o bloco vai para
 }
 
-const positionCubesThirdArea = [
+export const positionCubesThirdArea = [
   [13, -4, 42],
   [-13, -4, 56],
   [13, -4, 63],
@@ -266,7 +266,7 @@ export function insertCubesThirdArea(
     const clonedMaterial = cubeMaterial.clone();
     const cube = new THREE.Mesh(cubeGeometry, clonedMaterial);
 
-    if (cont < 4) {
+    if (cont < 2) {
       //Só entra aqui os 4 primeiros blocos da matriz
       cube.position.set(positionX, positionY, positionZ);
       const cubeBB = new THREE.Box3().setFromObject(cube);
