@@ -921,9 +921,9 @@ for (let x = -finalArea; x <= finalArea; x += 1) {
 //Cria a plataforma sobre a area final
 
 var platformGeometry = new THREE.BoxGeometry(10, 0.2, 10);
-let materialPlatform = setDefaultMaterial("#DEB887");
-
+let materialPlatform = setDefaultMaterial("#ffff");
 let platform = new THREE.Mesh(platformGeometry, materialPlatform);
+platform.material.map = textureLoader.load('./assets/textures/Logo_da_UFJF.png')
 
 platform.position.set(0, 4.5, 0);
 platform.translateZ(-44);
@@ -948,7 +948,7 @@ camera = new THREE.PerspectiveCamera(
 camera.position.copy(camPos);
 camera.up.copy(camUp);
 camera.position.setFromSphericalCoords(
-  200,
+  20,
   Math.PI / 3, // 60 degrees from positive Y-axis and 30 degrees to XZ-plane
   Math.PI / 4 // 45 degrees, between positive X and Z axes, thus on XZ-plane
 );

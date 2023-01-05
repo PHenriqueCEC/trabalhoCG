@@ -1,0 +1,208 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.2.75",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Cylinder",
+            "rotation" : [
+                0,
+                -0.5915629863739014,
+                0,
+                0.8062587976455688
+            ],
+            "translation" : [
+                0,
+                0.9962064623832703,
+                0
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "emissiveFactor" : [
+                0,
+                0,
+                0
+            ],
+            "name" : "Material.002",
+            "pbrMetallicRoughness" : {
+                "metallicFactor" : 0
+            }
+        },
+        {
+            "doubleSided" : true,
+            "emissiveFactor" : [
+                0,
+                0,
+                0
+            ],
+            "name" : "Material",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Cylinder",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                },
+                {
+                    "attributes" : {
+                        "POSITION" : 4,
+                        "NORMAL" : 5,
+                        "TEXCOORD_0" : 6
+                    },
+                    "indices" : 7,
+                    "material" : 1
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 6957,
+            "max" : [
+                1.1297588348388672,
+                0.5118887424468994,
+                1.1297588348388672
+            ],
+            "min" : [
+                -1.1297588348388672,
+                -0.9976183772087097,
+                -1.1297587156295776
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 6957,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 6957,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 37632,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 4,
+            "componentType" : 5126,
+            "count" : 2833,
+            "max" : [
+                0.9966495037078857,
+                0.5109843015670776,
+                0.9966493844985962
+            ],
+            "min" : [
+                -0.9966493844985962,
+                -0.8038884401321411,
+                -0.9966493248939514
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 5,
+            "componentType" : 5126,
+            "count" : 2833,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 6,
+            "componentType" : 5126,
+            "count" : 2833,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 7,
+            "componentType" : 5123,
+            "count" : 13434,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 83484,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 83484,
+            "byteOffset" : 83484
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 55656,
+            "byteOffset" : 166968
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 75264,
+            "byteOffset" : 222624
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 33996,
+            "byteOffset" : 297888
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 33996,
+            "byteOffset" : 331884
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 22664,
+            "byteOffset" : 365880
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 26868,
+            "byteOffset" : 388544
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 415412,
+            "uri" : "abajoura.bin"
+        }
+    ]
+}
